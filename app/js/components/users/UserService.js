@@ -32,10 +32,11 @@ UserService.prototype = {
 
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
+        res.$ok = true;
         return res;
     },
 
     handleError_: function handleError_(error) {
-        return error;
+        return {$ok : false, message: error};
     }
 };

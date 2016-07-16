@@ -1,4 +1,15 @@
-{
-    "roles" : ["GUEST", "MEMBER", "TOPIC_OWNER", "TOPIC_MANAGER", "MEMBERS_MANAGER", "SECRETARY", "TREASURER"],
-    "topic_owner": [2, 3, 4]
-}
+[{
+  "user": {
+    "id" : 1,
+    "login": "jack.smith@test.com",
+    "password": "test"
+  },
+  "roles" : ["MEMBER", "TOPIC_OWNER", "TOPIC_MANAGER", "MEMBERS_MANAGER", "SECRETARY", "TREASURER"]
+}, {
+  "user": {
+    "id" : 2,
+    "login": "john.doe@test.com",
+    "password": "test"
+  },
+  "roles" : ["MEMBER"]
+}]

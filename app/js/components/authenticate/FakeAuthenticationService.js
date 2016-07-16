@@ -1,10 +1,12 @@
 /**
  * Dummy authentication for testing, uses $timeout to simulate api call
  */
-function FakeAuthenticationService($http, $cookieStore, $rootScope, encoder, currentUserService) {
+function FakeAuthenticationService($http, $cookieStore, $rootScope, encoder, userResource, sessionService, authorizeService) {
   this.http = $http;
   this.cookieStore = $cookieStore;
-  this.currentUserService = currentUserService;
+  this.userResource = userResource;
+  this.sessionService = sessionService;
+  this.authorizeService = authorizeService;
   this.encoder = encoder;
   this.rootScope = $rootScope;
 
@@ -17,8 +19,7 @@ FakeAuthenticationService.prototype = {
     },
 
     login: function login(username, password) {
-        return this.currentUserService.getByLogin(username)
-        .then(this.handleResponse_);
+        return this.userResource.getByUsername(username).then(this.handleResponse_);
     },
 
     setCredentials : function setCredentials(username, password) {
@@ -39,11 +40,14 @@ FakeAuthenticationService.prototype = {
         this.rootScope.globals = {};
         this.cookieStore.remove('globals');
         this.http.defaults.headers.common.Authorization = 'Basic';
+        this.authorizeService.clearRoles();
     },
 
     handleResponse_ : function handleResponse_(user) {
-      if(user.$ok) {
+      if(!!user.$ok) {
         this.setCredentials(user.login, user.password);
+        this.sessionService.createSession(user, user.roles);
+        this.authorizeService.changeRoles(user.roles);
       }
       return user;
     }

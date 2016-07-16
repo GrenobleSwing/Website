@@ -1,5 +1,6 @@
 angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.auth',
+    'app.acl',
     'app.common',
     'app.home',
     'app.login',
@@ -10,7 +11,6 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.signup',
     'app.password',
     'app.users',
-    'sdt.models',
     'pascalprecht.translate'
   ])
   .config(['$routeProvider', DefaultRouteConfig])
@@ -36,4 +36,12 @@ function run($rootScope, $location, $cookieStore, $http) {
             $location.path('/login');
         }
     });
+
+    // If the route change failed due to our "Unauthorized" error, redirect them
+    $rootScope.$on('$routeChangeError', function(event, current, previous, rejection){
+        if(rejection === 'Unauthorized'){
+          $location.path('/login');
+        }
+    });
+
 }

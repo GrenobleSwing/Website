@@ -1,5 +1,5 @@
-function BalanceViewController(currentUserService) {
-  this.currentUserService = currentUserService;
+function BalanceViewController(sessionService) {
+  this.sessionService = sessionService;
   this.init_();
 }
 

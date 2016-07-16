@@ -1,3 +1,3 @@
-angular.module('app.home', [])
+angular.module('app.home', ['app.users'])
 .config(['$routeProvider', HomeRouteConfig])
-.controller('homeController', ['currentUserService', HomeController]);
+.controller('homeController', ['sessionService', 'userService', 'authorizeService', HomeController]);

@@ -37,7 +37,13 @@ FakeUsersResource.prototype = {
     getByUsername : function getByUsername(username) {
         var deferred = this.q.defer();
         var filtered = this.filter('filter')(this.getUsers_(), { login: username });
-        var user = filtered.length ? filtered[0] : null;
+        var user;
+        if(!! filtered.length) {
+          user = filtered[0];
+          user.$ok = true;
+        } else {
+            user = {$ok : false};
+        }
         deferred.resolve(user);
         return deferred.promise;
     },
@@ -60,7 +66,7 @@ FakeUsersResource.prototype = {
               users.push(user);
               this.setUsers_(users);
 
-              deferred.resolve({ success: true });
+              deferred.resolve({ $ok: true });
           }
 
         return deferred.promise;

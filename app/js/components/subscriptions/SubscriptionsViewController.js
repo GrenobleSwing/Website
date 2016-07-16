@@ -2,6 +2,7 @@ function SubscriptionsViewController(subscriptionService) {
   this.subscriptionService = subscriptionService;
   this.user = {id: 2};
   this.list = [];
+  this.amount = 0;
   this.init_();
 }
 
@@ -23,8 +24,10 @@ SubscriptionsViewController.prototype = {
     },
 
     listSubscriptions : function listSubscriptions() {
-      this.list = this.subscriptionService.getByUser(this.user).then(function(data) {
+      this.list = this.subscriptionService.getByUser(this.user)
+      .then(function(data) {
         this.list = data;
+        return this.list;
       }.bind(this));
       return this.list;
     }

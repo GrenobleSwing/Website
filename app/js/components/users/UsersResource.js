@@ -18,7 +18,7 @@ UsersResource.prototype = {
         return this.http.get('/api/user/' + username).then(this.handleSuccess_, this.handleError_('Error getting user by username'));
     },
 
-	getAll: function getAll() {
+	  getAll: function getAll() {
         return this.http.get('/api/users').then(this.handleSuccess_, this.handleError_('Error getting all users'));
     },
 
@@ -36,12 +36,13 @@ UsersResource.prototype = {
 
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
-        return res.data;
+      res.$ok = true;
+      return res;
     },
 
     handleError_: function handleError_(error) {
         return function () {
-            return { success: false, message: error };
+            return { $ok: false, message: error };
         };
     }
 };
