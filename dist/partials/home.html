@@ -1,0 +1,21 @@
+<div ng-if="ctrl.user.$ok">
+  <uib-tabset active="active">
+      <uib-tab index="0" heading="{{ 'ACCOUNT.TITLE' | translate}}">
+        <div gs-account-view="ctrl.user"></div>
+      </uib-tab>
+      <uib-tab index="1" heading="{{ 'PASSWORD.TITLE' | translate}}">
+        <div gs-password-edit="ctrl.user"></div>
+      </uib-tab>
+      <uib-tab index="2" heading="{{ 'SUBSCRIPTIONS.TITLE' | translate}}">
+        <div gs-subscriptions-view="ctrl.user" ></div>
+      </uib-tab>
+      <uib-tab index="3" heading="{{ 'BALANCE.TITLE'  | translate}}">
+        Balance page
+        <!-- <div gs-balance /> -->
+      </uib-tab>
+      <uib-tab index="4" heading="{{ 'TOPICS.TITLE' | translate}}">
+        Topics page
+        <!-- <div gs-topics /> -->
+      </uib-tab>
+  </uib-tabset>
+</div>

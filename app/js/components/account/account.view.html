@@ -1,0 +1,54 @@
+<div class="col-md-6 col-md-offset-3">
+    <div class="form-group">
+        <label for="login">{{ 'ACCOUNT.EMAIL' | translate}}</label>
+        <span name="login" id="login">{{ctrl.user.login}}</span>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-xs-6">
+          <label for="firstName">{{ 'ACCOUNT.FIRSTNAME' | translate}}</label>
+          <span name="firstName" id="firstName">{{ctrl.account.firstName}}</span>
+      </div>
+      <div class="form-group col-xs-6">
+          <label for="lastName">{{ 'ACCOUNT.LASTNAME' | translate}}</label>
+          <span name="lastName" id="lastName">{{ctrl.account.lastName}}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-xs-6">
+          <label for="gender">{{ 'ACCOUNT.GENDER' | translate}}</label><br />
+          <input type="radio" ng-model="ctrl.account.gender" value="male" ng-disabled="true" />{{ 'ACCOUNT.MALE' | translate}}
+          <input type="radio" ng-model="ctrl.account.gender" value="female" ng-disabled="true" />{{ 'ACCOUNT.FEMALE' | translate}}
+      </div>
+      <div class="form-group col-xs-6">
+          <label for="primary_role">{{ 'ACCOUNT.PRIMARY_ROLE' | translate}}</label><br />
+          <input type="radio" ng-model="ctrl.account.primaryRole" value="lead" ng-disabled="true" />{{ 'ACCOUNT.LEADER' | translate}}
+          <input type="radio" ng-model="ctrl.account.primaryRole" value="follow" ng-disabled="true" />{{ 'ACCOUNT.FOLLOWER' | translate}}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-xs-6">
+          <label for="country">{{ 'ACCOUNT.COUNTRY' | translate}}</label>
+          <span name="country" id="country">{{ctrl.account.country}}</span>
+      </div>
+
+      <div class="form-group col-xs-6">
+          <label for="city">{{ 'ACCOUNT.CITY' | translate}}</label>
+          <span name="city" id="city">{{ctrl.account.city}}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-xs-6">
+          <label for="address">{{ 'ACCOUNT.ADDRESS' | translate}}</label>
+          <span name="address" id="address">{{ctrl.account.address}}</span>
+      </div>
+
+      <div class="form-group col-xs-6">
+          <label for="zip">{{ 'ACCOUNT.ZIPCODE' | translate}}</label>
+          <span name="zip" id="zip">{{ctrl.account.postalCode}}</span>
+      </div>
+    </div>
+</div>

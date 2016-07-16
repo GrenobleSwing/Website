@@ -1,0 +1,4 @@
+{
+    "roles" : ["GUEST", "MEMBER", "TOPIC_OWNER", "TOPIC_MANAGER", "MEMBERS_MANAGER", "SECRETARY", "TREASURER"],
+    "topic_owner": [2, 3, 4]
+}

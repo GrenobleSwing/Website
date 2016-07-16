@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-md-4  col-md-offset-2 bg-info">
+      <h4>{{'LOGIN.TITLE' | translate}}</h4>
+      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">
+          <div class="form-group" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
+              <label for="login" class="control-label">{{ 'ACCOUNT.EMAIL' | translate}}</label>
+              <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
+              <span ng-if="form.login.$dirty && form.login.$invalid"
+                    class="glyphicon glyphicon-remove form-control-feedback">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</span>
+          </div>
+          <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+              <label for="password" class="control-label">{{ 'ACCOUNT.PASSWORD' | translate }}</label>
+              <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />
+              <span ng-if="form.password.$dirty && form.password.$error.required"
+                    class="glyphicon glyphicon-remove form-control-feedback">{{ 'ACCOUNT.PASSWORD_REQUIRED' | translate}}</span>
+          </div>
+          <div class="form-actions">
+              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ 'ACTION.CONNECT' | translate}}</button>
+          </div>
+      </form>
+  </div>
+  <div class="col-md-4">
+    <h4>{{'LOGIN.SIGNUP' | translate}}</h4>
+    <p>{{'LOGIN.MESSAGE' | translate}}</p>
+    <a href="#/sign-up" class="btn btn-link">{{ 'ACTION.SIGNUP' | translate}}</a>
+  </div>
+</div>

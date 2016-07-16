@@ -1,0 +1,13 @@
+[
+  {
+    "code" : "preRequisite",
+    "requiredTopicId" : 1,
+    "needSubscription" : true
+  },
+  {
+    "code" : "alreadySubscribed"
+  },
+  {
+    "code" : "inactiveTopic"
+  }
+]

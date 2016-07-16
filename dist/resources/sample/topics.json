@@ -1,0 +1,45 @@
+[{
+  "id" : 1,
+  "title" : "Adhésion année 2015-2016",
+  "description": "Lorem Ipsum",
+  "requiredTopic" : 0,
+  "startDate": "",
+  "endDate": "",
+  "location":"",
+  "teachers":"",
+  "price": 15,
+  "active" : false
+},{
+  "id" : 2,
+  "title" : "Adhésion année 2016-2017",
+  "description": "Lorem Ipsum",
+  "requiredTopic" : 0,
+  "startDate": "",
+  "endDate": "",
+  "location":"",
+  "teachers":"",
+  "price": 10,
+  "active" : true
+}, {
+  "id" : 3,
+  "title" : "Cours niveau 1 année 2016-2017",
+  "description": "Lorem Ipsum",
+  "requiredTopic" : 2,
+  "startDate": "",
+  "endDate": "",
+  "location":"Danse Théâtre",
+  "teachers": "X & Y",
+  "price": 190,
+  "active" : true
+}, {
+  "id" : 4,
+  "title" : "Cours niveau 2 année 2016-2017",
+  "description": "Lorem Ipsum",
+  "requiredTopic" : 2,
+  "startDate": "",
+  "endDate": "",
+  "location":"Danse Théâtre",
+  "teachers": "X & Y",
+  "price": 190,
+  "active" : true
+}]

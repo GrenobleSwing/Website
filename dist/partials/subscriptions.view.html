@@ -1,0 +1,3 @@
+<div ng-repeat="subscription in ctrl.list | orderBy:'id'">
+  {{subscription.topicTitle}} : {{subscription.balance | currency : '€'}}
+</div>
