@@ -1,4 +1,5 @@
 angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
+    'ui.router',
     'app.auth',
     'app.acl',
     'app.common',
@@ -17,8 +18,8 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
   .config(['$translateProvider', TranslateConfiguration])
   .run(['$rootScope', '$location', '$cookieStore', '$http', run]);
 
-function DefaultRouteConfig($routeProvider) {
-  $routeProvider.otherwise({ redirectTo: '/login' });
+function DefaultRouteConfig($urlRouterProvider) {
+  $urlRouterProvider.otherwise('login');
 }
 
 function run($rootScope, $location, $cookieStore, $http) {

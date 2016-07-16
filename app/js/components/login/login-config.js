@@ -1,3 +1,3 @@
 angular.module('app.login', ['app.auth'])
-.config(['$routeProvider', LoginRouteConfig])
+.config(['$stateProvider', LoginRouterConfig])
 .controller('loginController', ['$location', 'authenticationService', LoginController]);
