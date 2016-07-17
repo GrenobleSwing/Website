@@ -4,6 +4,6 @@ function NavController($state) {
 
 NavController.prototype = {
   isActive: function isActive(name) {
-    return ($state.is(name) ? "active" : "");   
+    return (this.state.is(name) ? "active" : "");
   }
-}
+};

@@ -27,7 +27,7 @@
     "build:css": "autoprefixer -b '> 5%' < app/styles/main.css | cssmin | hashmark -l 8 'dist/main.#.css' && copyfiles node_modules/bootstrap/dist/css/bootstrap.css dist/ ",
     "build:configjs": "find app/js -type f -name \"*-config.js\" -exec cat {} \\; >> dist/gs.js",
     "build:html": "cp app/index.html dist/ && mkdir dist/partials/ && find app/js/components/ -name '*.html' -exec cp {} dist/partials/  \\;",
-    "build:js": "find app/js -type f -name \"*.js\" ! -name \"*-config.js\"  ! -name \"app.js\" -exec cat {} \\; >> dist/gs.js",
+    "build:js": "find app/js/components/ -type f -name \"*.js\" ! -name \"*-config.js\"  ! -name \"app.js\" -exec cat {} \\; >> dist/gs.js",
     "build:libs": "copyfiles 'node_modules/angular/angular.js' 'node_modules/angular-ui-router/release/angular-ui-router.js'  'node_modules/angular-resource/angular-resource.js' 'node_modules/angular-i18n/angular-locale_fr-fr.js' 'node_modules/angular-ui-bootstrap/dist/*.js' 'node_modules/angular-route/angular-route.js' 'node_modules/angular-cookies/angular-cookies.js' 'node_modules/angular-translate/dist/angular-translate.js' dist/",
     "build:samples": "mkdir dist/resources/ && mkdir dist/resources/sample/ && cp app/resources/sample/*.json dist/resources/sample/",
     "build:uglifyjs": "uglifyjs dist/gs-annotated.js --compress --mangle -o dist/gs.min.js",

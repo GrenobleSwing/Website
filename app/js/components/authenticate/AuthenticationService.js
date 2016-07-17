@@ -18,7 +18,7 @@ AuthenticationService.prototype = {
         this.http.post('/api/authenticate', { username: username, password: password })
           .success(function (response) {
   			    response.$ok = true;
-  				  this.setCredentials(username, password);
+  				  this.setCredentials(response);
   				  this.http.get('/api/user/' + username).then(this.handleSuccess_, this.handleError_('Error creating session'));
             return response;
   			  })
@@ -29,14 +29,15 @@ AuthenticationService.prototype = {
           .then(callback);
     },
 
-    setCredentials : function setCredentials(username, password) {
-        var authdata = this.encoder.encode(username + ':' + password);
+    setCredentials : function setCredentials(user) {
+        var authdata = this.encoder.encode(user.login + ':' + user.password);
 
         this.rootScope.globals = {
-            currentUser: {
-                login: username,
-                authdata: authdata
-            }
+          currentUser: {
+              userId: user.id,
+              login: user.login,
+              authdata: authdata
+          }
         };
 
         this.http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line

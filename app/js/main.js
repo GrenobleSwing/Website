@@ -3,6 +3,7 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.auth',
     'app.acl',
     'app.common',
+    'app.nav',
     'app.home',
     'app.login',
     'app.logout',
@@ -32,7 +33,7 @@ function run($rootScope, $location, $cookieStore, $http) {
     $rootScope.$on('$locationChangeStart', function (event, next, current) {
         // redirect to login page if not logged in and trying to access a restricted page
         var restrictedPage = ['/login', '/sign-up'].indexOf($location.path()) === -1; // jshint ignore:line
-        var loggedIn = !!$rootScope.globals.currentUser ? !!$rootScope.globals.currentUser.login && !!$rootScope.globals.currentUser.authdata : false;
+        var loggedIn = !!$rootScope.globals.currentUser ? !!$rootScope.globals.currentUser.userId && !!$rootScope.globals.currentUser.login && !!$rootScope.globals.currentUser.authdata : false;
         if (restrictedPage && !loggedIn) {
             $location.path('/login');
         }

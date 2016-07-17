@@ -79,3 +79,61 @@ Rôle de la personne gérant la trésorerie. Elle enregistre et valide les paiem
 
 ## Secrétaire
 Rôle ayant accès à l’état civil des membres. Ces données sont inaccessibles aux autres membres.
+
+# Lancer l'application
+
+## Construire l'application dans le répertoire dist/
+```
+npm run build
+```
+
+## Démarrer le serveur inclus
+```
+npm run start
+```
+
+Dans le navigateur web, exécuter l'url http://localhost:8000
+
+
+# Outils
+
+Le plus simple pour installer tout l'environnement est d'aller à la racine du projet et d'exécuter la commande suivante:
+```
+npm install
+```
+
+Si besoin, voici la liste non exhaustive des outils requis à l'application. L'option -g signifie qu'ils sont installés globalement (ce qui reste facultatif); cette option peut nécessiter d'avoir les droits sudo sur l'environnement.
+
+## Bibliothèques angular
+```
+npm install angular
+npm install angular-route
+npm install angular-cookie
+npm install angular-cookies
+npm install angular-translate
+npm install angular-resource
+npm install angular-i18n
+npm install angular-ui-router
+```
+
+## Outils de build
+```
+npm install -g jshint
+npm install -g uglify-js
+npm install -g concat-cli
+npm install jslint
+npm install -g ng-annotate
+npm install -g copyfiles
+```
+
+## Outils liés aux tests
+```
+npm install -g karma-cli
+npm install karma --save-dev
+npm install karma-jasmine karma-chrome-launcher --save-dev
+npm install --save-dev karma-phantomjs-launcher
+npm install karma-jasmine --save-dev
+npm install karma-chrome-launcher --save-dev
+npm install karma-firefox-launcher --save-dev
+npm install protractor
+```

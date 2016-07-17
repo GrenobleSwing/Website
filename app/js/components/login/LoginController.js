@@ -21,7 +21,7 @@ LoginController.prototype = {
   onResponse_ : function onResponse_(user) {
       this.isLoading = false;
       if (!!user.$ok) {
-          this.location.path('/home');
+          this.location.path('/account');
       } else {
           // console.error(response.message);
       }

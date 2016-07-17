@@ -22,12 +22,13 @@ FakeAuthenticationService.prototype = {
         return this.userResource.getByUsername(username).then(this.handleResponse_);
     },
 
-    setCredentials : function setCredentials(username, password) {
-        var authdata = this.encoder.encode(username + ':' + password);
+    setCredentials : function setCredentials(user) {
+      var authdata = this.encoder.encode(user.login + ':' + user.password);
 
         this.rootScope.globals = {
             currentUser: {
-                login: username,
+                userId: user.id,
+                login: user.login,
                 authdata: authdata
             }
         };
@@ -45,7 +46,7 @@ FakeAuthenticationService.prototype = {
 
     handleResponse_ : function handleResponse_(user) {
       if(!!user.$ok) {
-        this.setCredentials(user.login, user.password);
+        this.setCredentials(user);
         this.sessionService.createSession(user, user.roles);
         this.authorizeService.changeRoles(user.roles);
       }

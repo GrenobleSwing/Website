@@ -2,6 +2,12 @@ function LoginRouterConfig($stateProvider) {
   $stateProvider
     .state('login', {
       url: "/login",
-      templateUrl: "partials/login.html"
+      views: {
+        content: {
+          templateUrl: 'partials/login.html',
+          controller: "loginController",
+          controllerAs: "ctrl"
+        }
+      }
     });
 }

@@ -1,0 +1,12 @@
+<script type="text/ng-template" id="partials/navbar.html">
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="nav navbar-nav">
+          <li ng-class="ctrl.isActive('account')"><a ui-sref="account">Profil</a></li>
+          <li ng-class="ctrl.isActive('password')"><a ui-sref="password">Changer le mot de passe</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</script>

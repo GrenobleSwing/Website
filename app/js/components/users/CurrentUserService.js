@@ -37,7 +37,7 @@ CurrentUserService.prototype = {
           $ok: false,
           user: {id: 0},
           roles: []
-        }
+        };
       } else {
         this.user = response;
       }

@@ -1,3 +1,3 @@
-angular.module('app.signup', ['app.users'])
+angular.module('app.signup', ['app.users', 'ui.router'])
   .config(['$stateProvider', SignUpRouterConfig])
   .controller('signUpController', ['$location', 'userService', SignUpController]);
