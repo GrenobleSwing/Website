@@ -1,6 +1,7 @@
 function SubscriptionResource($resource) {
   this.resource = $resource('/api/subscription/:subscriptionId', {subscriptionId:'@id'}, {
     'get':    { method:'GET' },
+    'getAmount':    { method:'GET' },
     'validate': { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },
@@ -19,6 +20,10 @@ SubscriptionResource.prototype = {
 
     getById: function getById(id) {
         return this.resource.get(id).then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+    },
+
+    getAmountByUserId: function getAmountByUserId(userId) {
+        return this.resource.getAmount(userId).then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
     },
 
 	  getAll: function getAll(params) {

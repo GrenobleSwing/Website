@@ -12,6 +12,12 @@ function SubscriptionsRouterConfig($stateProvider) {
           templateUrl: "partials/subscriptions.view.html",
           controller: "subscriptionsViewController",
           controllerAs: "ctrl"
+        },
+        graph: {
+          templateUrl: "partials/subscriptions.summary.html",
+          controller: function($scope) {
+
+          }
         }
       }
 

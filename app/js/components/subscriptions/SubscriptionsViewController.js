@@ -2,7 +2,6 @@ function SubscriptionsViewController(sessionService, subscriptionService) {
   this.subscriptionService = subscriptionService;
   this.userId = sessionService.userId;
   this.list = [];
-  this.amount = 0;
   this.init_();
 }
 

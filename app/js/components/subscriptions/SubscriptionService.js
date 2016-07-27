@@ -15,6 +15,10 @@ SubscriptionService.prototype = {
         return this.subscriptionResource.getAll({userId: userId}).then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
     },
 
+    getAmountByUserId: function getAmountByUserId(userId) {
+        return this.subscriptionResource.getAll({userId: userId}).then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
+    },
+
     addSubscription: function addSubscription(userId, topicId) {
       return this.subscriptionResource.create({userId: userId, topicId: topicId}).then(this.handleSuccess_, this.handleError_('Error adding subscription'));
     },
