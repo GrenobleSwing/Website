@@ -1,20 +1,18 @@
-function SessionService() {
-  this.userId = 0;
-  this.roles = [];
+function SessionService($cookieStore) {
+  this.cookieStore = $cookieStore;
 }
 
 SessionService.prototype = {
-  createSession: function(user, roles) {
-    this.userId = user.id;
-    this.roles = roles;
+
+  getUser: function getUser() {
+    return $cookieStore.get('globals').currentUser;
   },
 
-  clearSession : function() {
-    this.userId = 0;
-    this.roles = [];
+  getRoles: function getRoles() {
+    return $cookieStore.get('globals').currentRoles;
   },
 
   exists : function exists() {
-    return !!this.userId;
+    return !!$cookieStore.get('globals').currentUser;
   }
 };

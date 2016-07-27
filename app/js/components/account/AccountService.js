@@ -11,8 +11,8 @@ AccountService.prototype = {
         this.handleError_ = this.handleError_.bind(this);
     },
 
-    getByUser: function getByUser(user) {
-        return this.accountResource.getByUserId(user.id).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
+    getByUserId: function getByUser(userId) {
+        return this.accountResource.getByUserId(userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
     },
 
     updateAccount: function updateAccount(account) {

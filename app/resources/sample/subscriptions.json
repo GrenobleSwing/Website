@@ -3,23 +3,31 @@
   "topicId" : 1,
   "topicTitle" : "Adhésion année 2015-2016",
   "userId" : 1,
-  "balance": 0
-},{
+  "balance": 0,
+  "selected": true,
+   "state": "paid"
+}, {
   "id" : 2,
   "topicId" : 1,
   "topicTitle" : "Adhésion année 2015-2016",
   "userId" : 2,
-  "balance": 0
-},{
+  "balance": 0,
+  "selected": true,
+  "state": "paid"
+}, {
   "id" : 3,
   "topicId" :2,
   "topicTitle" : "Adhésion année 2016-2017",
   "userId" : 2,
-  "balance": -10
+  "balance": -10,
+  "selected": true,
+  "state": "waiting_for_payment"
 }, {
   "id" : 4,
   "topicId" : 3,
   "topicTitle" : "Cours niveau 1 année 2016-2017",
   "userId" : 2,
-  "balance": -190
+  "balance": -190,
+  "selected": true,
+  "state": "waiting_for_payment"
 }]

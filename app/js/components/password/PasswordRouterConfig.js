@@ -1,7 +1,7 @@
-function SubscriptionsRouterConfig($stateProvider) {
+function PasswordRouterConfig($stateProvider) {
   $stateProvider
-    .state('subscriptions', {
-      url: "/subscriptions",
+    .state('password', {
+      url: "/password",
       views: {
         nav: {
           templateUrl: 'partials/navbar.html',
@@ -9,11 +9,10 @@ function SubscriptionsRouterConfig($stateProvider) {
           controllerAs: "ctrl"
         },
         content: {
-          templateUrl: "partials/subscriptions.view.html",
-          controller: "subscriptionsViewController",
+          templateUrl: 'partials/password.edit.html',
+          controller: "passwordEditController",
           controllerAs: "ctrl"
         }
       }
-
     });
 }

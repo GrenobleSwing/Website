@@ -2,7 +2,7 @@ function PasswordEditController(passwordService) {
   this.password = "";
   this.passwordConfirm = "";
 
-  this.user = {};
+  this.user = {$ok : false};
 
   this.passwordService = passwordService;
 }

@@ -1,4 +1,13 @@
 <div ng-repeat="subscription in ctrl.list | orderBy : 'id'">
-  {{subscription.topicTitle}} : {{subscription.balance | currency : '€'}}
+  <div class="row">
+    <div class="col-md-4">{{subscription.topicTitle}}</div>
+    <div class="col-md-4">{{subscription.balance | currency : '€'}}</div>
+    <div class="col-md-4">
+      <input type="checkbox"
+              ng-model="subscription.selected"
+              ng-disabled="subscription.state == 'closed' || subscription.state == 'paid' || !!subscription.isLoading"
+              ng-change="ctrl.updateSubscription(subscription)">
+    </div>
+  </div>
 </div>
 <div>Total: {{ctrl.amount}}</div>

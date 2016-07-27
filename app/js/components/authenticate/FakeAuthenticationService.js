@@ -30,7 +30,8 @@ FakeAuthenticationService.prototype = {
                 userId: user.id,
                 login: user.login,
                 authdata: authdata
-            }
+            },
+            currentRoles : user.roles
         };
 
         this.http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
@@ -47,7 +48,6 @@ FakeAuthenticationService.prototype = {
     handleResponse_ : function handleResponse_(user) {
       if(!!user.$ok) {
         this.setCredentials(user);
-        this.sessionService.createSession(user, user.roles);
         this.authorizeService.changeRoles(user.roles);
       }
       return user;

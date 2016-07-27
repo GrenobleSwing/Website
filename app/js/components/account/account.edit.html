@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="account.edit.html">
+<script type="text/ng-template" id="partials/account.edit.html">
   <div class="col-md-6 col-md-offset-3">
       <h2>{{ 'ACCOUNT.TITLE' | translate}}</h2>
       <form name="form" ng-submit="ctrl.save()" role="form">
@@ -6,16 +6,6 @@
             <label for="login">{{ 'ACCOUNT.EMAIL' | translate}}</label>
             <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.user.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
             <span ng-if="form.login.$dirty && form.login.$invalid" class="help-block">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</span>
-        </div>
-        <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
-            <label for="password">{{ 'ACCOUNT.PASSWORD' | translate}}</label>
-            <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.user.password" required />
-            <span ng-if="form.password.$dirty && form.password.$error.required" class="help-block">{{ 'ACCOUNT.PASSWORD_REQUIRED' | translate}}</span>
-        </div>
-        <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
-            <label for="confirm-password">{{ 'ACCOUNT.PASSWORD_CONFIRM' | translate}}</label>
-            <input type="password" name="confirm-password" id="confirm-password" class="form-control" ng-model="ctrl.user.password" required />
-            <span ng-if="form.password.$dirty && form.password.$error.required" class="help-block">{{ 'ACCOUNT.PASSWORD_CONFIRM_REQUIRED' | translate}}</span>
         </div>
 
         <div class="form-group" ng-class="{ 'has-error': form.firstName.$dirty && form.firstName.$error.required }">

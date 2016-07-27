@@ -9,7 +9,8 @@
   "teachers":"",
   "price": 15,
   "active" : false,
-  "type":"adhesion"
+  "type":"adhesion",
+  "state": "closed"
 },{
   "id" : 2,
   "title" : "Adhésion année 2016-2017",
@@ -21,7 +22,8 @@
   "teachers":"",
   "price": 10,
   "active" : true,
-  "type":"duet"
+  "type":"duet",
+  "state": "active"
 }, {
   "id" : 3,
   "title" : "Cours niveau 1 année 2016-2017",
@@ -33,7 +35,8 @@
   "teachers": "X & Y",
   "price": 190,
   "active" : true,
-  "type":"duet"
+  "type":"duet",
+  "state": "active"
 }, {
   "id" : 4,
   "title" : "Cours niveau 2 année 2016-2017",
@@ -45,7 +48,8 @@
   "teachers": "X & Y",
   "price": 190,
   "active" : true,
-  "type":"duet"
+  "type":"duet",
+  "state": "active"
 }, {
   "id" : 4,
   "title" : "Cours Jazz Root 1 année 2016-2017",
@@ -57,5 +61,6 @@
   "teachers": "X",
   "price": 190,
   "active" : true,
-  "type":"solo"
+  "type":"solo",
+  "state": "active"
 }]

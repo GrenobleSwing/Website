@@ -11,16 +11,16 @@ SubscriptionService.prototype = {
         this.handleError_ = this.handleError_.bind(this);
     },
 
-    getByUser: function getByUser(user) {
-        return this.subscriptionResource.getAll({userId: user.id}).then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
+    getByUserId: function getByUser(userId) {
+        return this.subscriptionResource.getAll({userId: userId}).then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
     },
 
-    addSubscription: function addSubscription(user, topic) {
-      return this.subscriptionResource.create({userId: user.id, topicId: topic.id}).then(this.handleSuccess_, this.handleError_('Error adding subscription'));
+    addSubscription: function addSubscription(userId, topicId) {
+      return this.subscriptionResource.create({userId: userId, topicId: topicId}).then(this.handleSuccess_, this.handleError_('Error adding subscription'));
     },
 
-    cancelSubscription: function cancelSubscription(subscription) {
-      return this.subscriptionResource.remove(subscription.id).then(this.handleSuccess_, this.handleError_('Error cancelling subscription'));
+    cancelSubscription: function cancelSubscription(userId, topicId) {
+      return this.subscriptionResource.remove({userId: userId, topicId: topicId}).then(this.handleSuccess_, this.handleError_('Error cancelling subscription'));
     },
 
     validateSubscription: function validateSubscription(subscription) {

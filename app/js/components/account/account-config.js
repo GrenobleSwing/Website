@@ -1,7 +1,7 @@
 angular.module('app.account', ['app.users', 'ngResource', 'ui.router'])
   .config(['$stateProvider', AccountRouterConfig])
-  .directive('gsAccountView', AccountViewDirective)
+  // .directive('gsAccountView', AccountViewDirective)
   .service('accountResource', ['$timeout', '$filter', '$q', '$resource', FakeAccountResource])
   .service('accountService', ['accountResource', AccountService])
-  .controller('accountEditController', ['sessionService', 'userService', 'accountService', AccountEditController])
-  .controller('accountViewController', ['$scope', 'accountService', AccountViewController]);
+  .controller('accountEditController', ['sessionService', 'accountService', AccountEditController]);
+  // .controller('accountViewController', ['$scope', 'accountService', AccountViewController])
