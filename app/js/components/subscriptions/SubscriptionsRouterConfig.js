@@ -13,11 +13,10 @@ function SubscriptionsRouterConfig($stateProvider) {
           controller: "subscriptionsViewController",
           controllerAs: "ctrl"
         },
-        graph: {
+        summary: {
           templateUrl: "partials/subscriptions.summary.html",
-          controller: function($scope) {
-
-          }
+          controller: "subscriptionsAmountController",
+          controllerAs: "ctrl"
         }
       }
 

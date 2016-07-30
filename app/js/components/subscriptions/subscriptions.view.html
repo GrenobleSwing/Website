@@ -1,13 +1,54 @@
-<div ng-repeat="subscription in ctrl.list | orderBy : 'id'">
-  <div class="row">
-    <div class="col-md-4">{{subscription.topicTitle}}</div>
-    <div class="col-md-4">{{subscription.balance | currency : '€'}}</div>
-    <div class="col-md-4">
-      <input type="checkbox"
-              ng-model="subscription.selected"
-              ng-disabled="subscription.state == 'closed' || subscription.state == 'paid' || !!subscription.isLoading"
-              ng-change="ctrl.updateSubscription(subscription)">
-    </div>
+<div ng-repeat="subscription in ctrl.list | orderBy : 'id'" class="col-md-8 col-md-offset-2">
+    <uib-accordion>
+      <div uib-accordion-group>
+        <uib-accordion-heading>
+          <div class="panel-header row">
+            <span class="col-md-8">
+              <a href ng-click="ctrl.openDescription(subscription)">{{subscription.topicTitle}}</a>
+            </span>
+            <span class="col-md-3">
+              <p ng-if="!!subscription.selected">{{subscription.state}}</p>
+            </span>
+            <span class="col-md-1">
+              <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': !!subscription.isOpen, 'glyphicon-chevron-right': !subscription.isOpen}"></i>
+            </span>
+          </div>
+        </uib-accordion-heading>
+        <div class="panel-collapse collapse" uib-collapse="!subscription.isOpen"  ng-init="requiredSubscriptions = ctrl.getRequiredSubscriptions(subscription)">
+          <div class="panel-body row">
+            <span class="col-md-8">
+                <p>{{subscription.description}}</p>
+                <p>Requiert :</p>
+                <div ng-if="requiredSubscriptions.length > 0">
+                  <ul ng-repeat="item in requiredSubscriptions">
+                    <li>{{item.topicTitle}}</li>
+                  </ul>
+                </div>
+                <div ng-if="requiredSubscriptions.length === 0">
+                  <ul><li>aucun pré-requis</li></ul>
+                </div>
+            </span>
+            <span class="col-md-2">{{subscription.balance | currency : '€'}}</span>
+            <span class="col-md-2">
+              <span ng-if="!!subscription.selected && subscription.state == 'paid'" class="alert alert-success">{{subscription.state | translate}}</span>
+              <span ng-if="!!subscription.selected && subscription.state == 'waiting_for_payment'" class="alert alert-warning">{{subscription.state | translate}}</span>
+              <span ng-if="!subscription.selected">
+                <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription(subscription)">ajouter</a>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </uib-accordion>
+</div>
+
+<div ui-view name="summary"></div>
+
+<div class="row">
+  <div class="col-md-2 col-md-offset-6">
+    <a class="btn btn-danger" role="button" ng-disabled="!ctrl.dirty" ng-click="ctrl.cancelChanges()">Réinitialiser</a>
+  </div>
+  <div class="col-md-2">
+    <a class="btn btn-primary" role="button" ng-disabled="!ctrl.dirty">Valider</a>
   </div>
 </div>
-<div ui-view="summary"></div>

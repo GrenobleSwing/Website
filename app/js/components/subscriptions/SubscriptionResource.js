@@ -48,32 +48,14 @@ SubscriptionResource.prototype = {
 
     /**
   	 *
-  	 * @return {
+  	 * @param [{
+     *   userId: %integer%,
   	 *   topicId: %integer%,
-  	 *   amount: %float%
-  	 * }
+  	 *   selected: %boolean%
+  	 * }, ...]
   	 */
-    create: function create(subscription) {
-        return this.resource.create(subscription).then(this.handleSuccess_, this.handleError_('Error creating subscription'));
-    },
-
-    /**
-  	 *
-  	 * @return {
-  	 *   id: %integer%,
-  	 *   amount: %float%
-  	 * }
-  	 */
-    update: function update(subscription) {
-        return this.resource.update(subscription).then(this.handleSuccess_, this.handleError_('Error updating subscription'));
-    },
-
-    remove: function remove(id) {
-        return this.resource.delete(id).then(this.handleSuccess_, this.handleError_('Error deleting subscription'));
-    },
-
-    validate: function validate(subscription) {
-        return this.resource.validate(subscription).then(this.handleSuccess_, this.handleError_('Error validating subscription'));
+    updateSubscriptions: function updateSubscriptions(subscriptions) {
+        return this.resource.update(subscriptions).success(this.handleSuccess_).error(this.handleError_('Error updating subscription'));
     },
 
     // private functions

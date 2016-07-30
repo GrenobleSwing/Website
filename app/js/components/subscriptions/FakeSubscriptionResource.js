@@ -73,6 +73,12 @@ FakeSubscriptionResource.prototype = {
       return deferred.promise;
   },
 
+  updateSubscriptions: function updateSubscriptions(subscriptions) {
+      var deferred = this.q.defer();
+      deferred.resolve();
+      return deferred.promise;
+  },
+
   remove: function remove(id) {
       var deferred = $q.defer();
 

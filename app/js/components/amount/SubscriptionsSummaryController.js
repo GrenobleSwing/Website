@@ -1,5 +1,5 @@
-function SubscriptionsSummaryController(sessionService, subscriptionService) {
-  this.subscriptionService = subscriptionService;
+function SubscriptionsSummaryController(sessionService, subscriptionAmountService) {
+  this.subscriptionService = subscriptionAmountService;
   this.userId = sessionService.userId;
 
   this.init_();
@@ -9,6 +9,10 @@ SubscriptionsSummaryController.prototype = {
     init_ : function init_() {
       this.handleSuccess_ = this.handleSuccess_.bind(this);
 
+      this.refresh();
+    },
+
+    refresh : function refresh() {
       this.amount = this.subscriptionService.getAmountByUserId(this.userId).then(this.handleSuccess_);
     },
 
