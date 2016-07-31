@@ -1,3 +1,3 @@
 angular
-    .module('app.acl', [])
-    .service('authorizeService', ['sessionService', AuthorizeService]);
+    .module('app.acl', ['app.users'])
+    .service('authorizationService', ['$rootScope', '$state', 'identityService', AuthorizationService]);

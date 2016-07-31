@@ -1,6 +1,6 @@
 function PasswordRouterConfig($stateProvider) {
   $stateProvider
-    .state('password', {
+    .state('app.password', {
       url: "/password",
       views: {
         nav: {

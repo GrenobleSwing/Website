@@ -1,5 +1,5 @@
-function SignUpController($location, userService) {
-  this.location = $location;
+function SignUpController($state, userService) {
+  this.state = $state;
   this.userService = userService;
 
   this.login = "";
@@ -19,8 +19,6 @@ SignUpController.prototype = {
     },
 
     handleResponse_ : function handleResponse_(response) {
-        if (response.success) {
-            this.location.path('/login');
-        }
+        this.state.go('login');
     }
 };

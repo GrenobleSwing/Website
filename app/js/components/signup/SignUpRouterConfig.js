@@ -8,6 +8,9 @@ function SignUpRouterConfig($stateProvider) {
           controller: "signUpController",
           controllerAs: "ctrl"
         }
-      }
+      },
+      data: {
+        roles: []
+      },
     });
 }

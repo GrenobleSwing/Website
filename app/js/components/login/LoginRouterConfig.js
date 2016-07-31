@@ -8,6 +8,9 @@ function LoginRouterConfig($stateProvider) {
           controller: "loginController",
           controllerAs: "ctrl"
         }
-      }
+      },
+      data: {
+        roles: []
+      },
     });
 }

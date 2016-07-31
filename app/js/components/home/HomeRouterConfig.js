@@ -1,9 +1,17 @@
 function HomeRouterConfig($stateProvider) {
   $stateProvider
     .state('home', {
-      url: "/home",
-      templateUrl: "partials/home.html",
-      controller: "homeController",
-      controllerAs: "ctrl"
-    });
+      parent: 'app',
+      url: "/",
+      data: {
+        roles: ['User']
+      },
+      views: {
+        'content@': {
+          templateUrl: "partials/home.html",
+          controller: "homeController",
+          controllerAs: "ctrl"
+        }
+      }
+  });
 }

@@ -2,10 +2,10 @@
   "id" : 1,
   "login": "jack.smith@test.com",
   "password": "test",
-  "roles" : ["MEMBER", "TOPIC_OWNER", "TOPIC_MANAGER", "MEMBERS_MANAGER", "SECRETARY", "TREASURER"]
+  "roles" : ["USER", "TOPIC_OWNER", "TOPIC_MANAGER", "MEMBERS_MANAGER", "SECRETARY", "TREASURER"]
 }, {
   "id" : 2,
   "login": "john.doe@test.com",
   "password": "test",
-  "roles" : ["MEMBER"]
+  "roles" : ["USER"]
 }]

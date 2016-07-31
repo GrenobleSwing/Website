@@ -1,11 +1,11 @@
-function LogoutController($location, authenticationService) {
+function LogoutController($location, identityService) {
     this.location = $location;
-    this.authenticationService = authenticationService;
+    this.identityService = identityService;
 }
 
 LogoutController.prototype =  {
     logout: function logout() {
-      this.authenticationService.clearCredentials();
-      this.location.path('/login');
+      this.identityService.clearIdentity();
+      $state.go('login');
     }
 };
