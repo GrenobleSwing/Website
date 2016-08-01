@@ -1,19 +1,22 @@
-function SubscriptionsViewController(sessionService, subscriptionService) {
+function SubscriptionsViewController(identityService, subscriptionService) {
   this.subscriptionService = subscriptionService;
-  this.userId = sessionService.userId;
   this.list = undefined;
   this.originalList = undefined;
   this.dirty = false;
-  this.init_();
+
+  this.init_ = this.init_.bind(this);
+  this.handleInitSuccess_ = this.handleInitSuccess_.bind(this);
+  this.handleAddSuccess_ = this.handleAddSuccess_.bind(this);
+  this.handleRemoveSuccess_ = this.handleRemoveSuccess_.bind(this);
+
+  this.identity = identityService.getIdentity().then(this.init_);
+
 }
 
 SubscriptionsViewController.prototype = {
-    init_ : function init_() {
-      this.handleInitSuccess_ = this.handleInitSuccess_.bind(this);
-      this.handleAddSuccess_ = this.handleAddSuccess_.bind(this);
-      this.handleRemoveSuccess_ = this.handleRemoveSuccess_.bind(this);
-
-      this.subscriptionService.getSubscriptionsByUserId(this.userId).then(this.handleInitSuccess_);
+    init_ : function init_(identity) {
+      this.identity = identity;
+      this.subscriptionService.getSubscriptionsByUserId(identity.id).then(this.handleInitSuccess_);
     },
 
     validateSubscription: function validateSubscription(subscription) {
@@ -31,7 +34,7 @@ SubscriptionsViewController.prototype = {
     },
 
     getRequiredSubscriptions : function getRequiredSubscriptions(subscription) {
-      return this.subscriptionService.getRequiredSubscriptions(this.userId, subscription);
+      return this.subscriptionService.getRequiredSubscriptions(this.identity.id, subscription);
     },
 
     saveSubscriptions : function saveSubscriptions() {

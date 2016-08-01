@@ -1,4 +1,4 @@
-function FakeUsersResource($timeout, $filter, $q, $resource) {
+function UsersResourceStub($timeout, $filter, $q, $resource) {
   this.timeout = $timeout;
   this.filter = $filter;
   this.q = $q;
@@ -10,7 +10,7 @@ function FakeUsersResource($timeout, $filter, $q, $resource) {
   this.init_();
 }
 
-FakeUsersResource.prototype = {
+UsersResourceStub.prototype = {
 
     init_: function init_() {
       this.getUsers_ = this.getUsers_.bind(this);

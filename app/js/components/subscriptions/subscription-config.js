@@ -3,4 +3,4 @@ angular
     .config(['$stateProvider', SubscriptionsRouterConfig])
     .service('subscriptionResource', ['$timeout', '$filter', '$q', '$resource', FakeSubscriptionResource])
     .service('subscriptionService', ['subscriptionResource', SubscriptionService])
-    .controller('subscriptionsViewController', ['sessionService', 'subscriptionService', SubscriptionsViewController]);
+    .controller('subscriptionsViewController', ['identityService', 'subscriptionService', SubscriptionsViewController]);

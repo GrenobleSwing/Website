@@ -3,15 +3,15 @@ function SubscriptionsRouterConfig($stateProvider) {
     .state('subscriptions', {
       parent: 'app',
       url: "/subscriptions",
+      data: {
+        roles: ['USER']
+      },
       views: {
-        content: {
+        'content@': {
           templateUrl: "partials/subscriptions.view.html",
           controller: "subscriptionsViewController",
           controllerAs: "ctrl"
         }
-      },
-      data: {
-        roles: ['USER']
       }
     });
 }

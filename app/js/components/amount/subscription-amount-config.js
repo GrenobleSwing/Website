@@ -3,4 +3,4 @@ angular
   .directive('gsSubscriptionsSummary', SubscriptionsAmountDirective)
   .service('subscriptionAmountResource', ['$filter', '$q', '$resource', FakeSubscriptionAmountResource])
   .service('subscriptionAmountService', ['subscriptionAmountResource', SubscriptionsAmountService])
-  .controller('subscriptionsSummaryController', ['sessionService', 'subscriptionAmountService', SubscriptionsSummaryController]);
+  .controller('subscriptionsSummaryController', ['identityService', 'subscriptionAmountService', SubscriptionsSummaryController]);

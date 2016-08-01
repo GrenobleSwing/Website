@@ -12,7 +12,7 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.subscriptions.amount',
     // 'app.balance',
     'app.signup',
-    // 'app.password',
+    'app.password',
     'app.users',
     'pascalprecht.translate'
   ])
@@ -27,8 +27,18 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       resolve: {
         authorize: ['authorizationService',
           function(authService) {
-            return auth.authorize();
+            return authService.authorize();
           }]
+      },
+      views: {
+        'nav@': {
+          templateUrl: 'partials/navbar.html',
+          controller: 'navController',
+          controllerAs: 'ctrl'
+        },
+        'content@': {
+          template: '<ui-view/>'
+        }
       }
     })
     .state('accessdenied', {
@@ -44,7 +54,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       }
     });
 
-  $urlRouterProvider.otherwise('home');
+  $urlRouterProvider.otherwise('login');
 }
 
 function run($rootScope, $state, $stateParams, authService, identityService) {

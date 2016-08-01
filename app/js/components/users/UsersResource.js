@@ -15,6 +15,18 @@ UsersResource.prototype = {
   	 * @return {
      *  id: %integer%,
      *  login: %email%,
+     *  authdata: %string%
+     * }
+  	 */
+    getCurrentUser: function getCurrentUser() {
+        return this.http.get('/api/identity').then(this.handleSuccess_, this.handleError_('Error getting user by id'));
+    },
+
+    /**
+  	 *
+  	 * @return {
+     *  id: %integer%,
+     *  login: %email%,
      *  password: %string%
      * }
   	 */
