@@ -1,7 +1,7 @@
-function AccountEditController(sessionService, accountService) {
+function AccountEditController(identityService, accountService) {
+  this.identityService = identityService;
   this.accountService = accountService;
   this.account = {$ok: false};
-  this.userId = sessionService.userId;
   this.init_();
 }
 
@@ -10,7 +10,9 @@ AccountEditController.prototype = {
   		this.handleInitResponse_ = this.handleInitResponse_.bind(this);
       this.handleSaveResponse_ = this.handleSaveResponse_.bind(this);
 
-      this.account = this.accountService.getByUserId(this.userId).then(this.handleInitResponse_);
+      this.identityService.getIdentity().then(function (user) {
+        this.account = this.accountService.getByUserId(user.id).then(this.handleInitResponse_);
+      }.bind(this));
     },
 
     save : function save() {

@@ -22,7 +22,7 @@ LoginController.prototype = {
     if (!!this.scope.returnToState) {
       this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
-     this.state.go('account');
+     this.state.go('home');
     }
   }
 };

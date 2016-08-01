@@ -70,6 +70,7 @@ IdentityService.prototype = {
 
   getIdentity: function getIdentity(force) {
     var deferred = this.q.defer();
+    var login = this.identity.login;
 
     if (force === true) this.identity = undefined;
 
@@ -81,7 +82,7 @@ IdentityService.prototype = {
     }
 
     // otherwise, retrieve the identity data from the server, update the identity object, and then resolve.
-    this.userResource.getByUsername(username).then(
+    this.userResource.getByUsername(login).then(
       function(data) {
         this.identity = data;
         this.authenticated = true;

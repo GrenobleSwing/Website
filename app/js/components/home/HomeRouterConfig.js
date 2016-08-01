@@ -4,7 +4,7 @@ function HomeRouterConfig($stateProvider) {
       parent: 'app',
       url: "/",
       data: {
-        roles: ['User']
+        roles: ['USER']
       },
       views: {
         'content@': {
