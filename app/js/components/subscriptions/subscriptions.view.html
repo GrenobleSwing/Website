@@ -32,7 +32,10 @@
             <span class="col-md-2">
               <span ng-if="!!subscription.selected && subscription.state == 'paid'" class="alert alert-success">{{subscription.state | translate}}</span>
               <span ng-if="!!subscription.selected && subscription.state == 'waiting_for_payment'" class="alert alert-warning">{{subscription.state | translate}}</span>
-              <span ng-if="!subscription.selected">
+              <span ng-if="!subscription.selected && subscription.type === 'duet'">
+                <a class="btn btn-primary" role="button" ng-click="ctrl.validateDuetSubscription(subscription)">ajouter</a>
+              </span>
+              <span ng-if="!subscription.selected && subscription.type !== 'duet'">
                 <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription(subscription)">ajouter</a>
               </span>
             </span>

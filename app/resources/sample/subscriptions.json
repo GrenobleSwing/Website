@@ -8,7 +8,8 @@
   "selected": true,
   "yearId": "2015-2016",
   "state": "paid",
-  "requiredTopicId" : 0
+  "requiredTopicId" : 0,
+  "type":"subscribe"
 }, {
   "id" : 2,
   "topicId" : 1,
@@ -19,7 +20,8 @@
   "selected": true,
   "yearId": "2015-2016",
   "state": "paid",
-  "requiredTopicId" : 0
+  "requiredTopicId" : 0,
+  "type":"subscribe"
 }, {
   "id" : 3,
   "topicId" :2,
@@ -30,7 +32,8 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 0
+  "requiredTopicId" : 0,
+  "type":"subscribe"
 }, {
   "id" : 4,
   "topicId" : 3,
@@ -41,7 +44,8 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 2
+  "requiredTopicId" : 2,
+  "type":"duet"
 }, {
   "id" : 5,
   "topicId" : 4,
@@ -52,7 +56,8 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 2
+  "requiredTopicId" : 2,
+  "type":"duet"
 }, {
   "id" : 6,
   "topicId" : 1,
@@ -63,7 +68,8 @@
   "selected": true,
   "yearId": "2015-2016",
   "state": "paid",
-  "requiredTopicId" : 0
+  "requiredTopicId" : 0,
+  "type":"subscribe"
 }, {
   "id" : 7,
   "topicId" :2,
@@ -74,7 +80,8 @@
   "selected": true,
   "yearId": "2016-2017",
   "state": "waiting_for_payment",
-  "requiredTopicId" : 0
+  "requiredTopicId" : 0,
+  "type":"subscribe"
 }, {
   "id" : 8,
   "topicId" : 3,
@@ -85,7 +92,8 @@
   "selected": true,
   "yearId": "2016-2017",
   "state": "waiting_for_payment",
-  "requiredTopicId" : 2
+  "requiredTopicId" : 2,
+  "type":"duet"
 }, {
   "id" : 9,
   "topicId" : 4,
@@ -96,5 +104,30 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 2
+  "requiredTopicId" : 2,
+  "type":"duet"
+}, {
+  "id" : 10,
+  "topicId" : 4,
+  "topicTitle" : "Jazz Root niveau 2 année 2016-2017",
+  "description" : "Cours Solo les mardis, de 21h30 à 22h30, à Studio Soanne, avec X",
+  "userId" : 1,
+  "balance": -190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "requiredTopicId" : 2,
+  "type":"solo"
+}, {
+  "id" : 11,
+  "topicId" : 4,
+  "topicTitle" : "Jazz Root niveau 2 année 2016-2017",
+  "description" : "Cours Solo les mardis, de 21h30 à 22h30, à Studio Soanne, avec X",
+  "userId" : 2,
+  "balance": -190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "requiredTopicId" : 2,
+  "type":"solo"
 }]

@@ -1,6 +1,6 @@
 angular
-    .module('app.subscriptions.view', ['app.users', 'ui.router'])
+    .module('app.subscriptions.view', ['app.users', 'ui.router', 'ui.bootstrap'])
     .config(['$stateProvider', SubscriptionsRouterConfig])
     .service('subscriptionResource', ['$timeout', '$filter', '$q', '$resource', FakeSubscriptionResource])
     .service('subscriptionService', ['subscriptionResource', SubscriptionService])
-    .controller('subscriptionsViewController', ['identityService', 'subscriptionService', SubscriptionsViewController]);
+    .controller('subscriptionsViewController', ['$uibModal', 'identityService', 'subscriptionService', SubscriptionsViewController]);

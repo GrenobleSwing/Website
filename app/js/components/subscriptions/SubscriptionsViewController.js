@@ -1,8 +1,9 @@
-function SubscriptionsViewController(identityService, subscriptionService) {
+function SubscriptionsViewController($modal, identityService, subscriptionService) {
   this.subscriptionService = subscriptionService;
   this.list = undefined;
   this.originalList = undefined;
   this.dirty = false;
+  this.modal = $modal;
 
   this.init_ = this.init_.bind(this);
   this.handleInitSuccess_ = this.handleInitSuccess_.bind(this);
@@ -31,6 +32,27 @@ SubscriptionsViewController.prototype = {
       }
 
       this.dirty = true;
+    },
+
+    validateDuetSubscription: function validateDuetSubscription(subscription) {
+      var modalInstance = this.modal.open({
+            animation: true,
+            templateUrl: 'partials/subscription.duet.html',
+            controller: 'subscriptionDuetController',
+            resolve: {
+              data: function () {
+                return subscription;
+              }
+            }
+          });
+
+          modalInstance.result.then(function (value) {
+            subscription.role = value.role;
+            subscription.partnerName = value.partnerName;
+            this.validateSubscription(subscription);
+          }.bind(this), function () {
+
+          });
     },
 
     getRequiredSubscriptions : function getRequiredSubscriptions(subscription) {
