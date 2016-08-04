@@ -14,31 +14,50 @@
             </span>
           </div>
         </uib-accordion-heading>
-        <div class="panel-collapse collapse" uib-collapse="!subscription.isOpen"  ng-init="requiredSubscriptions = ctrl.getRequiredSubscriptions(subscription)">
-          <div class="panel-body row">
-            <span class="col-md-8">
-                <p>{{subscription.description}}</p>
-                <p>Requiert :</p>
-                <div ng-if="requiredSubscriptions.length > 0">
-                  <ul ng-repeat="item in requiredSubscriptions">
-                    <li>{{item.topicTitle}}</li>
-                  </ul>
+        <div class="panel-collapse collapse" uib-collapse="!subscription.isOpen">
+          <div class="panel-body">
+            <div class="row">
+              <span class="col-md-8">
+                <div class="row">
+                  <p>{{subscription.description}}</p>
                 </div>
-                <div ng-if="requiredSubscriptions.length === 0">
-                  <ul><li>aucun pré-requis</li></ul>
+                <div class="row">
+                  <span class="col-md-12">
+                    <div class="row" ng-if="subscription.role">
+                      <p>Inscrit en tant que : {{subscription.role}}</p>
+                    </div>
+                    <div class="row" ng-if="subscription.partnerName">
+                      <p>Avec : {{subscription.partnerName}}</p>
+                    </div>
+                  </span>
                 </div>
-            </span>
-            <span class="col-md-2">{{subscription.balance | currency : '€'}}</span>
-            <span class="col-md-2">
-              <span ng-if="!!subscription.selected && subscription.state == 'paid'" class="alert alert-success">{{subscription.state | translate}}</span>
-              <span ng-if="!!subscription.selected && subscription.state == 'waiting_for_payment'" class="alert alert-warning">{{subscription.state | translate}}</span>
-              <span ng-if="!subscription.selected && subscription.type === 'duet'">
-                <a class="btn btn-primary" role="button" ng-click="ctrl.validateDuetSubscription(subscription)">ajouter</a>
+                <div class="row" data-subscription="subscription" data-list="ctrl.list"></div>
+                <div class="row" ng-init="requiredSubscriptions = ctrl.getRequiredSubscriptions(subscription)">
+                  <span class="col-md-8">
+                      Requiert :
+                      <div ng-if="requiredSubscriptions.length > 0">
+                        <ul ng-repeat="item in requiredSubscriptions">
+                          <li>{{item.topicTitle}}</li>
+                        </ul>
+                      </div>
+                      <div ng-if="requiredSubscriptions.length === 0">
+                        <ul><li>aucun pré-requis</li></ul>
+                      </div>
+                  </span>
+                </div>
               </span>
-              <span ng-if="!subscription.selected && subscription.type !== 'duet'">
-                <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription(subscription)">ajouter</a>
+              <span class="col-md-2">{{subscription.balance | currency : '€'}}</span>
+              <span class="col-md-2">
+                <span ng-if="!!subscription.selected && subscription.state == 'paid'" class="alert alert-success">{{subscription.state | translate}}</span>
+                <span ng-if="!!subscription.selected && subscription.state == 'waiting_for_payment'" class="alert alert-warning">{{subscription.state | translate}}</span>
+                <span ng-if="!subscription.selected && subscription.type === 'duet'">
+                  <a class="btn btn-primary" role="button" ng-click="ctrl.validateDuetSubscription(subscription)">ajouter</a>
+                </span>
+                <span ng-if="!subscription.selected && subscription.type !== 'duet'">
+                  <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription(subscription)">ajouter</a>
+                </span>
               </span>
-            </span>
+            </div>
           </div>
         </div>
       </div>

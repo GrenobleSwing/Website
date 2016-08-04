@@ -1,7 +1,7 @@
-function SubscriptionDuetController($scope, $modalInstance) {
+function SubscriptionDuetController($scope, $modalInstance, role, partnerName) {
   this.modalInstance = $modalInstance;
-  this.role = $scope.data.role;
-  this.partnerName = $scope.data.partnerName;
+  this.role = role;
+  this.partnerName = partnerName;
 }
 
 SubscriptionDuetController.prototype = {

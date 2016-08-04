@@ -39,9 +39,13 @@ SubscriptionsViewController.prototype = {
             animation: true,
             templateUrl: 'partials/subscription.duet.html',
             controller: 'subscriptionDuetController',
+            controllerAs: 'ctrl',
             resolve: {
-              data: function () {
-                return subscription;
+              role: function () {
+                return subscription.role;
+              },
+              partnerName: function () {
+                return subscription.partnerName;
               }
             }
           });
