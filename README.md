@@ -80,60 +80,241 @@ Rôle de la personne gérant la trésorerie. Elle enregistre et valide les paiem
 ## Secrétaire
 Rôle ayant accès à l’état civil des membres. Ces données sont inaccessibles aux autres membres.
 
-# Lancer l'application
 
-## Construire l'application dans le répertoire dist/
-```
-npm run build
-```
+# API
+## Authentification
+URL: http://www.example.org/api/auth/
 
-## Démarrer le serveur inclus
-```
-npm run start
-```
+S'authentifier auprès du serveur et récupérer le jeton associé
+Requête:
+- Type: POST
+- paramètes: login, password
 
-Dans le navigateur web, exécuter l'url http://localhost:8000
+Réponse:
+- Format : JSON
+- Contenu: userId, Token
+
+Exemple de requête: curl -X POST http://www.example.org/api/auth --data="{\"login\": \"example@test.org\", \"password\": \"mySuperPassword\" }"
+Exemple de réponse: {userId: 1234, token: blabla}
 
 
-# Outils
+## Identité
+URL: /api/identity/
 
-Le plus simple pour installer tout l'environnement est d'aller à la racine du projet et d'exécuter la commande suivante:
-```
-npm install
-```
+Récupérer l'identité et les rôles de l'utilisateur courant
+Requête:
+- Type: GET
 
-Si besoin, voici la liste non exhaustive des outils requis à l'application. L'option -g signifie qu'ils sont installés globalement (ce qui reste facultatif); cette option peut nécessiter d'avoir les droits sudo sur l'environnement.
+Réponse:
+- Format: JSON
 
-## Bibliothèques angular
-```
-npm install angular
-npm install angular-route
-npm install angular-cookie
-npm install angular-cookies
-npm install angular-translate
-npm install angular-resource
-npm install angular-i18n
-npm install angular-ui-router
-```
+Exemple de requête: curl -X GET http://www.example.org/api/identity
+Exemple de réponse: {userId: 1234, login: example@test.com}
 
-## Outils de build
-```
-npm install -g jshint
-npm install -g uglify-js
-npm install -g concat-cli
-npm install jslint
-npm install -g ng-annotate
-npm install -g copyfiles
-```
+## Profil utilisateur
+URL: /api/account/
 
-## Outils liés aux tests
-```
-npm install -g karma-cli
-npm install karma --save-dev
-npm install karma-jasmine karma-chrome-launcher --save-dev
-npm install --save-dev karma-phantomjs-launcher
-npm install karma-jasmine --save-dev
-npm install karma-chrome-launcher --save-dev
-npm install karma-firefox-launcher --save-dev
-npm install protractor
-```
+#### Récupérer le profil d'un utilisateur
+Requête:
+- Type: GET
+- Paramètre: userId
+
+Réponse:
+- Format: JSON
+
+Exemple de requête: curl -X GET http://www.example.org/api/account/1234
+Exemple de réponse: {userId: 1234, login: example@test.com}
+
+#### Créer un profil d'un utilisateur
+Requête:
+- Type: POST
+- Paramètres: email, password
+
+Réponse:
+- Code: 201
+- Format: JSON
+- contenu: userId
+
+Exemple de requête: curl -X POST http://www.example.org/api/account
+Exemple de réponse: {"userId" : 2, "firstName": "John", "lastName": "Doe", "age": 37, "streetAddress": "22Ob Baker Street", "city": "London", "state": "UK", "postalCode": "1234"}
+
+#### Mettre à jour le profil d'un utilisateur
+Requête:
+- Type: PUT
+- Paramètre: userId
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X PUT http://www.example.org/api/account/1234 --data="{\"userId\": 2, \"firstName\": \"John\", \"lastName\": \"Doe\", \"age\": 37, \"streetAddress\": \"22Ob Baker Street\", \"city\": \"London\", \"state\": \"UK\", \"postalCode\": \"1234\"}"
+
+#### Mettre à jour le mot de passe d'un utilisateur
+Requête:
+- Type: PUT
+- Paramètre: userId, password
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X PUT http://www.example.org/api/account/1234 --data="{\"userId\": 2, \"password\": \"myNewPassord\"}"
+
+## Inscriptions d'un utilisateur
+URL: /api/subscription/
+
+#### Récupérer les inscriptions d'un utilisateur
+Requête:
+- Paramètre: userId
+- Type: GET
+
+Réponse:
+- Format: Array/JSON
+
+Exemple de requête: curl -X GET http://www.example.org/api/subscription
+Exemple de réponse: [{
+  \"id\" : 1,
+  \"topicId\" : 1,
+  \"topicTitle\" : \"Adhésion année 2015-2016\",
+  \"userId\" : 1,
+  \"state\": "paid"
+}]
+
+#### Ajouter une inscription d'un utilisateur
+Requête:
+- Type: POST
+- Paramètres: topicId, userId
+
+Réponse:
+- Code: 200
+- Contenu: subscriptionId
+
+Exemple de requête: curl -X POST http://www.example.org/api/subscription
+Exemple de réponse: {subscriptionId: 1234}
+
+#### Annuler une inscription d'un utilisateur
+Requête:
+- Type: DELETE
+- Paramètres: subscriptionId
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X PUT http://www.example.org/api/subscription/1234
+
+#### Mettre à jour le partenaire dans une inscription en couple d'un utilisateur
+Requête:
+- Type: PUT
+- Paramètres: subscriptionId
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X PUT http://www.example.org/api/subscription
+
+#### Mettre à jour le reste à payer d'une inscription d'un utilisateur
+Requête:
+- Type: PUT
+- Paramètres: subscriptionId
+
+Réponse:
+- Code: 200
+
+Exemple de requête: to be defined
+
+## Gestion d'une année
+URL: http://www.example.org/api/year/
+
+#### Récupérer les années
+Requête:
+- Type: GET
+
+Réponse:
+- Format: Array/JSON
+
+Exemple de requête: curl -X GET http://www.example.org/api/year
+Exemple de réponse: [{id: 2015, title: "Année 2015-2016"}]
+
+#### Récupérer les informations d'une année
+Requête:
+- Type: GET
+- Paramètre: yearId
+
+Réponse:
+- Format: JSON
+
+Exemple de requête: curl -X GET http://www.example.org/api/year/2015
+Exemple de réponse: {id: 2015, title: "Année 2015-2016"}
+
+#### Ajouter une année
+Requête:
+- Type: POST
+
+Réponse:
+- Code: 200
+- Contenu: yearId
+
+Exemple de requête: curl -X POST http://www.example.org/api/year
+Exemple de réponse: {id: 2016}
+
+#### Mettre à jour une année
+Requête:
+- Type: PUT
+- Paramètre: yearId
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X PUT http://www.example.org/api/year --data="{\"title\": \"Année 2015-2016\"}"
+
+## Gestion d'une sujet
+URL: /api/topic/
+
+#### Récupérer les sujets
+Requête:
+- Type: GET
+
+Réponse:
+- Format: Array/JSON
+
+Exemple de requête: curl -X GET http://www.example.org/api/topic
+Exemple de réponse: [{id: 1234, "title": "Adhésion pour l'année 2015-2016"}]
+
+#### Récupérer les informations d'un sujet à partir de son identifiant
+Requête:
+- Type: GET
+- Paramètre: topicId
+
+Réponse:
+- Format: JSON
+
+Exemple de requête: curl -X GET http://www.example.org/api/topic
+Exemple de réponse: {id: 1234, "title": "Adhésion pour l'année 2015-2016"}
+
+#### Ajouter un sujet
+Requête:
+- Type: POST
+
+Réponse:
+- Code: 200
+- Contenu: topicId
+
+Exemple de requête: curl -X POST http://www.example.org/api/topic --data="{\"title\": \"Adhésion pour l'année 2015-2016\", \"yearId\": 2015 }"
+Exemple de réponse: {id: 1234}
+
+#### Mettre à jour un sujet
+Requête:
+- Type: PUT
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X PUT http://www.example.org/api/topic --data="{\"id\": 1234, \"title\": \"Adhésion pour l'année 2015-2016\", \"yearId\": 2015}"
+
+#### Supprimer un sujet
+Requête:
+- Type: DELETE
+- Paramètre: topicId
+
+Réponse:
+- Code: 200
+
+Exemple de requête: curl -X GET http://www.example.org/api/topic/1234

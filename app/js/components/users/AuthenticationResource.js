@@ -7,6 +7,6 @@ function AuthenticationResource($http) {
 
 AuthenticationResource.prototype = {
     login: function login(username, password) {
-        return this.http.post('/api/authenticate', { username: login, password: password});
+        return this.http.post('/api/auth', { username: login, password: password});
     }
 };
