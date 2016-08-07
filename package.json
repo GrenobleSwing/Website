@@ -25,10 +25,12 @@
 
     "prebuild": "npm run build:clean",
     "build:clean": "rm -r build/*",
-    "build:js" : "cpx \"app/js/components/**/*.js\" build --verbose",
-    "build:html" : "cpx \"app/js/components/**/*.html\" build",
+    "build:css": "cpx \"node_modules/bootstrap/dist/css/*.css\" \"build/css/vendors\"",
+    "build:js" : "cpx \"app/**/*.js\" build --verbose",
+    "build:html" : "cpx \"app/**/*.html\" build --verbose",
+    "build:lib" : "cpx \"node_modules/angular/**.js\" \"build/js/vendors\" --verbose && cpx \"node_modules/angular-ui-router/release/**.js\" \"build/js/vendors\" && cpx \"node_modules/angular-resource/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-i18n/angular-locale_fr-fr.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-ui-bootstrap/dist/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-route/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-cookies/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-translate/dist/**.js\"  \"build/js/vendors\"",
     "build:sample" : "cpx \"app/resources/**/*.json\" build",
-    "build": "npm run build:js && npm run build:html",
+    "build": "npm run build:css && npm run build:js && npm run build:html && npm run build:lib",
 
     "predist": "npm run clean",
     "dist:annotate": "ng-annotate -a dist/gs.js -o dist/gs-annotated.js",

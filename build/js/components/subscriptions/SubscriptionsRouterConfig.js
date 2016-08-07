@@ -8,7 +8,7 @@ function SubscriptionsRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          templateUrl: "partials/subscriptions.view.html",
+          templateUrl: "components/subscriptions/subscriptions.view.html",
           controller: "subscriptionsViewController",
           controllerAs: "ctrl"
         }
