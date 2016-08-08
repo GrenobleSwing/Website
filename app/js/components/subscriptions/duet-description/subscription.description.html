@@ -1,0 +1,43 @@
+<div class="panel-body">
+  <div class="row">
+    <span class="col-md-8">
+      <div class="row">
+        <p>{{ctrl.subscription.description}}</p>
+      </div>
+      <div class="row">
+        <span class="col-md-12">
+          <div class="row" ng-if="subscription.role">
+            <p>Inscrit en tant que : {{ctrl.subscription.role}}</p>
+          </div>
+          <div class="row" ng-if="ctrl.subscription.partnerName">
+            <p>Avec : {{ctrl.subscription.partnerName}}</p>
+          </div>
+        </span>
+      </div>
+      <div class="row">
+        <span class="col-md-8">
+            Requiert :
+            <div ng-if="ctrl.subscription.requiredSubscriptions.length > 0">
+              <ul ng-repeat="item in ctrl.subscription.requiredSubscriptions">
+                <li>{{item.topicTitle}}</li>
+              </ul>
+            </div>
+            <div ng-if="ctrl.subscription.requiredSubscriptions.length === 0">
+              <ul><li>aucun pré-requis</li></ul>
+            </div>
+        </span>
+      </div>
+    </span>
+    <span class="col-md-2">{{ctrl.subscription.balance | currency : '€'}}</span>
+    <span class="col-md-2">
+      <span ng-if="!!ctrl.subscription.selected"
+            class="alert"
+            ng-class="'alert-success' : ctrl.subscription.state == 'paid'; 'alert-warning' : ctrl.subscription.state == 'waiting_for_payment';">
+              {{ctrl.subscription.state | translate}}
+      </span>
+      <span ng-if="!ctrl.subscription.selected">
+        <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription(subscription)">ajouter</a>
+      </span>
+    </span>
+  </div>
+</div>
