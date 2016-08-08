@@ -88,14 +88,14 @@ URL: http://www.example.org/api/auth/
 S'authentifier auprès du serveur et récupérer le jeton associé
 Requête:
 - Type: POST
-- paramètes: login, password
+- paramètres: login, password
 
 Réponse:
 - Format : JSON
-- Contenu: userId, Token
+- Contenu: expires_in, Token
 
-Exemple de requête: curl -X POST http://www.example.org/api/auth --data="{\"login\": \"example@test.org\", \"password\": \"mySuperPassword\" }"
-Exemple de réponse: {userId: 1234, token: blabla}
+Exemple de requête: curl -i -XPOST http://www.example.org/api/auth -d "{\"login\": \"login@example.com\", \"password\":\"mySuperPassword\"}" -H "Content-Type: application/json"
+Exemple de réponse: {"expires_in":86400,"token": "hash"}
 
 
 ## Identité
@@ -108,7 +108,7 @@ Requête:
 Réponse:
 - Format: JSON
 
-Exemple de requête: curl -X GET http://www.example.org/api/identity
+Exemple de requête: curl -X GET http://www.example.org/api/identity  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: {userId: 1234, login: example@test.com}
 
 ## Profil utilisateur
@@ -122,10 +122,10 @@ Requête:
 Réponse:
 - Format: JSON
 
-Exemple de requête: curl -X GET http://www.example.org/api/account/1234
-Exemple de réponse: {userId: 1234, login: example@test.com}
+Exemple de requête: curl -X GET http://www.example.org/api/account/1234  -H "Content-Type: application/json" -H "Authorization: Token hash"
+Exemple de réponse: {\"userId\": 1234, \"firstName\": \"John\", \"lastName\": \"Doe\", \"age\": 37, \"streetAddress\": \"22Ob Baker Street\", \"city\": \"London\", \"state\": \"UK\", \"postalCode\": \"38400\"}
 
-#### Créer un profil d'un utilisateur
+#### Créer le profil d'un utilisateur
 Requête:
 - Type: POST
 - Paramètres: email, password
@@ -136,7 +136,9 @@ Réponse:
 - contenu: userId
 
 Exemple de requête: curl -X POST http://www.example.org/api/account
-Exemple de réponse: {"userId" : 2, "firstName": "John", "lastName": "Doe", "age": 37, "streetAddress": "22Ob Baker Street", "city": "London", "state": "UK", "postalCode": "1234"}
+curl -i -XPOST http://www.example.org/api/account -d "{\"login\":\"example@mymail.com\",\"password\":\"person2\"}" -H "Content-Type: application/json" -H "Authorization: Token hash"
+
+Exemple de réponse, si succès: {"id" : 2} 
 
 #### Mettre à jour le profil d'un utilisateur
 Requête:
@@ -146,7 +148,7 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X PUT http://www.example.org/api/account/1234 --data="{\"userId\": 2, \"firstName\": \"John\", \"lastName\": \"Doe\", \"age\": 37, \"streetAddress\": \"22Ob Baker Street\", \"city\": \"London\", \"state\": \"UK\", \"postalCode\": \"1234\"}"
+Exemple de requête: curl -i -XPUT http://www.example.org/api/account/1234 -d "{\"userId\": 2, \"firstName\": \"John\", \"lastName\": \"Doe\", \"age\": 37, \"streetAddress\": \"22Ob Baker Street\", \"city\": \"London\", \"state\": \"UK\", \"postalCode\": \"1234\"}" -H "Content-Type: application/json" -H "Authorization: Token hash" 
 
 #### Mettre à jour le mot de passe d'un utilisateur
 Requête:
@@ -156,7 +158,7 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X PUT http://www.example.org/api/account/1234 --data="{\"userId\": 2, \"password\": \"myNewPassord\"}"
+Exemple de requête: curl -i -XPUT http://www.example.org/api/account/1234 -d "{\"userId\": 2, \"password\": \"myNewPassord\"}" -H "Content-Type: application/json" -H "Authorization: Token hash"
 
 ## Inscriptions d'un utilisateur
 URL: /api/subscription/
@@ -169,7 +171,7 @@ Requête:
 Réponse:
 - Format: Array/JSON
 
-Exemple de requête: curl -X GET http://www.example.org/api/subscription
+Exemple de requête: curl -XGET http://www.example.org/api/subscription/1234 -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: [{
   \"id\" : 1,
   \"topicId\" : 1,
@@ -187,7 +189,7 @@ Réponse:
 - Code: 200
 - Contenu: subscriptionId
 
-Exemple de requête: curl -X POST http://www.example.org/api/subscription
+Exemple de requête: curl -XPOST http://www.example.org/api/subscription  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: {subscriptionId: 1234}
 
 #### Annuler une inscription d'un utilisateur
@@ -198,7 +200,7 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X PUT http://www.example.org/api/subscription/1234
+Exemple de requête: curl -XPUT http://www.example.org/api/subscription/1234  -H "Content-Type: application/json" -H "Authorization: Token hash"
 
 #### Mettre à jour le partenaire dans une inscription en couple d'un utilisateur
 Requête:
@@ -208,7 +210,7 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X PUT http://www.example.org/api/subscription
+Exemple de requête: curl -XPUT http://www.example.org/api/subscription  -H "Content-Type: application/json" -H "Authorization: Token hash"
 
 #### Mettre à jour le reste à payer d'une inscription d'un utilisateur
 Requête:
@@ -241,7 +243,7 @@ Requête:
 Réponse:
 - Format: JSON
 
-Exemple de requête: curl -X GET http://www.example.org/api/year/2015
+Exemple de requête: curl -XGET http://www.example.org/api/year/2015  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: {id: 2015, title: "Année 2015-2016"}
 
 #### Ajouter une année
@@ -252,7 +254,7 @@ Réponse:
 - Code: 200
 - Contenu: yearId
 
-Exemple de requête: curl -X POST http://www.example.org/api/year
+Exemple de requête: curl -XPOST http://www.example.org/api/year  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: {id: 2016}
 
 #### Mettre à jour une année
@@ -263,7 +265,7 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X PUT http://www.example.org/api/year --data="{\"title\": \"Année 2015-2016\"}"
+Exemple de requête: curl -XPUT http://www.example.org/api/year  -H "Content-Type: application/json" -H "Authorization: Token hash"
 
 ## Gestion d'une sujet
 URL: /api/topic/
@@ -275,7 +277,7 @@ Requête:
 Réponse:
 - Format: Array/JSON
 
-Exemple de requête: curl -X GET http://www.example.org/api/topic
+Exemple de requête: curl -X GET http://www.example.org/api/topic  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: [{id: 1234, "title": "Adhésion pour l'année 2015-2016"}]
 
 #### Récupérer les informations d'un sujet à partir de son identifiant
@@ -286,7 +288,7 @@ Requête:
 Réponse:
 - Format: JSON
 
-Exemple de requête: curl -X GET http://www.example.org/api/topic
+Exemple de requête: curl -X GET http://www.example.org/api/topic  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: {id: 1234, "title": "Adhésion pour l'année 2015-2016"}
 
 #### Ajouter un sujet
@@ -297,7 +299,7 @@ Réponse:
 - Code: 200
 - Contenu: topicId
 
-Exemple de requête: curl -X POST http://www.example.org/api/topic --data="{\"title\": \"Adhésion pour l'année 2015-2016\", \"yearId\": 2015 }"
+Exemple de requête: curl -X POST http://www.example.org/api/topic -d "{\"title\": \"Adhésion pour l'année 2015-2016\", \"yearId\": 2015 }"  -H "Content-Type: application/json" -H "Authorization: Token hash"
 Exemple de réponse: {id: 1234}
 
 #### Mettre à jour un sujet
@@ -307,7 +309,7 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X PUT http://www.example.org/api/topic --data="{\"id\": 1234, \"title\": \"Adhésion pour l'année 2015-2016\", \"yearId\": 2015}"
+Exemple de requête: curl -X PUT http://www.example.org/api/topic -d "{\"id\": 1234, \"title\": \"Adhésion pour l'année 2015-2016\", \"yearId\": 2015}"  -H "Content-Type: application/json" -H "Authorization: Token hash"
 
 #### Supprimer un sujet
 Requête:
@@ -317,4 +319,4 @@ Requête:
 Réponse:
 - Code: 200
 
-Exemple de requête: curl -X GET http://www.example.org/api/topic/1234
+Exemple de requête: curl -X GET http://www.example.org/api/topic/1234 -H "Content-Type: application/json" -H "Authorization: Token hash"
