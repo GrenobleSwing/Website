@@ -1,7 +1,7 @@
-function SubscriptionSoloDescriptionController(subscriptionService, subscription) {
+function SubscriptionSoloDescriptionController($scope, subscriptionService) {
   this.subscriptionService = subscriptionService;
   this.subscription = {$ok: false};
-  this.subscriptionId = subscription.id;
+  this.subscriptionId = $scope.subscription.id;
 }
 
 SubscriptionSoloDescriptionController.prototype = {
