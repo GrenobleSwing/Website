@@ -3,7 +3,7 @@
       <form name="form" ng-submit="ctrl.save()" role="form">
         <div class="form-group" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
             <label for="login">{{ 'ACCOUNT.EMAIL' | translate}}</label>
-            <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.user.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
+            <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.account.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
             <span ng-if="form.login.$dirty && form.login.$invalid" class="help-block">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</span>
         </div>
 

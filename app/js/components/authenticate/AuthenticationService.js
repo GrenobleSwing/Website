@@ -1,9 +1,8 @@
-function AuthenticationService($http, $cookieStore, $rootScope, encoder, sessionService, authorizeService) {
-  this.http = $http;
+function AuthenticationService($rootScope, $cookies, $http, authResource) {
+  this.authResource = authResource;
   this.rootScope = $rootScope;
-  this.cookieStore = $cookieStore;
-  this.encoder = encoder;
-  this.sessionService = sessionService;
+  this.cookies = $cookies;
+  this.http = $http;
 
   this.init_();
 }
@@ -14,48 +13,31 @@ AuthenticationService.prototype = {
       this.handleSuccess_ = this.handleSuccess_.bind(this);
     },
 
-    login: function login(username, password, callback) {
-        this.http.post('/api/authenticate', { username: username, password: password })
-          .success(function (response) {
-  			    response.$ok = true;
-  				  this.setCredentials(response);
-  				  this.http.get('/api/user/' + username).then(this.handleSuccess_, this.handleError_('Error creating session'));
-            return response;
-  			  })
-          .error(function(response) {
-            response.success = false;
-            return response;
-          })
-          .then(callback);
-    },
-
-    setCredentials : function setCredentials(user) {
-        var authdata = this.encoder.encode(user.login + ':' + user.password);
-
-        this.rootScope.globals = {
-          currentUser: {
-              userId: user.id,
-              login: user.login,
-              authdata: authdata
-          }
-        };
-
-        this.http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
-        this.cookieStore.put('globals', this.rootScope.globals);
+    login: function login(username, password) {
+      return this.authResource.login(username, password).then(this.handleSuccess_, this.handleError_);
     },
 
     clearCredentials : function clearCredentials() {
         this.rootScope.globals = {};
-        this.cookieStore.remove('globals');
+        this.cookies.remove('globals');
         this.http.defaults.headers.common.Authorization = 'Basic';
-        this.sessionService.clearSession();
     },
 
     // private functions
-    handleSuccess_ : function handleSuccess_(user) {
-      user.$ok = true;
-      this.sessionService.createSession(user, user.roles);
-      this.authorizeService.changeRoles(user.roles);
+    handleSuccess_ : function handleSuccess_(data) {
+      this.rootScope.globals = {
+        currentUser: {
+            userId: data.id,
+            token: data.token
+        }
+      };
+
+      var expirationDate = new Date();
+      expirationDate.setSeconds(data.expires_in);
+      this.cookies.put('globals', this.rootScope.globals, {expires: expirationDate});
+
+      this.http.defaults.headers.common['Authorization'] = 'Basic ' + data.token; // jshint ignore:line
+
       return data;
     },
 

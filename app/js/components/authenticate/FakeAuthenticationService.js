@@ -1,12 +1,11 @@
 /**
  * Dummy authentication for testing, uses $timeout to simulate api call
  */
-function FakeAuthenticationService($http, $cookieStore, $rootScope, encoder, userResource, sessionService, authorizeService) {
+function FakeAuthenticationService($http, $cookies, $rootScope, encoder, userResource) {
   this.http = $http;
-  this.cookieStore = $cookieStore;
+  this.cookies = $cookies;
   this.userResource = userResource;
-  this.sessionService = sessionService;
-  this.authorizeService = authorizeService;
+
   this.encoder = encoder;
   this.rootScope = $rootScope;
 
@@ -22,34 +21,26 @@ FakeAuthenticationService.prototype = {
         return this.userResource.getByUsername(username).then(this.handleResponse_);
     },
 
-    setCredentials : function setCredentials(user) {
-      var authdata = this.encoder.encode(user.login + ':' + user.password);
-
-        this.rootScope.globals = {
-            currentUser: {
-                userId: user.id,
-                login: user.login,
-                authdata: authdata
-            },
-            currentRoles : user.roles
-        };
-
-        this.http.defaults.headers.common['Authorization'] = 'Basic ' + authdata; // jshint ignore:line
-        this.cookieStore.put('globals', this.rootScope.globals);
-    },
-
     clearCredentials : function clearCredentials() {
         this.rootScope.globals = {};
-        this.cookieStore.remove('globals');
+        this.cookies.remove('globals');
         this.http.defaults.headers.common.Authorization = 'Basic';
-        this.authorizeService.clearRoles();
     },
 
-    handleResponse_ : function handleResponse_(user) {
-      if(!!user.$ok) {
-        this.setCredentials(user);
-        this.authorizeService.changeRoles(user.roles);
-      }
-      return user;
+    handleResponse_ : function handleResponse_(data) {
+      this.rootScope.globals = {
+        currentUser: {
+            userId: data.id,
+            token: this.encoder.encode(data.login)
+        }
+      };
+
+      var expirationDate = new Date();
+      expirationDate.setSeconds(data.expires_in);
+      this.cookies.put('globals', this.rootScope.globals, {expires: expirationDate});
+
+      this.http.defaults.headers.common['Authorization'] = 'Basic ' + data.token; // jshint ignore:line
+
+      return data;
     }
   };

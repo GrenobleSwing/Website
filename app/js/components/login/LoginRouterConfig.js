@@ -4,7 +4,7 @@ function LoginRouterConfig($stateProvider) {
       url: "/login",
       views: {
         content: {
-          templateUrl: 'components/login/login.html',
+          templateUrl: 'js/components/login/login.html',
           controller: "loginController",
           controllerAs: "ctrl"
         }

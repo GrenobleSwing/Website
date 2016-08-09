@@ -8,7 +8,6 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.login',
     'app.account',
     'app.subscriptions.common',
-    'app.subscriptions.view',
     'app.subscriptions.list',
     'app.subscriptions.description.duet',
     'app.subscriptions.description.solo',
@@ -33,7 +32,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       },
       views: {
         'nav@': {
-          templateUrl: 'partials/navbar.html',
+          templateUrl: 'js/components/navigation/navbar.html',
           controller: 'navController',
           controllerAs: 'ctrl'
         },

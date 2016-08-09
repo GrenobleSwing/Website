@@ -8,7 +8,7 @@ function AccountRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          templateUrl: 'components/account/account.edit.html',
+          templateUrl: 'js/components/account/account.edit.html',
           controller: "accountEditController",
           controllerAs: "ctrl"
         }

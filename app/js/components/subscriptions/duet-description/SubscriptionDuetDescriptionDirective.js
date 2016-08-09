@@ -1,7 +1,7 @@
 function SubscriptionDuetDescriptionDirective() {
   return {
     truc: 'AE',
-    templateUrl: 'components/subscription/duet-description/subscription.description.html',
+    templateUrl: 'js/components/subscription/duet-description/subscription.description.html',
     controller: 'subscriptionDuetDescriptionController',
     controllerAs: 'ctrl',
     scope : {

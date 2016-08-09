@@ -1,11 +1,13 @@
-function LoginController($scope, $state, identityService) {
+function LoginController($scope, $state, authenticationService, identityService) {
   this.scope = $scope;
   this.state = $state;
 
   this.login = "";
   this.password = "";
 
+  this.authenticationService = authenticationService;
   this.identityService = identityService;
+
   this.init_();
 }
 
@@ -15,14 +17,16 @@ LoginController.prototype = {
   },
 
   connect : function connect() {
-      this.identityService.authenticate(this.login, this.password).then(this.handleSuccess_);
+      this.authenticationService.login(this.login, this.password).then(this.handleSuccess_);
   },
 
   handleSuccess_ : function handleSuccess_() {
-    if (!!this.scope.returnToState) {
-      this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
-    } else {
-     this.state.go('account');
-    }
+    this.identityService.getIdentity().then(function(identity) {
+      if (!!this.scope.returnToState) {
+        this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
+      } else {
+       this.state.go('account');
+      }
+    }.bind(this));
   }
 };

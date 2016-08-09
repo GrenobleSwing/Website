@@ -14,8 +14,7 @@ function IdentityService($cookieStore, $q, identityResource, authResource, $time
 IdentityService.prototype = {
 
   init_: function init_() {
-    this.handleAuthSuccess_ = this.handleAuthSuccess_.bind(this);
-    this.handleAuthError_ = this.handleAuthError_.bind(this);
+
   },
 
   isIdentityResolved: function isIdentityResolved() {
@@ -42,32 +41,6 @@ IdentityService.prototype = {
     return false;
   },
 
-  authenticate: function authenticate(login, password) {
-    // console.info("IdentityService#authenticate");
-    return this.authResource.login(login, password).then(this.handleAuthSuccess_, this.handleAuthError_);
-  },
-
-  handleAuthSuccess_: function handleAuthSuccess_(data) {
-    // console.info("IdentityService#handleAuthSuccess_");
-
-    if (!!data) {
-     this.identity = data;
-     this.authenticated = true;
-     this.cookieStore.put('currentUser', angular.toJson(data));
-    } else {
-     this.cookieStore.remove("currentUser");
-     this.identity = null;
-     this.authenticated = false;
-    }
-    return data;
-  },
-
-  handleAuthError_ : function handleAuthError_() {
-    this.cookieStore.remove("currentUser");
-    this.identity = null;
-    this.authenticated = false;
-  },
-
   clearIdentity: function clearIdentity() {
     this.identity = null;
     this.authenticated = false;
@@ -91,29 +64,19 @@ IdentityService.prototype = {
     // console.info("IdentityService#getIdentity 3");
 
     // otherwise, retrieve the identity data from the server, update the identity object, and then resolve.
-    // this.identityResource.getCurrentUser().then(
-    //   function(data) {
-    //     // console.info("IdentityService#getIdentity success");
-    //     this.identity = data;
-    //     this.authenticated = true;
-    //     deferred.resolve(this.identity);
-    //   }, function () {
-    //     // console.info("IdentityService#getIdentity error");
-    //
-    //     this.identity = null;
-    //     this.authenticated = false;
-    //     deferred.resolve(this.identity);
-    //   });
+    this.identityResource.getCurrentUser().then(
+      function(data) {
+        // console.info("IdentityService#getIdentity success");
+        this.identity = data;
+        this.authenticated = true;
+        deferred.resolve(this.identity);
+      }.bind(this), function () {
+        // console.info("IdentityService#getIdentity error");
 
-    // for the sake of the demo, fake the lookup by using a timeout to create a valid
-    // fake identity. in reality,  you'll want something more like the $http request
-    // commented out above. in this example, we fake looking up to find the user is
-    // not logged in
-    this.timeout(function() {
-      // console.info("IdentityService#getIdentity 4");
-      this.clearIdentity();
-      deferred.resolve(this.identity);
-    }.bind(this), 1000);
+        this.identity = null;
+        this.authenticated = false;
+        deferred.resolve(this.identity);
+      }.bind(this));
 
     return deferred.promise;
   }

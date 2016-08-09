@@ -1,4 +1,4 @@
 angular
     .module('app.subscriptions.description.solo', ['app.subscriptions.common'])
-    .directive('gsSubscriptionSoloDescription', SubcriptionSoloDescriptionDirective)
+    .directive('gsSubscriptionSoloDescription', SubscriptionSoloDescriptionDirective)
     .controller('subscriptionSoloDescriptionController', [SubscriptionSoloDescriptionController]);

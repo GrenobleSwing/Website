@@ -1,4 +1,6 @@
-function IdentityResourceStub() {
+function IdentityResourceStub($q) {
+  this.q = $q;
+  
   this.init_();
 }
 

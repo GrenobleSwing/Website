@@ -1,7 +1,7 @@
-function SubscriptionSoloDescriptionControllerDirective() {
+function SubscriptionSoloDescriptionDirective() {
   return {
     truc: 'AE',
-    templateUrl: 'components/subscription/solo-description/subscription.description.html',
+    templateUrl: 'js/components/subscriptions/solo-description/subscription.description.html',
     controller: 'subscriptionSoloDescriptionController',
     controllerAs: 'ctrl',
     scope : {

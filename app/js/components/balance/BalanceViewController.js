@@ -1,5 +1,4 @@
-function BalanceViewController(sessionService) {
-  this.sessionService = sessionService;
+function BalanceViewController() {
   this.init_();
 }
 
