@@ -1,6 +1,6 @@
 angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'ui.router',
-    // 'app.auth',
+    'app.auth',
     'app.acl',
     'app.common',
     'app.nav',

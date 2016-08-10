@@ -21,20 +21,10 @@ SubscriptionService.prototype = {
           .then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
     },
 
-    addSubscription: function addSubscription(userId, topicId) {
-      return this.subscriptionResource.create({userId: userId, topicId: topicId})
-        .then(this.handleSuccess_, this.handleError_('Error adding subscription'));
-    },
-
     cancelSubscription: function cancelSubscription(userId, topicId) {
       return this.subscriptionResource.remove({userId: userId, topicId: topicId})
         .then(this.handleSuccess_, this.handleError_('Error cancelling subscription'));
     },
-
-    // getRequiredSubscriptions: function getRequiredSubscriptions(userId, subscription) {
-    //   return this.subscriptionResource.getAll({userId: userId, topicId: subscription.requiredTopicId})
-    //     .then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
-    // },
 
     saveSubscriptions : function saveSubscriptions(subscriptions) {
       this.subscriptionResource.updateSubscriptions(subscriptions);

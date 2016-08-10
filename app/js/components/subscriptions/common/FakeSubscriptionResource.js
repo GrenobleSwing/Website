@@ -17,11 +17,14 @@ FakeSubscriptionResource.prototype = {
   },
 
   getById : function getById(id) {
-      var deferred = this.q.defer();
-      var filtered = this.filter('filter')(this.subscriptions, { id: id });
-      var subscription = filtered.length ? filtered[0] : null;
-      deferred.resolve(subscription);
-      return deferred.promise;
+      var params = { id: id };
+      return this.subscriptionResource.query().$promise.then(function(data) {
+        var deferred = this.q.defer();
+        var filtered = this.filter('filter')(data, params);
+        var subscription = filtered.length ? filtered[0] : null;
+        deferred.resolve(subscription);
+        return deferred.promise;
+      }.bind(this));
   },
 
   getAll: function getAll(params) {

@@ -1,5 +1,7 @@
-function SubscriptionsSummaryController(identityService, subscriptionAmountService) {
+function SubscriptionsSummaryController(identityService, subscriptionAmountService, subscriptionObservableService) {
   this.subscriptionService = subscriptionAmountService;
+  this.subscriptionObservableService = subscriptionObservableService;
+
   this.user = identityService.getCurrentUser();
 
   this.init_();
@@ -7,12 +9,15 @@ function SubscriptionsSummaryController(identityService, subscriptionAmountServi
 
 SubscriptionsSummaryController.prototype = {
     init_ : function init_() {
+      this.refresh_ = this.refresh_.bind(this);
       this.handleSuccess_ = this.handleSuccess_.bind(this);
 
-      this.refresh();
+      this.subscriptionObservableService.addListener(this.refresh_);
+
+      this.refresh_();
     },
 
-    refresh : function refresh() {
+    refresh_ : function refresh_() {
       this.amount = this.subscriptionService.getAmountByUserId(this.user.id).then(this.handleSuccess_);
     },
 

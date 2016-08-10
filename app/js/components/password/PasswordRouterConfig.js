@@ -3,9 +3,12 @@ function PasswordRouterConfig($stateProvider) {
     .state('password', {
       parent: 'app',
       url: "/password",
+      data: {
+        roles: ['USER']
+      },
       views: {
         content: {
-          templateUrl: 'partials/password.edit.html',
+          templateUrl: 'js/components/password/password.edit.html',
           controller: "passwordEditController",
           controllerAs: "ctrl"
         }

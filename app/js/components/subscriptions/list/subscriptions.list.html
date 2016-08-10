@@ -15,11 +15,11 @@
           </div>
         </uib-accordion-heading>
         <div class="panel-collapse collapse" uib-collapse="!subscription.isOpen">
-          <div gs-subscription-duet-description data-description="subscription" ng-if="subscription.type === 'duet'"></div>
-          <div gs-subscription-solo-description data-description="subscription" ng-if="subscription.type !== 'duet'"></div>
+          <div gs-subscription-duet-description data-subscription="subscription" ng-if="subscription.type === 'duet'"></div>
+          <div gs-subscription-solo-description data-subscription="subscription" ng-if="subscription.type !== 'duet'"></div>
         </div>
       </div>
     </uib-accordion>
 </div>
 
-<div ui-view name="summary"></div>
+<gs-subscriptions-summary></gs-subscriptions-summary>

@@ -32,7 +32,7 @@
     <span class="col-md-2">
       <span ng-if="!!ctrl.subscription.selected"
             class="alert"
-            ng-class="'alert-success' : ctrl.subscription.state == 'paid'; 'alert-warning' : ctrl.subscription.state == 'waiting_for_payment';">
+            ng-class="{'alert-success' : ctrl.subscription.state == 'paid', 'alert-warning' : ctrl.subscription.state == 'waiting_for_payment'}">
               {{ctrl.subscription.state | translate}}
       </span>
       <span ng-if="!ctrl.subscription.selected">
