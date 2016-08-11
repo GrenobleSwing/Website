@@ -1,6 +1,9 @@
 function SubscriptionService(resource) {
   this.subscriptionResource = resource;
 
+  this.subscriptions = [];
+  this.subscriptionsLoaded = false;
+
   this.init_();
 }
 
@@ -12,8 +15,17 @@ SubscriptionService.prototype = {
     },
 
     getSubscriptionsByUserId: function getSubscriptionsByUserId(userId) {
-        return this.subscriptionResource.getAll({userId: userId})
-          .then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
+      var deferred = this.q.defer();
+
+      if (!!this.subscriptionsLoaded) {
+          deferred.resolve(this.subscriptions);
+          return deferred.promise;
+      }
+
+      this.subscriptionResource.getAll({userId: userId})
+          .then(this.handleSuccess_.bind(this, deferred), this.handleError_('Error retrieving subscriptions by User'));
+
+      return deferred.promise;
     },
 
     getSubscriptionById: function getSubscriptionById(subscriptionId) {
@@ -31,8 +43,9 @@ SubscriptionService.prototype = {
     },
 
     // private functions
-    handleSuccess_ : function handleSuccess_(res) {
-        // res.$ok = true;
+    handleSuccess_ : function handleSuccess_(res, deferred) {
+        this.subscriptions = res;
+        deferred.resolve(this.subscriptions);
         return res;
     },
 

@@ -15,8 +15,6 @@ SubscriptionsListController.prototype = {
     init_ : function init_(identity) {
       this.identity = identity;
       this.subscriptionService.getSubscriptionsByUserId(identity.id).then(this.handleInitSuccess_);
-
-      console.info("SubscriptionsListController");
     },
 
     saveSubscriptions : function saveSubscriptions() {

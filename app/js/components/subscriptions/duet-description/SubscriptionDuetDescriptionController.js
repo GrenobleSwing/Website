@@ -1,5 +1,6 @@
-function SubscriptionDuetDescriptionController($scope, subscriptionService, subscriptionObservableService) {
+function SubscriptionDuetDescriptionController($scope, $modal, subscriptionService, subscriptionObservableService) {
   this.scope = $scope;
+  this.modal = $modal;
   this.subscriptionService = subscriptionService;
   this.subscription = {$ok: false};
   this.subscriptionId = $scope.subscription.id;
@@ -29,15 +30,19 @@ SubscriptionDuetDescriptionController.prototype = {
     this.subscription.selected = true;
     this.subscription.state = "waiting_for_payment";
 
-    this.subscriptionObservableService.notifyListeners(this.subscription);
+    this.subscriptionService.saveSubscription(this.subscription);
+
+    for (var i = 0; i < this.subscription.requiredSubscriptions.length; i++) {
+      this.subscriptionObservableService.notifyListeners(this.subscription.requiredSubscriptions[i]);
+    }
   },
 
   validateSubscription: function validateSubscription() {
     var subscription = this.subscription;
     var modalInstance = this.modal.open({
           animation: true,
-          templateUrl: 'partials/subscription.duet.html',
-          controller: 'subscriptionDuetController',
+          templateUrl: 'js/components/subscriptions/duet-dialog/subscription.duet.dialog.html',
+          controller: 'subscriptionDuetDialogController',
           controllerAs: 'ctrl',
           resolve: {
             role: function () {
@@ -59,9 +64,20 @@ SubscriptionDuetDescriptionController.prototype = {
   },
 
   activateSubscription_: function activateSubscription_(data) {
-    if (data.id === this.subscription.id && !this.subscription.selected) {
+    if (data.topicId === this.subscription.topicId && !this.subscription.selected) {
+      this.subscription.isOpen = true;
       this.validateSubscription();
     }
+  },
+
+  isCancellable : function isCancellable() {
+    return true;
+  },
+
+  cancelSubscription: function cancelSubscription() {
+    this.subscriptionService.cancelSubscription(this.subscription).then(function() {
+
+    }.bind(this));
   },
 
   handleDestroy_: function handleDestroy_() {

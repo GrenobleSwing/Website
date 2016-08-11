@@ -1,4 +1,5 @@
 angular
-    .module('app.subscriptions.description.duet', ['app.subscriptions.common'])
+    .module('app.subscriptions.description.duet', ['app.subscriptions.common', 'ui.bootstrap'])
     .directive('gsSubscriptionDuetDescription', SubscriptionDuetDescriptionDirective)
-    .controller('subscriptionDuetDescriptionController', ['$scope', 'subscriptionService', 'subscriptionObservableService', SubscriptionDuetDescriptionController]);
+    .controller('subscriptionDuetDescriptionController', ['$scope', '$uibModal', 'subscriptionService',
+      'subscriptionObservableService', SubscriptionDuetDescriptionController]);

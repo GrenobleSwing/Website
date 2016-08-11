@@ -1,8 +1,7 @@
 function SubscriptionsAmountDirective() {
   return {
-    restrict: 'AE',
+    restrict: 'E',
     template: '<div>{{ctrl.amount}}</div>',
-    // templateUrl: 'js/components/subscriptions/amount/subscriptions.summary.html',
     controller: 'subscriptionsSummaryController',
     controllerAs: 'ctrl'
   };

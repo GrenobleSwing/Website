@@ -15,8 +15,8 @@
         </span>
       </div>
       <div class="row">
-        <span class="col-md-8">
-            Requiert :
+        <p>Requiert :</p>
+        <span class="col-md-12">
             <div ng-if="ctrl.subscription.requiredSubscriptions.length > 0">
               <ul ng-repeat="item in ctrl.subscription.requiredSubscriptions">
                 <li>{{item.topicTitle}}</li>
@@ -36,7 +36,10 @@
               {{ctrl.subscription.state | translate}}
       </span>
       <span ng-if="!ctrl.subscription.selected">
-        <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription(subscription)">ajouter</a>
+        <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()">ajouter</a>
+      </span>
+      <span ng-if="ctrl.subscription.selected && ctrl.subscription.state == 'waiting_for_payment'">
+        <a class="btn btn-primary" role="button" ng-disabled="ctrl.isCancellable()" ng-click="ctrl.cancelSubscription()">supprimer</a>
       </span>
     </span>
   </div>

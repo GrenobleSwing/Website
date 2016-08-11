@@ -2,7 +2,7 @@ function SubscriptionsSummaryController(identityService, subscriptionAmountServi
   this.subscriptionService = subscriptionAmountService;
   this.subscriptionObservableService = subscriptionObservableService;
 
-  this.user = identityService.getCurrentUser();
+  this.user = identityService.getIdentity();
 
   this.init_();
 }

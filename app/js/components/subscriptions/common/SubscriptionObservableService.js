@@ -4,6 +4,7 @@ function SubscriptionObservableService() {
 
 SubscriptionObservableService.prototype = {
   addListener: function addListener(callback) {
+    console.info("SubscriptionObservableService#addListener");
     this.listeners.push(callback);
   },
 
@@ -13,6 +14,8 @@ SubscriptionObservableService.prototype = {
   },
 
   notifyListeners: function notifyListeners(data) {
+    console.info("SubscriptionObservableService#notifyListeners on " + this.listeners.length + " listeners");
+    console.info(data);
     for (var i = 0; i < this.listeners.length; i++) {
       this.listeners[i](data);
     }

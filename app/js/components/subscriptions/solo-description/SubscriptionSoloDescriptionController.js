@@ -27,14 +27,29 @@ SubscriptionSoloDescriptionController.prototype = {
   validateSubscription: function validateSubscription() {
     this.subscription.selected = true;
     this.subscription.state = "waiting_for_payment";
+    console.info("Validate subscription to " + this.subscription.topicTitle);
 
-    this.subscriptionObservableService.notifyListeners(this.subscription);
+    for (var i = 0; i < this.subscription.requiredSubscriptions.length; i++) {
+      this.subscriptionObservableService.notifyListeners(this.subscription.requiredSubscriptions[i]);
+    }
   },
 
   activateSubscription_: function activateSubscription_(data) {
-    if (data.id === this.subscription.id && !this.subscription.selected) {
+    if (data.topicId === this.subscription.topicId && !this.subscription.selected) {
+      console.info("Activate subscription to " + this.subscription.topicTitle);
+      this.subscription.isOpen = true;
       this.validateSubscription();
     }
+  },
+
+  isCancellable : function isCancellable() {
+    return true;
+  },
+
+  cancelSubscription: function cancelSubscription() {
+    this.subscriptionService.cancelSubscription(this.subscription).then(function() {
+
+    }.bind(this));
   },
 
   handleDestroy_: function handleDestroy_() {

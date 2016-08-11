@@ -8,7 +8,7 @@
   "selected": true,
   "yearId": "2015-2016",
   "state": "paid",
-  "requiredTopicId" : 0,
+  "requiredSubscriptions": [],
   "type":"subscribe"
 }, {
   "id" : 2,
@@ -80,7 +80,7 @@
   "selected": true,
   "yearId": "2015-2016",
   "state": "paid",
-  "requiredTopicId" : 0,
+  "requiredSubscriptions": [],
   "type":"subscribe"
 }, {
   "id" : 7,
@@ -92,8 +92,8 @@
   "selected": true,
   "yearId": "2016-2017",
   "state": "waiting_for_payment",
-  "requiredTopicId" : 0,
-  "type":"subscribe"
+  "type":"subscribe",
+  "requiredSubscriptions": []
 }, {
   "id" : 8,
   "topicId" : 3,
@@ -104,10 +104,9 @@
   "selected": true,
   "yearId": "2016-2017",
   "state": "waiting_for_payment",
-  "requiredTopicId" : 2,
   "type":"duet",
   "requiredSubscriptions": [{
-    "id" : 8,
+    "id" : 7,
     "topicId" :2,
     "topicTitle" : "Adhésion année 2016-2017"
   }]
@@ -121,10 +120,9 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 2,
   "type":"duet",
   "requiredSubscriptions": [{
-    "id" : 8,
+    "id" : 7,
     "topicId" :2,
     "topicTitle" : "Adhésion année 2016-2017"
   }]
@@ -138,10 +136,9 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 2,
   "type":"solo",
   "requiredSubscriptions": [{
-    "id" : 8,
+    "id" : 7,
     "topicId" :2,
     "topicTitle" : "Adhésion année 2016-2017"
   }]
@@ -155,10 +152,9 @@
   "selected": false,
   "yearId": "2016-2017",
   "state": "unpicked",
-  "requiredTopicId" : 2,
   "type":"solo",
   "requiredSubscriptions": [{
-    "id" : 8,
+    "id" : 3,
     "topicId" :2,
     "topicTitle" : "Adhésion année 2016-2017"
   }]
