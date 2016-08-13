@@ -1,7 +1,7 @@
 function PasswordRouterConfig($stateProvider) {
   $stateProvider
-    .state('password', {
-      parent: 'app',
+    .state('member.password', {
+      parent: 'member',
       url: "/password",
       data: {
         roles: ['USER']

@@ -6,15 +6,25 @@
     <link rel="stylesheet" href="css/vendors/bootstrap.min.css" />
   </head>
   <body>
-    <!-- NAVIGATION -->
-    <div ui-view name="nav"></div>
+
+    <!-- MAIN NAVIGATION -->
+    <gs-main-nav></gs-main-nav>
+
+    <div class="row">
+      <!-- MAIN CONTENT -->
+      <div class="container">
+          <!-- THIS IS WHERE WE WILL INJECT OUR CONTENT ============================== -->
+          <div ui-view="content"></div>
+      </div>
+    </div>
+
+    <!-- <div ui-view="nav"></div> -->
 
     <!-- MAIN CONTENT -->
-    <div class="container">
-
+    <!-- <div class="container"> -->
         <!-- THIS IS WHERE WE WILL INJECT OUR CONTENT ============================== -->
-        <div ui-view name="content"></div>
-    </div>
+        <!-- <div ui-view="content"></div> -->
+    <!-- </div> -->
 
     <script src="js/vendors/angular.js"></script>
     <script src="js/vendors/angular-resource.js"></script>

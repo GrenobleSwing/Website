@@ -3,9 +3,11 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.auth',
     'app.acl',
     'app.common',
-    'app.nav',
+    'app.main.nav',
+    'app.member.nav',
     'app.home',
     'app.login',
+    'app.logout',
     'app.account',
     'app.subscriptions.common',
     'app.subscriptions.list',
@@ -13,6 +15,7 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'app.subscriptions.description.duet',
     'app.subscriptions.description.solo',
     'app.subscriptions.duet.dialog',
+    'app.admin.nav',
     'app.signup',
     'app.password',
     'app.users',
@@ -24,7 +27,7 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
 
 function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
-    .state('app', {
+    .state('index', {
       abstract: true,
       resolve: {
         authorize: ['authorizationService',
@@ -34,29 +37,61 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       },
       views: {
         'nav@': {
-          templateUrl: 'js/components/navigation/navbar.html',
-          controller: 'navController',
+          template: ''
+        }
+      }
+    })
+    .state('member', {
+      abstract: true,
+      resolve: {
+        authorize: ['authorizationService',
+          function(authService) {
+            return authService.authorize();
+          }]
+      },
+      views: {
+        'nav@': {
+          templateUrl: 'js/components/member-navigation/navbar.html',
+          controller: 'memberNavController',
           controllerAs: 'ctrl'
-        },
-        'content@': {
-          template: '<ui-view/>'
+        // },
+      //   'content@': {
+      //     template: '<ui-view/>'
+        }
+      }
+    })
+    .state('admin', {
+      abstract: true,
+      resolve: {
+        authorize: ['authorizationService',
+          function(authService) {
+            return authService.authorize();
+          }]
+      },
+      views: {
+        'nav@': {
+          templateUrl: 'js/components/admin-navigation/navbar.html',
+          controller: 'adminNavController',
+          controllerAs: 'ctrl'
         }
       }
     })
     .state('accessdenied', {
-      parent: 'app',
       url: '/denied',
       data: {
         roles: []
       },
       views: {
+        'nav': {
+          template: ''
+        },
         'content@': {
           template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="home">Return home.</a></p></alert>'
         }
       }
     });
 
-  $urlRouterProvider.otherwise('login');
+  $urlRouterProvider.otherwise('/');
 }
 
 function run($rootScope, $state, $stateParams, authService, identityService) {

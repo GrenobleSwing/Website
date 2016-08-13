@@ -1,4 +1,3 @@
-angular
-  .module('app.balance', ['app.users'])
+angular.module('app.balance', ['app.users'])
   .directive('gsBalanceView', BalanceViewDirective)
   .controller('balanceViewController', ['usersService', BalanceViewController]);

@@ -1,0 +1,16 @@
+<div class="navbar-collapse collapse" id="top-navbar" ng-if="ctrl.isActive()">
+  <div ui-view="nav"></div>
+  <ul class="nav navbar-nav navbar-right">
+      <li uib-dropdown>
+        <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
+          {{ctrl.identity.login}}<span class="caret"></span>
+        </button>
+        <ul uib-dropdown-menu class="dropdown-menu">
+          <li role="menuitem"><a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Membre</a></li>
+          <li class="divider"></li>
+          <li class="divider"></li>
+          <li role="menuitem"><a ui-sref="logout"><i class="glyphicon glyphicon-log-out"></i> Se déconnecter</a></li>
+        </ul>
+      </li>
+  </ul>
+</div>

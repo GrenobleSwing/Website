@@ -32,8 +32,6 @@ AuthorizationService.prototype = {
         // now, send them to the signin state so they can log in
         this.state.go('login');
       }
-    } else {
-      // console.info("AuthorizationService#handleSuccess_ 3");
     }
 
   },

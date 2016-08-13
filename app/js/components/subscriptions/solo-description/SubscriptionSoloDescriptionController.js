@@ -27,7 +27,8 @@ SubscriptionSoloDescriptionController.prototype = {
   validateSubscription: function validateSubscription() {
     this.subscription.selected = true;
     this.subscription.state = "waiting_for_payment";
-    console.info("Validate subscription to " + this.subscription.topicTitle);
+
+    this.subscriptionService.saveSubscription(this.subscription);
 
     for (var i = 0; i < this.subscription.requiredSubscriptions.length; i++) {
       this.subscriptionObservableService.notifyListeners(this.subscription.requiredSubscriptions[i]);

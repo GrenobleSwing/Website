@@ -1,4 +1,5 @@
-function SubscriptionService(resource) {
+function SubscriptionService($q, resource) {
+  this.q = $q;
   this.subscriptionResource = resource;
 
   this.subscriptions = [];
@@ -10,7 +11,6 @@ function SubscriptionService(resource) {
 SubscriptionService.prototype = {
 
     init_ : function init_() {
-        this.handleSuccess_ = this.handleSuccess_.bind(this);
         this.handleError_ = this.handleError_.bind(this);
     },
 
@@ -23,7 +23,11 @@ SubscriptionService.prototype = {
       }
 
       this.subscriptionResource.getAll({userId: userId})
-          .then(this.handleSuccess_.bind(this, deferred), this.handleError_('Error retrieving subscriptions by User'));
+          .then(function(res) {
+              this.subscriptions = res;
+              deferred.resolve(this.subscriptions);
+              return res;
+          }, this.handleError_('Error retrieving subscriptions by User'));
 
       return deferred.promise;
     },
@@ -42,10 +46,12 @@ SubscriptionService.prototype = {
       this.subscriptionResource.updateSubscriptions(subscriptions);
     },
 
+    saveSubscription : function saveSubscription(subscription) {
+      this.subscriptionResource.updateSubscription(subscription);
+    },
+
     // private functions
-    handleSuccess_ : function handleSuccess_(res, deferred) {
-        this.subscriptions = res;
-        deferred.resolve(this.subscriptions);
+    handleSuccess_ : function handleSuccess_(res) {
         return res;
     },
 

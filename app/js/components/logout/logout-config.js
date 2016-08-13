@@ -1,3 +1,3 @@
 angular
-    .module('app.logout', ['app.auth'])
-    .controller('logoutController', ['$location', 'authenticationService', LogoutController]);
+    .module('app.logout', ['app.users'])
+    .config(['$stateProvider', LogoutRouterConfig]);

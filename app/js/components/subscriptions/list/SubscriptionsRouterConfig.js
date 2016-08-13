@@ -1,7 +1,7 @@
 function SubscriptionsRouterConfig($stateProvider) {
   $stateProvider
-    .state('subscriptions', {
-      parent: 'app',
+    .state('member.subscriptions', {
+      parent: 'member',
       url: "/subscriptions",
       data: {
         roles: ['USER']

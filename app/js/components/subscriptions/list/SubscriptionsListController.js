@@ -17,10 +17,6 @@ SubscriptionsListController.prototype = {
       this.subscriptionService.getSubscriptionsByUserId(identity.id).then(this.handleInitSuccess_);
     },
 
-    saveSubscriptions : function saveSubscriptions() {
-      this.subscriptionService.saveSubscriptions(this.list);
-    },
-
     handleInitSuccess_ : function handleInitSuccess_(data) {
       this.list = data;
       this.originalList = angular.copy(data);

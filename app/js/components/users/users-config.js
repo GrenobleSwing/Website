@@ -1,5 +1,4 @@
-angular
-    .module('app.users', ['ngResource'])
+angular.module('app.users', ['ngResource'])
 	  .service('usersResource', ['$timeout', '$filter', '$q', '$resource', UsersResourceStub])
     .service('identityResource', ['$q', IdentityResourceStub])
     .service('authResource', ['usersResource', AuthenticationResourceStub])

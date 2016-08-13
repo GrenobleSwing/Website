@@ -58,6 +58,10 @@ SubscriptionResource.prototype = {
         return this.resource.update(subscriptions).success(this.handleSuccess_).error(this.handleError_('Error updating subscription'));
     },
 
+    updateSubscription: function updateSubscription(subscription) {
+        return this.resource.update(subscription).success(this.handleSuccess_).error(this.handleError_('Error updating subscription'));
+    },
+
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
         return res.data;

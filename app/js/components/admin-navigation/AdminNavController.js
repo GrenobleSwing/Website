@@ -1,8 +1,8 @@
-function NavController($state) {
+function AdminNavController($state) {
   this.state = $state;
 }
 
-NavController.prototype = {
+AdminNavController.prototype = {
   isActive: function isActive(name) {
     return (this.state.is(name) ? "active" : "");
   }
