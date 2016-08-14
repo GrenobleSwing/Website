@@ -8,7 +8,8 @@
    "streetAddress": "21 2nd Street",
    "city": "New York",
    "state": "NY",
-   "postalCode": "10021"
+   "postalCode": "10021",
+   "preferredRole": "lead"
  }, {
     "id" : 2,
     "userId" : 2,
@@ -19,5 +20,6 @@
     "streetAddress": "22Ob Baker Street",
     "city": "London",
     "state": "UK",
-    "postalCode": "1234"
+    "postalCode": "1234",
+    "preferredRole": "none"
   }]

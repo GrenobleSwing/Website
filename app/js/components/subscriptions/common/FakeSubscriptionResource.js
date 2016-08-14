@@ -62,24 +62,27 @@ FakeSubscriptionResource.prototype = {
       return deferred.promise;
   },
 
-  update: function update(subscription) {
-      var deferred = this.q.defer();
-
-      for (var i = 0; i < this.subscriptions.length; i++) {
-          if (this.subscriptions[i].id === subscription.id) {
-              this.subscriptions[i] = subscription;
-              break;
-          }
-      }
-      deferred.resolve();
-
-      return deferred.promise;
-  },
-
   updateSubscriptions: function updateSubscriptions(subscriptions) {
       var deferred = this.q.defer();
       deferred.resolve();
       return deferred.promise;
+  },
+
+  updateSubscription: function updateSubscription(subscription) {
+    // var deferred = this.q.defer();
+    //
+    // for (var i = 0; i < this.subscriptions.length; i++) {
+    //     if (this.subscriptions[i].id === subscription.id) {
+    //         this.subscriptions[i] = subscription;
+    //         break;
+    //     }
+    // }
+    // deferred.resolve();
+    //
+    // return deferred.promise;
+    var deferred = this.q.defer();
+    deferred.resolve();
+    return deferred.promise;
   },
 
   remove: function remove(id) {

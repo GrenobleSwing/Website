@@ -30,17 +30,22 @@
     </span>
     <span class="col-md-2">{{ctrl.subscription.balance | currency : '€'}}</span>
     <span class="col-md-2">
-      <span ng-if="!!ctrl.subscription.selected"
-            class="alert"
-            ng-class="{'alert-success' : ctrl.subscription.state == 'paid', 'alert-warning' : ctrl.subscription.state == 'waiting_for_payment'}">
-              {{ctrl.subscription.state | translate}}
-      </span>
-      <span ng-if="!ctrl.subscription.selected">
-        <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()">ajouter</a>
-      </span>
-      <span ng-if="ctrl.subscription.selected && ctrl.subscription.state == 'waiting_for_payment'">
-        <a class="btn btn-primary" role="button" ng-disabled="ctrl.isCancellable()" ng-click="ctrl.cancelSubscription()">supprimer</a>
-      </span>
+      <div class="row">
+        <span ng-if="!!ctrl.subscription.selected"
+              class="alert"
+              ng-class="{'alert-success' : ctrl.subscription.state == 'paid', 'alert-warning' : ctrl.subscription.state == 'waiting_for_payment'}">
+                {{ctrl.subscription.state | translate}}
+        </span>
+      </div>
+      <div class="row">
+        <span ng-if="!ctrl.subscription.selected">
+          <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()">ajouter</a>
+        </span>
+        <span ng-if="ctrl.subscription.selected && ctrl.subscription.state == 'waiting_for_payment'">
+          <a class="btn btn-primary" role="button" ng-disabled="ctrl.isUpdatable()" ng-click="ctrl.updateSubscription()"><i class="glyphicon glyphicon-edit"></i></a>
+          <a class="btn btn-primary" role="button" ng-disabled="ctrl.isCancellable()" ng-click="ctrl.cancelSubscription()"><i class="glyphicon glyphicon-trash"></i></a>
+        </span>
+      </div>
     </span>
   </div>
 </div>

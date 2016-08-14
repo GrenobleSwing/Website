@@ -19,8 +19,29 @@
         </div>
 
         <div class="form-group" ng-class="{ 'has-error': form.special.$dirty && form.special.$error.required }">
-            <label for="special">{{ 'ACCOUNT.STUDENT' | translate}}</label>
-            <input type="text" name="special" id="special" class="form-control" ng-model="ctrl.account.special" />
+            <div class="row">
+              <span class="col-md-1">
+                <input type="checkbox" name="special" id="special" class="form-control" ng-model="ctrl.account.special" />
+              </span>
+              <span class="col-md-11">{{ 'ACCOUNT.SPECIAL' | translate}}</span>
+            </div>
+        </div>
+
+        <div class="form-group row"  ng-class="{ 'has-error': form.special.$dirty && form.special.$error.required }">
+          <div class="row">
+            <label for="role">Rôle préféré :</label>
+          </div>
+          <div class="row">
+            <span class="col-md-4">
+              <input type="radio" name="role" ng-model="ctrl.account.preferredRole" value="lead" />Cavalier / Leader
+            </span>
+            <span class="col-md-4">
+              <input type="radio" name="role" ng-model="ctrl.account.preferredRole" value="follow" />Cavalière / Follower
+            </span>
+            <span class="col-md-4">
+              <input type="radio" name="role" ng-model="ctrl.account.preferredRole" value="none" />Ni l'un, ni l'autre
+            </span>
+          </div>
         </div>
 
         <div class="form-group" ng-class="{ 'has-error': form.address.$dirty && form.address.$error.required }">
@@ -31,6 +52,11 @@
         <div class="form-group" ng-class="{ 'has-error': form.city.$dirty && form.city.$error.required }">
             <label for="city">{{ 'ACCOUNT.CITY' | translate}}</label>
             <input type="text" name="city" id="city" class="form-control" ng-model="ctrl.account.city" required />
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error': form.postalCode.$dirty && form.postalCode.$error.required }">
+            <label for="postalCode">{{ 'ACCOUNT.ZIPCODE' | translate}}</label>
+            <input type="text" name="postalCode" id="postalCode" class="form-control" ng-model="ctrl.account.postalCode" required />
         </div>
 
         <div class="form-actions">

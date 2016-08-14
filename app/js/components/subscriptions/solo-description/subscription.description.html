@@ -39,7 +39,7 @@
         <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()">ajouter</a>
       </span>
       <span ng-if="ctrl.subscription.selected && ctrl.subscription.state == 'waiting_for_payment'">
-        <a class="btn btn-primary" role="button" ng-disabled="ctrl.isCancellable()" ng-click="ctrl.cancelSubscription()">supprimer</a>
+        <a class="btn btn-primary" role="button" ng-disabled="ctrl.isCancellable()" ng-click="ctrl.cancelSubscription()"><i class="glyphicon glyphicon-trash"></i></a>
       </span>
     </span>
   </div>
