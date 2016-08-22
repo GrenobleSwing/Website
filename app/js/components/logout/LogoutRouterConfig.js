@@ -4,7 +4,8 @@ function LogoutRouterConfig($stateProvider) {
     data: {
       roles: ['USER']
     },
-		controller: function LogoutController($state, identityService) {
+		controller: function LogoutController($state, authenticationService, identityService) {
+        authenticationService.clearCredentials();
         identityService.clearIdentity();
         $state.go('login');
     }
