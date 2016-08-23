@@ -1,6 +1,5 @@
 function AccountRouterConfig($stateProvider) {
-  $stateProvider
-    .state('member.account', {
+  $stateProvider.state('member.account', {
       parent: 'member',
       url: "/account",
       data: {

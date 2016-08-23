@@ -4,14 +4,15 @@ function CompareToDirective() {
         scope: {
             otherModelValue: "=gsCompareTo"
         },
-        link: function (scope, element, attrs, ngModelController) {
-            ngModelController.$validators.compareTo = function(modelValue) {
-                return modelValue == scope.otherModelValue;
-            };
+        link: function (scope, element, attrs, ctrl) {
 
-            scope.$watch("compareTo", function() {
-                ngModelController.$validate();
-            });
+          ctrl.$validators.compareTo = function(modelValue) {
+              return modelValue == scope.otherModelValue;
+          };
+
+          scope.$watch("otherModelValue", function() {
+              ctrl.$validate();
+          });
         }
     };
 }

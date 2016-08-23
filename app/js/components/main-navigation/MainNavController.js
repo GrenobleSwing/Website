@@ -1,5 +1,7 @@
-function MainNavController(identityService) {
+function MainNavController($state, authenticationService, identityService) {
+  this.state = $state;
   this.identityService = identityService;
+  this.authenticationService = authenticationService;
 
   this.isOpen = false;
   this.identity = {$ok: false};
@@ -15,7 +17,13 @@ MainNavController.prototype = {
     }.bind(this));
   },
 
-  isActive: function isActive() {
+  isLogged: function isLogged() {
     return this.identityService.isIdentityResolved();
+  },
+
+  logout: function logout() {
+    this.authenticationService.clearCredentials();
+    this.identityService.clearIdentity();
+    this.state.go('login');
   }
 };

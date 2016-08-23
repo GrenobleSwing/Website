@@ -1,3 +1,3 @@
-angular.module('app.main.nav', ['app.users'])
+angular.module('app.main.nav', ['app.users', 'app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
-  .controller('mainNavController', ['identityService', MainNavController]);
+  .controller('mainNavController', ['$state', 'authenticationService', 'identityService', MainNavController]);

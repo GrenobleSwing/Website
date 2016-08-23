@@ -42,7 +42,7 @@ IdentityService.prototype = {
   },
 
   clearIdentity: function clearIdentity() {
-    this.identity = null;
+    this.identity = undefined;
     this.authenticated = false;
   },
 

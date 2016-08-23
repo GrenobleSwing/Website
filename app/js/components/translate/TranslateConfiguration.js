@@ -27,7 +27,7 @@ function TranslateConfiguration($translateProvider) {
       'PASSWORD_REQUIRED': 'Le mot de passe est requis',
       'PASSWORD_CONFIRM': 'Confirmation du mot de passe',
       'PASSWORD_CONFIRM_REQUIRED': 'Le mot de passe est erroné',
-      'PRIMARY_ROLE': 'Rôle principal',
+      'PRIMARY_ROLE': 'Rôle préféré',
       'SPECIAL': 'Cochez cette case si vous avez un régime spécial (étudiant, chômeur, retraité)',
       'TITLE': 'Etat civil',
       'ZIPCODE' : 'Code postal'

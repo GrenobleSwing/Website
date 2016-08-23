@@ -5,8 +5,6 @@ function PasswordEditController(passwordService) {
   this.user = {$ok : false};
 
   this.passwordService = passwordService;
-
-  console.info("PasswordEditController");
 }
 
 PasswordEditController.prototype = {
