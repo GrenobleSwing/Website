@@ -40,6 +40,11 @@ function TranslateConfiguration($translateProvider) {
     },
     'PASSWORD' : {
       'TITLE': 'Mot de passe',
+      'PWD_TOO_SHORT': 'Password too short!',
+      'PWD_TOO_LONG': 'Password too long!',
+      'PWD_NEEDS_LETTERS': 'Password needs letters!',
+      'PWD_NEEDS_NUMBERS': 'Password needs numbers!',
+      'PWD_CONFIRM_FAILED': 'Confirmation fails !'
     },
     'TOPICS' : {
       'TITLE': 'Thèmes',

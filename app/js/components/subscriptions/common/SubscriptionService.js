@@ -22,7 +22,7 @@ SubscriptionService.prototype = {
           return deferred.promise;
       }
 
-      this.subscriptionResource.getAll({userId: userId})
+      this.subscriptionResource.getAll({userId: userId, yearId: "2016-2017"})
           .then(function(res) {
               this.subscriptions = res;
               deferred.resolve(this.subscriptions);
