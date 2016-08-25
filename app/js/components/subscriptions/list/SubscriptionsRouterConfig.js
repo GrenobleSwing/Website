@@ -8,7 +8,7 @@ function SubscriptionsRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          template: "<div class=\"row\"><gs-subscriptions-list></gs-subscriptions-list></div><div class=\"row\"><gs-subscriptions-summary></gs-subscriptions-summary></div>"
+          template: "<div class=\"row\"><gs-subscriptions-list></gs-subscriptions-list></div>"
         }
       }
     });

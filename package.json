@@ -25,7 +25,7 @@
 
     "prebuild": "npm run build:clean",
     "build:clean": "rm -r build/*",
-    "build:css": "cpx \"node_modules/bootstrap/dist/css/*.css\" \"build/css/vendors\"",
+    "build:css": "cpx \"node_modules/bootstrap/dist/css/*.css\" \"build/css/vendors\" && cpx \"app/styles/*.css\" \"build/css/\"",
     "build:font": "cpx \"node_modules/bootstrap/fonts/*\" \"build/css/fonts\"",
     "build:appjs": "cat app/js/main.js >> build/js/gs.js",
     "build:js": "mkdir build/js; find app/js/components/ -type f -name \"*.js\" ! -name \"*-config.js\"  ! -name \"app.js\" -exec cat {} \\; >> build/js/gs.js",

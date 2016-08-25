@@ -1,24 +1,37 @@
   <div class="col-md-6 col-md-offset-3">
       <h2>{{ 'ACCOUNT.TITLE' | translate}}</h2>
       <form name="form" ng-submit="ctrl.save()" role="form">
-        <div class="form-group" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
-            <label for="login">{{ 'ACCOUNT.EMAIL' | translate}}</label>
+        <div class="form-group required" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
+            <label for="login" class='control-label'>{{ 'ACCOUNT.EMAIL' | translate}}</label>
             <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.account.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
             <span ng-if="form.login.$dirty && form.login.$invalid" class="help-block">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</span>
         </div>
 
-        <div class="form-group" ng-class="{ 'has-error': form.firstName.$dirty && form.firstName.$error.required }">
-            <label for="firstName">{{ 'ACCOUNT.FIRSTNAME' | translate}}</label>
+        <div class="form-group required" ng-class="{ 'has-error': form.firstName.$dirty && form.firstName.$error.required }">
+            <label for="firstName" class='control-label'>{{ 'ACCOUNT.FIRSTNAME' | translate}}</label>
             <input type="text" name="firstName" id="firstName" class="form-control" ng-model="ctrl.account.firstName" required />
             <span ng-if="form.firstName.$dirty && form.firstName.$error.required" class="help-block">{{ 'ACCOUNT.FIRSTNAME_REQUIRED' | translate}}</span>
         </div>
-        <div class="form-group" ng-class="{ 'has-error': form.lastName.$dirty && form.lastName.$error.required }">
-            <label for="lastName">{{ 'ACCOUNT.LASTNAME' | translate}}</label>
+        <div class="form-group required" ng-class="{ 'has-error': form.lastName.$dirty && form.lastName.$error.required }">
+            <label for="lastName" class='control-label'>{{ 'ACCOUNT.LASTNAME' | translate}}</label>
             <input type="text" name="lastName" id="lastName" class="form-control" ng-model="ctrl.account.lastName" required />
             <span ng-if="form.lastName.$dirty && form.lastName.$error.required" class="help-block">{{ 'ACCOUNT.LASTNAME_REQUIRED' | translate}}</span>
         </div>
 
+        <div class="form-group required">
+            <label for="birthday" class='control-label'>Date de naissance</label>
+            <input rsmdatedropdowns
+                    id="birthday" name="birthday"
+                    ng-model="ctrl.account.birthday"
+                    day-class="day-selector"
+                    month-class="month-selector"
+                    year-class="year-selector">
+        </div>
+
         <div class="form-group">
+            <div class="row">
+              <span class="col-md-12"><strong>Régime spécial</strong></span>
+            </div>
             <div class="row">
               <span class="col-md-1">
                 <input type="checkbox" name="special" id="special" class="form-control" ng-model="ctrl.account.special" />
@@ -44,20 +57,22 @@
           </div>
         </div>
 
-        <div class="form-group" ng-class="{ 'has-error': form.address.$dirty && form.address.$error.required }">
-            <label for="address">{{ 'ACCOUNT.ADDRESS' | translate}}</label>
+        <div class="form-group required" ng-class="{ 'has-error': form.address.$dirty && form.address.$error.required }">
+            <label for="address" class='control-label'>{{ 'ACCOUNT.ADDRESS' | translate}}</label>
             <input type="text" name="address" id="address" class="form-control" ng-model="ctrl.account.address" required />
         </div>
 
-        <div class="form-group" ng-class="{ 'has-error': form.city.$dirty && form.city.$error.required }">
-            <label for="city">{{ 'ACCOUNT.CITY' | translate}}</label>
+        <div class="form-group required" ng-class="{ 'has-error': form.city.$dirty && form.city.$error.required }">
+            <label for="city" class='control-label'>{{ 'ACCOUNT.CITY' | translate}}</label>
             <input type="text" name="city" id="city" class="form-control" ng-model="ctrl.account.city" required />
         </div>
 
-        <div class="form-group" ng-class="{ 'has-error': form.postalCode.$dirty && form.postalCode.$error.required }">
-            <label for="postalCode">{{ 'ACCOUNT.ZIPCODE' | translate}}</label>
+        <div class="form-group required" ng-class="{ 'has-error': form.postalCode.$dirty && form.postalCode.$error.required }">
+            <label for="postalCode" class='control-label'>{{ 'ACCOUNT.ZIPCODE' | translate}}</label>
             <input type="text" name="postalCode" id="postalCode" class="form-control" ng-model="ctrl.account.postalCode" required />
         </div>
+
+        <gs-legal-notice></gs-legal-notice>
 
         <div class="form-actions">
             <button type="submit" ng-disabled="form.$invalid || ctrl.dataLoading" class="btn btn-primary">{{ 'ACTION.SAVE' | translate}}</button>
