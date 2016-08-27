@@ -2,6 +2,7 @@ function AccountEditController(identityService, accountService) {
   this.identityService = identityService;
   this.accountService = accountService;
   this.account = {$ok: false};
+  this.phonePattern = /^((\+|00)33\s?|0)[1-5](\s?\d{2}){4}$/;
   this.init_();
 }
 

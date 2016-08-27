@@ -8,7 +8,8 @@ function SummaryRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          template: "<div class=\"row\"><gs-subscriptions-summary></gs-subscriptions-summary></div>"
+          template: "<div class=\"row\"><gs-subscriptions-summary></gs-subscriptions-summary></div>"+
+                    "<div class=\"row\"><gs-invoice-request></gs-invoice-request></div>"
         }
       }
     });
