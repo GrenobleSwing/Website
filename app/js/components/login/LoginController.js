@@ -14,6 +14,9 @@ function LoginController($scope, $state, authenticationService, identityService)
 LoginController.prototype = {
   init_ : function init_() {
     this.handleSuccess_ = this.handleSuccess_.bind(this);
+
+    this.authenticationService.clearCredentials();
+    this.identityService.clearIdentity();
   },
 
   connect : function connect() {
@@ -22,10 +25,16 @@ LoginController.prototype = {
 
   handleSuccess_ : function handleSuccess_() {
     this.identityService.getIdentity().then(function(identity) {
-      if (!!this.scope.returnToState) {
+      if (!!this.scope.returnToState && this.scope.returnToState.name !== 'index.home') {
         this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
-      } else {
-       this.state.go('member.account');
+      } else if(this.identityService.isInRole('USER')){
+        this.state.go('member.account');
+      } else if(this.identityService.isInRole('TOPIC_MANAGER')){
+        this.state.go('admin.admin');
+      } else if(this.identityService.isInRole('SECRETARY')){
+        this.state.go('admin.secretariat');
+      } else if(this.identityService.isInRole('TREASURER')){
+        this.state.go('admin.treasury');
       }
     }.bind(this));
   }

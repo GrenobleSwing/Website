@@ -5,8 +5,10 @@ function IdentityService($cookieStore, $q, identityResource, authResource, $time
   this.authResource = authResource;
   this.timeout = $timeout;
 
-  this.identity = undefined;
+  this.identity = {$ok : false};
   this.authenticated = false;
+
+  this.unIndentified = {$ok : false};
 
   this.init_();
 }
@@ -18,21 +20,21 @@ IdentityService.prototype = {
   },
 
   isIdentityResolved: function isIdentityResolved() {
-    return angular.isDefined(this.identity);
+    return !!this.identity.$ok;
   },
 
   isAuthenticated: function isAuthenticated() {
-    return this.authenticated;
+    return !!this.identity.$ok;
   },
 
   isInRole: function isInRole(role) {
-    if (!this.authenticated || !this.identity.roles) return false;
+    if (!this.isAuthenticated() || !this.identity.roles) return false;
 
     return this.identity.roles.indexOf(role) != -1;
   },
 
   isInAnyRole: function isInAnyRole(roles) {
-    if (!this.authenticated || !this.identity.roles) return false;
+    if (!this.isAuthenticated() || !this.identity.roles) return false;
 
     for (var i = 0; i < roles.length; i++) {
       if (this.isInRole(roles[i])) return true;
@@ -42,8 +44,7 @@ IdentityService.prototype = {
   },
 
   clearIdentity: function clearIdentity() {
-    this.identity = undefined;
-    this.authenticated = false;
+    this.identity = this.unIndentified;
   },
 
   getIdentity: function getIdentity(force) {
@@ -51,11 +52,13 @@ IdentityService.prototype = {
 
     var deferred = this.q.defer();
 
-    if (force === true) this.identity = undefined;
+    if (force === true) {
+      this.clearIdentity();
+    }
 
     // check and see if we have retrieved the identity data from the server. if we have, reuse it by immediately resolving
-    if (angular.isDefined(this.identity)) {
-      // console.info("IdentityService#getIdentity 2");
+    if (this.isIdentityResolved()) {
+      console.info("IdentityService#getIdentity 2");
       deferred.resolve(this.identity);
 
       return deferred.promise;
@@ -66,15 +69,14 @@ IdentityService.prototype = {
     // otherwise, retrieve the identity data from the server, update the identity object, and then resolve.
     this.identityResource.getCurrentUser().then(
       function(data) {
-        // console.info("IdentityService#getIdentity success");
+        console.info("IdentityService#getIdentity success");
         this.identity = data;
-        this.authenticated = true;
+        // this.identity.$ok = true;
         deferred.resolve(this.identity);
       }.bind(this), function () {
-        // console.info("IdentityService#getIdentity error");
+        console.info("IdentityService#getIdentity error");
 
-        this.identity = null;
-        this.authenticated = false;
+        this.identity = {$ok : false};
         deferred.resolve(this.identity);
       }.bind(this));
 

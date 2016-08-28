@@ -65,7 +65,7 @@
           <input type="text" name="phone" id="phone" ng-pattern="ctrl.phonePattern" ng-model="ctrl.account.phone">
           <div class="help-block" ng-messages="form.phone.$error">
             <p ng-message="required">Phone number is required.</p>
-            <p ng-message="pattern">Phone number is invalid.</p>
+            <p ng-message="pattern">Formats autorisés: +33123456789 ou 0123456789</p>
           </div>
         </div>
 

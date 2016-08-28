@@ -12,7 +12,7 @@ InvoiceRequestController.prototype = {
   },
 
   handleChange: function handleChange() {
-    this.http.post('/invoice', {userId: this.identity.id}, config).then(this.handleSuccess_, this.handleError_);
+    this.http.post('/api/invoice', {userId: this.identity.id}, config).then(this.handleSuccess_, this.handleError_);
   },
 
   handleSuccess_: function handleSuccess_() {

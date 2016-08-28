@@ -8,4 +8,9 @@
   "login": "john.doe@test.com",
   "password": "test",
   "roles" : ["USER"]
+}, {
+  "id" : 3,
+  "login": "admin@test.com",
+  "password": "admin",
+  "roles" : ["ADMIN", "TOPIC_MANAGER", "SECRETARY", "TREASURER"]
 }]

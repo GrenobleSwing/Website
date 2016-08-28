@@ -1,9 +1,14 @@
 angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'ui.router',
     'ngMessages',
+    'ui.grid',
     'app.account',
     'app.acl',
+    'app.admin',
     'app.admin.nav',
+    'app.admin.secretariat',
+    'app.admin.treasury',
+    'app.admin.topics',
     'app.auth',
     'app.cnil',
     'app.common',
@@ -59,9 +64,6 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
           templateUrl: 'js/components/member-navigation/navbar.html',
           controller: 'memberNavController',
           controllerAs: 'ctrl'
-        // },
-      //   'content@': {
-      //     template: '<ui-view/>'
         }
       }
     })
@@ -91,7 +93,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
           template: ''
         },
         'content@': {
-          template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="home">Return home.</a></p></alert>'
+          template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="index.home">Return home.</a></p></alert>'
         }
       }
     });

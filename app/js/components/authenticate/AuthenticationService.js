@@ -14,7 +14,7 @@ AuthenticationService.prototype = {
     },
 
     login: function login(username, password) {
-      return this.authResource.login(username, password).then(this.handleSuccess_, this.handleError_);
+      return this.authResource.authenticate(username, password).then(this.handleSuccess_, this.handleError_);
     },
 
     clearCredentials : function clearCredentials() {

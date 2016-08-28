@@ -12,14 +12,23 @@ function MainNavController($state, authenticationService, identityService) {
 MainNavController.prototype = {
 
   init_: function init_() {
-    this.identityService.getIdentity().then(function(data) {
+    this.identity = this.identityService.getIdentity().then(function(data) {
       this.identity = data;
     }.bind(this));
   },
 
   isLogged: function isLogged() {
-    return this.identityService.isIdentityResolved();
+    return this.identityService.isAuthenticated();
   },
+
+  hasPermission: function hasPermission(role) {
+    return this.identityService.isInRole(role);
+  },
+
+  hasPermissions: function hasPermissions(roles) {
+    return this.identityService.isInAnyRole(roles);
+  },
+
 
   logout: function logout() {
     this.authenticationService.clearCredentials();

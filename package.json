@@ -25,13 +25,13 @@
 
     "prebuild": "npm run build:clean",
     "build:clean": "rm -r build/*",
-    "build:css": "cpx \"node_modules/bootstrap/dist/css/*.css\" \"build/css/vendors\" && cpx \"app/styles/*.css\" \"build/css/\"",
+    "build:css": "cpx \"node_modules/bootstrap/dist/css/*.css\" \"build/css/vendors\" && cpx \"app/styles/*.css\" \"build/css/\" && cpx \"node_modules/angular-ui-grid/**.css\"  \"build/css/vendors/\"",
     "build:font": "cpx \"node_modules/bootstrap/fonts/*\" \"build/css/fonts\"",
     "build:appjs": "cat app/js/main.js >> build/js/gs.js",
     "build:js": "mkdir build/js; find app/js/components/ -type f -name \"*.js\" ! -name \"*-config.js\"  ! -name \"app.js\" -exec cat {} \\; >> build/js/gs.js",
     "build:configjs": "find app/js -type f -name \"*-config.js\" -exec cat {} \\; >> build/js/gs.js",
     "build:html" : "cpx \"app/**/*.html\" build --verbose",
-    "build:lib" : "cpx \"node_modules/angular/**.js\" \"build/js/vendors\" --verbose && cpx \"node_modules/angular-ui-router/release/**.js\" \"build/js/vendors\" && cpx \"node_modules/angular-resource/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-i18n/angular-locale_fr-fr.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-ui-bootstrap/dist/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-route/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-cookies/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-translate/dist/**.js\"  \"build/js/vendors\"  && cpx \"node_modules/angular-messages/**.js\"  \"build/js/vendors\"",
+    "build:lib" : "cpx \"node_modules/angular/**.js\" \"build/js/vendors\" --verbose && cpx \"node_modules/angular-ui-router/release/**.js\" \"build/js/vendors\" && cpx \"node_modules/angular-resource/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-i18n/angular-locale_fr-fr.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-ui-bootstrap/dist/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-route/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-cookies/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-translate/dist/**.js\"  \"build/js/vendors\"  && cpx \"node_modules/angular-messages/**.js\"  \"build/js/vendors\" && cpx \"node_modules/angular-ui-grid/**.js\"  \"build/js/vendors\"",
     "build:samples": "mkdir build/resources/ && mkdir build/resources/sample/ && cp app/resources/sample/*.json build/resources/sample/",
     "build": "npm run build:css && npm run build:font && npm run build:js && npm run build:configjs && npm run build:appjs && npm run build:html && npm run build:lib && npm run build:samples",
 

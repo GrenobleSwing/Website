@@ -1,10 +1,10 @@
 /**
  * Dummy authentication for testing, uses $timeout to simulate api call
  */
-function FakeAuthenticationService($http, $cookies, $rootScope, encoder, userResource) {
+function FakeAuthenticationService($http, $cookies, $rootScope, encoder, authResource) {
   this.http = $http;
   this.cookies = $cookies;
-  this.userResource = userResource;
+  this.authResource = authResource;
 
   this.encoder = encoder;
   this.rootScope = $rootScope;
@@ -14,11 +14,12 @@ function FakeAuthenticationService($http, $cookies, $rootScope, encoder, userRes
 
 FakeAuthenticationService.prototype = {
     init_ : function init_() {
-        this.handleResponse_ = this.handleResponse_.bind(this);
+        this.handleSuccess_ = this.handleSuccess_.bind(this);
+        this.handleError_ = this.handleError_.bind(this);
     },
 
     login: function login(username, password) {
-        return this.userResource.getByUsername(username).then(this.handleResponse_);
+        return this.authResource.authenticate(username, password).then(this.handleSuccess_, this.handleError_);
     },
 
     clearCredentials : function clearCredentials() {
@@ -27,7 +28,7 @@ FakeAuthenticationService.prototype = {
         this.http.defaults.headers.common.Authorization = 'Basic';
     },
 
-    handleResponse_ : function handleResponse_(data) {
+    handleSuccess_ : function handleSuccess_(data) {
       this.rootScope.globals = {
         currentUser: {
             userId: data.id,
@@ -42,5 +43,10 @@ FakeAuthenticationService.prototype = {
       this.http.defaults.headers.common['Authorization'] = 'Basic ' + data.token; // jshint ignore:line
 
       return data;
+    },
+
+    handleError_ : function handleError_() {
+      console.info("FakeAuthenticationService#handleError_");
+      return {$ok: false};
     }
   };

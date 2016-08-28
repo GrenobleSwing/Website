@@ -7,6 +7,8 @@ function UsersResourceStub($timeout, $filter, $q, $resource) {
 
   this.resource = $resource('resources/sample/users.json', {});
 
+  this.currentUser = {$ok : false};
+
   this.init_();
 }
 
@@ -44,8 +46,24 @@ UsersResourceStub.prototype = {
         } else {
             user = {$ok : false};
         }
+        this.currentUser = user;
         deferred.resolve(user);
         return deferred.promise;
+    },
+
+    setCurrentUser: function(user) {
+      console.info("UsersResourceStub#setCurrentUser");
+      this.getByUsername(user.login).then(function(data) {
+        this.currentUser = data;
+      }.bind(this));
+    },
+
+    getCurrentUser: function getCurrentUser() {
+      console.info("UsersResourceStub#getCurrentUser");
+      var deferred = this.q.defer();
+      var user = this.currentUser;
+      deferred.resolve(user);
+      return deferred.promise;
     },
 
     create: function create(user) {

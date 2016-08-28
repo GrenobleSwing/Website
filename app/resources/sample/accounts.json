@@ -22,4 +22,11 @@
     "state": "UK",
     "postalCode": "1234",
     "preferredRole": "none"
-  }]
+  }, {
+     "id" : 3,
+     "userId" : 3,
+     "firstName": "Admin",
+     "lastName": "Nimda",
+     "login": "admin@test.com",
+     "age": 0
+   }]
