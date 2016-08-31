@@ -1,5 +1,5 @@
-angular.module('app.admin.topics', ['ui.router', 'ui.grid'])
-  .config(['$stateProvider', TopicRouterConfig]);
-  // .service('membersResource', ['$filter', '$q', '$resource', MembersResourceStub])
-  // .service('membersService', ['Resource', MembersService]);
-  // .controller('membersListController', ['membersService', MembersListController]);
+angular.module('app.topic.list', ['ui.router', 'ui.bootstrap', 'app.topic.common'])
+  .config(['$stateProvider', TopicRouterConfig])
+  .service('topicResource', ['$resource', FakeTopicResource])
+  .service('topicService', ['topicResource', TopicsService])
+  .controller('topicsListController', ['$uibModal', 'topicService', TopicsListController]);

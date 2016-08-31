@@ -28,13 +28,12 @@ FakeTopicResource.prototype = {
       return deferred.promise;
   },
 
-    getByUserId : function getByUserId(userId) {
-        var deferred = this.q.defer();
-        var filtered = this.filter('filter')(this.getTopics_(), { userId: userId });
-        var topic = filtered.length ? filtered[0] : {};
-        deferred.resolve(topic);
-        return deferred.promise;
-    },
+  getAll: function getAll(params) {
+    var deferred = this.q.defer();
+    var filtered = this.filter('filter')(this.getTopics_(), params);
+    deferred.resolve(filtered);
+    return deferred.promise;
+  },
 
     create: function create(topic) {
         var deferred = this.q.defer();

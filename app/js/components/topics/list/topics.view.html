@@ -1,3 +1,6 @@
-<div ng-repeat="topic in ctrl.list | orderBy : 'id'">
-  {{topic.title}}
-</div>
+<table>
+<tr ng-repeat="topic in ctrl.items">
+  <td>{{topic.title}}</td>
+  <td><a ng-click="ctrl.editTopic(topic)"><i class="glyphicon glyphicon-edit"></i></a></td>
+</tr>
+</table>

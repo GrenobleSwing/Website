@@ -1,0 +1,35 @@
+<div class="col-md-6 col-md-offset-3">
+    <div class="form-group" ng-class="{ 'has-error': form.label.$dirty && form.label.$error.required }">
+        <label for="label">Label</label>
+        <input type="text" name="label" id="label" class="form-control" ng-model="ctrl.topic.title" required />
+        <span ng-show="form.label.$dirty && form.label.$error.required" class="help-block">Label is required</span>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error': form.description.$dirty && form.description.$error.required }">
+        <label for="description">Description</label>
+        <textarea name="description" id="description" class="form-control" ng-model="ctrl.topic.description" required />
+        <span ng-show="form.description.$dirty && form.description.$error.required" class="help-block">Description is required</span>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error': form.nestedTopic.$dirty && form.nestedTopic.$error.required }">
+        <label for="nestedTopic">Nested Topic</label>
+        <select name="nestedTopic" id="nestedTopic" class="form-control"
+                ng-model="ctrl.topic.nestedTopicId"
+                ng-options="item as item.title for item in ctrl.nestedTopics track by item.id">
+        </select>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error': form.type.$dirty && form.type.$error.required }">
+        <label for="type">Nested Topic</label>
+        <select name="type" id="type" class="form-control"
+                ng-model="ctrl.topic.type"
+                ng-options="item as item.title for item in ctrl.topicTypes track by item.id">
+        </select>
+    </div>
+    <div class="form-group" ng-class="{ 'has-error': form.teacher.$dirty && form.teacher.$error.required }">
+        <label for="teacher">Teachers</label>
+        <input type="text" name="teacher" id="teacher" class="form-control" ng-model="ctrl.teacher" required />
+        <span ng-show="form.teacher.$dirty && form.teacher.$error.required" class="help-block">Label is required</span>
+    </div>
+    <div class="form-actions">
+        <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Update</button>
+        <a href="#/login" class="btn btn-link">Cancel</a>
+    </div>
+</div>

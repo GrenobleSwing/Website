@@ -7,10 +7,9 @@ function TopicRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          // templateUrl: 'js/components/topics/members.view.html',
-          template: '<p>Topics</p>'
-          // controller: 'membersListController',
-          // controllerAs: 'ctrl'
+          templateUrl: 'js/components/topics/list/topics.view.html',
+          controller: 'topicsListController',
+          controllerAs: 'ctrl'
         }
       }
     });

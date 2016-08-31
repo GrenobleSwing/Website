@@ -20,8 +20,8 @@ TopicResource.prototype = {
         return this.resource.get(id).then(this.handleSuccess_, this.handleError_('Error getting topic by id'));
     },
 
-	  getByUserId: function getByUserId(userId) {
-        return this.resource.query({userId : userId}).then(this.handleSuccess_, this.handleError_('Error getting all topics'));
+	  getAll: function getAll() {
+        return this.resource.query().then(this.handleSuccess_, this.handleError_('Error getting all topics'));
     },
 
     create: function create(topic) {
