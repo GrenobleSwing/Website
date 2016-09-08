@@ -7,10 +7,13 @@
         </button>
         <ul uib-dropdown-menu class="dropdown-menu">
           <li role="menuitem" ng-if="ctrl.hasPermission('USER')"><a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a></li>
-          <li class="divider" ng-if="ctrl.hasPermissions(['TOPIC_MANAGER', 'SECRETARY', 'TREASURER'])"></li>
-          <li role="menuitem" ng-if="ctrl.hasPermission('TOPIC_MANAGER')"><a ui-sref="admin.topics"><i class="glyphicon glyphicon-tag"></i> Gestion des événements</a></li>
-          <li role="menuitem" ng-if="ctrl.hasPermission('SECRETARY')"><a ui-sref="admin.secretariat"><i class="glyphicon glyphicon-list"></i> Secrétariat</a></li>
-          <li role="menuitem" ng-if="ctrl.hasPermission('TREASURER')"><a ui-sref="admin.treasury"><i class="glyphicon glyphicon-euro"></i> Trésorerie</a></li>
+          <li class="divider" ng-if="ctrl.hasPermissions(['TOPIC_MANAGER', 'SECRETARY', 'TREASURER', 'TEACHER'])"></li>
+          <li role="menuitem" ng-if="ctrl.hasPermission(['TEACHER'])">
+            <a ui-sref="admin.topics"><i class="glyphicon glyphicon-sunglasses"></i> Gestion des cours</a>
+          </li>
+          <li role="menuitem" ng-if="ctrl.hasPermissions(['TOPIC_MANAGER', 'SECRETARY', 'TREASURER'])">
+            <a ui-sref="admin.topics"><i class="glyphicon glyphicon-tag"></i> Administration</a>
+          </li>
           <li class="divider"></li>
           <li class="divider"></li>
           <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se déconnecter</a></li>

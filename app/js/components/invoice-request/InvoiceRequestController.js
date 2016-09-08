@@ -1,5 +1,6 @@
-function InvoiceRequestController($http, identityService) {
+function InvoiceRequestController($http, config, identityService) {
   this.http = $http;
+  this.config = config;
 
   this.identity = identityService.getIdentity().then(this.init_);
 }
@@ -12,7 +13,7 @@ InvoiceRequestController.prototype = {
   },
 
   handleChange: function handleChange() {
-    this.http.post('/api/invoice', {userId: this.identity.id}, config).then(this.handleSuccess_, this.handleError_);
+    this.http.post(this.config.apiUrl + '/api/invoice', {userId: this.identity.id}).then(this.handleSuccess_, this.handleError_);
   },
 
   handleSuccess_: function handleSuccess_() {

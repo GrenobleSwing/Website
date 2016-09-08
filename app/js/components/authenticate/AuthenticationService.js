@@ -37,7 +37,8 @@ AuthenticationService.prototype = {
       this.cookies.put('globals', this.rootScope.globals, {expires: expirationDate});
 
       this.http.defaults.headers.common['Authorization'] = 'Basic ' + data.token; // jshint ignore:line
-
+      console.info("AuthenticationService#login#handleSuccess_");
+      console.info(data);
       return data;
     },
 

@@ -25,8 +25,10 @@ TopicService.prototype = {
 
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
-        res.$ok = true;
-        return res;
+      return {
+        list: res,
+        $ok : true
+      };
     },
 
     handleError_: function handleError_(error) {

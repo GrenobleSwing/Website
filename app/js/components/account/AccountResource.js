@@ -1,5 +1,6 @@
-function AccountResource($http) {
+function AccountResource($http, config) {
   this.http = $http;
+  this.config = config;
 
   this.init_();
 }
@@ -11,7 +12,7 @@ AccountResource.prototype = {
     },
 
     getById: function getById(id) {
-        return this.http.get('/api/account/' + id).then(this.handleSuccess_, this.handleError_('Error getting account by id'));
+        return this.http.get(this.config.apiUrl + '/api/account/' + id).$promise.then(this.handleSuccess_, this.handleError_('Error getting account by id'));
     },
 
     /**
@@ -30,7 +31,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     getByUserId: function getByUserId(userId) {
-        return this.http.get('/api/account/user/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
+        return this.http.get(this.config.apiUrl + '/api/account/user/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
     },
 
     /**
@@ -45,7 +46,7 @@ AccountResource.prototype = {
   	 * }, ...]
   	 */
 	  getAll: function getAll() {
-        return this.http.get('/api/account').then(this.handleSuccess_, this.handleError_('Error getting all accounts'));
+        return this.http.get(this.config.apiUrl + '/api/account').then(this.handleSuccess_, this.handleError_('Error getting all accounts'));
     },
 
     /**
@@ -63,7 +64,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     create: function create(account) {
-        return this.http.post('/api/account', account).then(this.handleSuccess_, this.handleError_('Error creating account'));
+        return this.http.post(this.config.apiUrl + '/api/account', account).then(this.handleSuccess_, this.handleError_('Error creating account'));
     },
 
     /**
@@ -81,7 +82,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     update: function update(account) {
-        return this.http.put('/api/account/' + account.id, account).then(this.handleSuccess_, this.handleError_('Error updating account'));
+        return this.http.put(this.config.apiUrl + '/api/account/' + account.id, account).then(this.handleSuccess_, this.handleError_('Error updating account'));
     },
 
     // remove: function remove(id) {

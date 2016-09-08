@@ -1,22 +1,23 @@
-function AccountResource($http) {
+function AuthResource($http, config) {
   this.http = $http;
+  this.config = config;
 
   this.init_();
 }
 
-AccountResource.prototype = {
+AuthResource.prototype = {
     init_ : function init_() {
         this.handleSuccess_ = this.handleSuccess_.bind(this);
         this.handleError_ = this.handleError_.bind(this);
     },
 
     authenticate: function authenticate(login, password) {
-        return this.http.post('/api/auth/', {login: login, password: password}).then(this.handleSuccess_, this.handleError_('Error authenticating current user ' + login));
+        return this.http.post(this.config.apiUrl + '/api/auth/', {login: login, password: password}).then(this.handleSuccess_, this.handleError_('Error authenticating current user ' + login));
     },
 
-    // remove: function remove(id) {
-    //     return this.http.delete('/api/account/' + id).then(this.handleSuccess_, this.handleError_('Error deleting account'));
-    // },
+    terminate: function terminate(identity) {
+        return this.http.post(this.config.apiUrl + '/api/logout/', {login: identity.login}).then(this.handleSuccess_, this.handleError_('Error disconnecting current user ' + login));
+    },
 
     // private functions
     handleSuccess_ : function handleSuccess_(res) {

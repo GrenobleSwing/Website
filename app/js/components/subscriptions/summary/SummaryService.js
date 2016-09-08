@@ -1,5 +1,5 @@
-function SummaryService($q, resource) {
-  this.q = $q;
+function SummaryService(resource) {
+
   this.subscriptionResource = resource;
 
   this.subscriptions = [];

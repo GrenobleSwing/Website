@@ -1,7 +1,4 @@
-angular.module('app.users', ['ngResource'])
-	  .service('usersResource', ['$timeout', '$filter', '$q', '$resource', UsersResourceStub])
-    // .service('identityResource', ['$q', IdentityResourceStub])
-    .service('authResource', ['usersResource', AuthenticationResourceStub])
-    .service('identityService', ['$cookieStore', '$q', 'usersResource', 'authResource', '$timeout', IdentityService])
+angular.module('app.users', ['app.config'])
+		.service('usersResource', ['$http', 'config', UsersResource])
     .service('userService', ['usersResource', UserService])
     .service('usersService', ['usersResource', UsersService]);

@@ -1,13 +1,12 @@
-function FakeTopicResource($timeout, $filter, $q, $resource) {
-  this.timeout = $timeout;
+function FakeTopicResource($filter, $q, $resource) {
   this.filter = $filter;
   this.q = $q;
 
   this.topics = JSON.stringify([]);
 
-  this.resource = $resource('resources/sample/topics.json', {});
+  this.resource = $resource('resources/sample/topics.json', {}, {query: {method:'GET', isArray: true}});
 
-    this.init_();
+  this.init_();
 }
 
 FakeTopicResource.prototype = {

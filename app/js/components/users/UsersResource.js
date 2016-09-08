@@ -1,4 +1,5 @@
-function UsersResource($http) {
+function UsersResource($http, config) {
+  this.config = config;
   this.http = $http;
 
   this.init_();
@@ -19,7 +20,7 @@ UsersResource.prototype = {
      * }
   	 */
     getCurrentUser: function getCurrentUser() {
-        return this.http.get('/api/identity').then(this.handleSuccess_, this.handleError_('Error getting user by id'));
+        return this.http.get(this.config.apiUrl + '/api/identity').then(this.handleSuccess_, this.handleError_('Error getting user by id'));
     },
 
     /**
@@ -31,7 +32,7 @@ UsersResource.prototype = {
      * }
   	 */
     getById: function getById(id) {
-        return this.http.get('/api/user/' + id).then(this.handleSuccess_, this.handleError_('Error getting user by id'));
+        return this.http.get(this.config.apiUrl + '/api/user/' + id).then(this.handleSuccess_, this.handleError_('Error getting user by id'));
     },
 
     /**
@@ -43,7 +44,7 @@ UsersResource.prototype = {
      * }
      */
     getByUsername: function getByUsername(username) {
-        return this.http.get('/api/user/' + username).then(this.handleSuccess_, this.handleError_('Error getting user by username'));
+        return this.http.get(this.config.apiUrl + '/api/user/' + username).then(this.handleSuccess_, this.handleError_('Error getting user by username'));
     },
 
     /**
@@ -55,7 +56,7 @@ UsersResource.prototype = {
      * }, ...
      */
 	  getAll: function getAll() {
-        return this.http.get('/api/users').then(this.handleSuccess_, this.handleError_('Error getting all users'));
+        return this.http.get(this.config.apiUrl + '/api/users').then(this.handleSuccess_, this.handleError_('Error getting all users'));
     },
 
     /**
@@ -66,7 +67,7 @@ UsersResource.prototype = {
      * }
      */
     create: function create(user) {
-        return this.http.post('/api/user', user).then(handleSuccess_, this.handleError_('Error creating user'));
+        return this.http.post(this.config.apiUrl + '/api/user', user).then(handleSuccess_, this.handleError_('Error creating user'));
     },
 
     /**
@@ -78,7 +79,7 @@ UsersResource.prototype = {
      * }
      */
     update: function update(user) {
-        return this.http.put('/api/user/' + user.id, user).then(handleSuccess_, this.handleError_('Error updating user'));
+        return this.http.put(this.config.apiUrl + '/api/user/' + user.id, user).then(handleSuccess_, this.handleError_('Error updating user'));
     },
 
     /**
@@ -86,7 +87,7 @@ UsersResource.prototype = {
   	 * @param id user's identifier
   	 */
     remove: function remove(id) {
-        return this.http.delete('/api/user/' + id).then(handleSuccess_, this.handleError_('Error deleting user'));
+        return this.http.delete(this.config.apiUrl + '/api/user/' + id).then(handleSuccess_, this.handleError_('Error deleting user'));
     },
 
     // private functions

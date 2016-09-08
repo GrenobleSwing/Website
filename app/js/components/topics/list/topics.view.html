@@ -1,6 +1,9 @@
 <table>
-<tr ng-repeat="topic in ctrl.items">
-  <td>{{topic.title}}</td>
-  <td><a ng-click="ctrl.editTopic(topic)"><i class="glyphicon glyphicon-edit"></i></a></td>
-</tr>
+  <tr ng-repeat="topic in ctrl.items">
+    <td>{{topic.type}}</td>
+    <td>{{topic.title}}</td>
+    <td>{{topic.active}}</td>
+    <td>{{topic.state}}</td>
+    <td><a class="btn" ng-click="ctrl.editTopic(topic)"><i class="glyphicon glyphicon-edit"></i></a></td>
+  </tr>
 </table>

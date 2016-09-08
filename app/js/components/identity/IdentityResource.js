@@ -1,4 +1,5 @@
-function IdentityResource($http) {
+function IdentityResource($http, config) {
+  this.config = config;
   this.http = $http;
 
   this.init_();
@@ -19,11 +20,13 @@ IdentityResource.prototype = {
      * }
   	 */
     getCurrentUser: function getCurrentUser() {
-        return this.http.get('/api/identity').then(this.handleSuccess_, this.handleError_('Error getting user by id'));
+        return this.http.get(this.config.apiUrl + '/api/identity'); //.then(this.handleSuccess_, this.handleError_('Error getting user by id'));
     },
 
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
+      console.info("IdentityResource#getCurrentUser#handleSuccess_");
+      console.info(res);
       res.$ok = true;
       return res;
     },

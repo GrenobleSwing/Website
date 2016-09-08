@@ -1,4 +1,4 @@
-angular.module('app.topic.common', [])
-    // .service('topicObservableService', topicObservableService)
-    .service('topicResource', ['$timeout', '$filter', '$q', '$resource', FakeTopicResource])
-    .service('topicService', ['$q', 'topicResource', TopicService]);
+angular.module('app.topic.common', ['app.config'])
+    // .service('topicResource', ['$filter', '$q', '$resource', FakeTopicResource])
+    .service('topicResource', ['$resource', 'config', TopicResource])
+    .service('topicService', ['topicResource', TopicService]);

@@ -1,13 +1,16 @@
-<div class="col-md-6 col-md-offset-3">
+<div class="modal-header">
+    <h3 class="modal-title">Editer "{{ctrl.topic.title}}"</h3>
+</div>
+<div class="modal-body">
     <div class="form-group" ng-class="{ 'has-error': form.label.$dirty && form.label.$error.required }">
         <label for="label">Label</label>
         <input type="text" name="label" id="label" class="form-control" ng-model="ctrl.topic.title" required />
-        <span ng-show="form.label.$dirty && form.label.$error.required" class="help-block">Label is required</span>
+        <span ng-if="form.label.$dirty && form.label.$error.required" class="help-block">Label is required</span>
     </div>
     <div class="form-group" ng-class="{ 'has-error': form.description.$dirty && form.description.$error.required }">
         <label for="description">Description</label>
-        <textarea name="description" id="description" class="form-control" ng-model="ctrl.topic.description" required />
-        <span ng-show="form.description.$dirty && form.description.$error.required" class="help-block">Description is required</span>
+        <textarea name="description" id="description" class="form-control" ng-model="ctrl.topic.description" required ></textarea>
+        <span ng-if="form.description.$dirty && form.description.$error.required" class="help-block">Description is required</span>
     </div>
     <div class="form-group" ng-class="{ 'has-error': form.nestedTopic.$dirty && form.nestedTopic.$error.required }">
         <label for="nestedTopic">Nested Topic</label>
@@ -17,19 +20,44 @@
         </select>
     </div>
     <div class="form-group" ng-class="{ 'has-error': form.type.$dirty && form.type.$error.required }">
-        <label for="type">Nested Topic</label>
+        <label for="type">Type</label>
         <select name="type" id="type" class="form-control"
                 ng-model="ctrl.topic.type"
-                ng-options="item as item.title for item in ctrl.topicTypes track by item.id">
+                ng-options="item as item.label for item in ctrl.topicTypes track by item.id">
         </select>
     </div>
-    <div class="form-group" ng-class="{ 'has-error': form.teacher.$dirty && form.teacher.$error.required }">
+    <div class="form-group" ng-class="{ 'has-error': form.teacher.$dirty && form.teacher.$error.required }"
+         ng-if="ctrl.showTeachers()">
         <label for="teacher">Teachers</label>
-        <input type="text" name="teacher" id="teacher" class="form-control" ng-model="ctrl.teacher" required />
-        <span ng-show="form.teacher.$dirty && form.teacher.$error.required" class="help-block">Label is required</span>
+        <table>
+          <tr ng-repeat="teacher in ctrl.topic.teachers track by $index">
+            <td><p>{{teacher}}</p></td>
+            <td><a ng-click="ctrl.removeTeachRow($index)"><i class="glyphicon glyphicon-minus"></i></a></td>
+          </td>
+
+       </table>
     </div>
-    <div class="form-actions">
-        <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Update</button>
-        <a href="#/login" class="btn btn-link">Cancel</a>
+    <div class="form-group">
+      <i ng-if="loadingTeachers" class="glyphicon glyphicon-refresh"></i>
+      <div ng-if="noResults">
+        <i class="glyphicon glyphicon-remove"></i> No Results Found
+      </div>
     </div>
+    <div class="form-group"  ng-if="ctrl.showTeachers()">
+      <table>
+        <tr>
+          <td>
+            <input type="text" ng-model="ctrl.tmpTeacher" class="form-control"
+               uib-typeahead="person for person in ctrl.getTeachers($viewValue)"
+               typeahead-loading="loadingTeachers"
+               typeahead-no-results="noResults" />
+          </td>
+          <td><a ng-click="ctrl.addTeacher()"><i class="glyphicon glyphicon-plus"></i></a></td>
+        </tr>
+      </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ctrl.apply()" type="submit" ng-disabled="form.$invalid">Update</button>
+    <a class="btn btn-link" ng-click="ctrl.cancel()">Cancel</a>
 </div>

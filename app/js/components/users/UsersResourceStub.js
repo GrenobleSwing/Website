@@ -52,14 +52,14 @@ UsersResourceStub.prototype = {
     },
 
     setCurrentUser: function(user) {
-      console.info("UsersResourceStub#setCurrentUser");
+      // console.info("UsersResourceStub#setCurrentUser");
       this.getByUsername(user.login).then(function(data) {
         this.currentUser = data;
       }.bind(this));
     },
 
     getCurrentUser: function getCurrentUser() {
-      console.info("UsersResourceStub#getCurrentUser");
+      // console.info("UsersResourceStub#getCurrentUser");
       var deferred = this.q.defer();
       var user = this.currentUser;
       deferred.resolve(user);
@@ -70,22 +70,22 @@ UsersResourceStub.prototype = {
         var deferred = this.q.defer();
 
         // simulate api call with $timeout
-          var filtered = this.filter('filter')(this.getUsers_(), { login: user.login });
-          if (filtered.length > 0) {
-              deferred.resolve({ success: false, message: 'Username "' + user.login + '" is already taken' });
-          } else {
-              var users = this.getUsers_();
+        var filtered = this.filter('filter')(this.getUsers_(), { login: user.login });
+        if (filtered.length > 0) {
+            deferred.resolve({ success: false, message: 'Username "' + user.login + '" is already taken' });
+        } else {
+            var users = this.getUsers_();
 
-              // assign id
-              var lastUser = users[users.length - 1] || { id: 0 };
-              user.id = lastUser.id + 1;
+            // assign id
+            var lastUser = users[users.length - 1] || { id: 0 };
+            user.id = lastUser.id + 1;
 
-              // save to local storage
-              users.push(user);
-              this.setUsers_(users);
+            // save to local storage
+            users.push(user);
+            this.setUsers_(users);
 
-              deferred.resolve({ $ok: true });
-          }
+            deferred.resolve({ $ok: true });
+        }
 
         return deferred.promise;
     },

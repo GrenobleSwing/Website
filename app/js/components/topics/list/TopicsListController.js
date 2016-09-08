@@ -14,13 +14,13 @@ TopicsListController.prototype = {
     this.handleInitSuccess_ = this.handleInitSuccess_.bind(this);
     this.handleError_ = this.handleError_.bind(this);
 
-    this.items = this.topicService.getAll().then(this.handleInitSuccess_);
+    this.items = this.topicService.getTopics().then(this.handleInitSuccess_);
   },
 
   editTopic: function editTopic(topic) {
       var modalInstance = this.modal.open({
             animation: true,
-            templateUrl: 'js/components/topic/edit-dialog/topic.edit.html',
+            templateUrl: 'js/components/topics/edit-dialog/topic.edit.html',
             controller: 'topicEditController',
             controllerAs: 'ctrl',
             resolve: {
@@ -38,7 +38,7 @@ TopicsListController.prototype = {
   },
 
   handleInitSuccess_: function handleInitSuccess_(data, status, headers, config) {
-     this.items = data;
+     this.items = data.list;
      return data;
   },
 

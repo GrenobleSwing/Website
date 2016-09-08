@@ -25,17 +25,24 @@ LoginController.prototype = {
 
   handleSuccess_ : function handleSuccess_() {
     this.identityService.getIdentity().then(function(identity) {
+      console.info("LoginController#connect#handleSuccess_");
       if (!!this.scope.returnToState && this.scope.returnToState.name !== 'index.home') {
+        console.info("returnToState: " + this.scope.returnToState.name);
         this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
       } else if(this.identityService.isInRole('USER')){
+        console.info("goToState: " + 'member.account');
         this.state.go('member.account');
       } else if(this.identityService.isInRole('TOPIC_MANAGER')){
+        console.info("goToState: " + 'admin.admin');
         this.state.go('admin.admin');
       } else if(this.identityService.isInRole('SECRETARY')){
+        console.info("goToState: " + 'admin.secretariat');
         this.state.go('admin.secretariat');
       } else if(this.identityService.isInRole('TREASURER')){
+        console.info("goToState: " + 'admin.treasury');
         this.state.go('admin.treasury');
       }
+      console.info("goToState: somewhere....");
     }.bind(this));
   }
 };

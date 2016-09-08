@@ -1,5 +1,6 @@
-function PasswordResource($http) {
+function PasswordResource($http, config) {
   this.http = $http;
+  this.config = config;
 
   this.init_();
 }
@@ -11,7 +12,7 @@ PasswordResource.prototype = {
     },
 
     change: function updchangeate(account, password) {
-        return this.http.put('/api/account/change-password/' + account.id, password).then(this.handleSuccess_, this.handleError_('Error changing password'));
+        return this.http.put(this.config.apiUrl + '/api/account/change-password/' + account.id, password).then(this.handleSuccess_, this.handleError_('Error changing password'));
     },
 
     // private functions

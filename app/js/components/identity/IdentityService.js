@@ -44,11 +44,15 @@ IdentityService.prototype = {
   },
 
   clearIdentity: function clearIdentity() {
-    this.identity = this.unIndentified;
+    if (this.isIdentityResolved()) {
+      this.authResource.terminate(this.identity).finally(function() {
+        this.identity = this.unIndentified;
+      });
+    }
   },
 
   getIdentity: function getIdentity(force) {
-    // console.info("IdentityService#getIdentity 1");
+    console.info("IdentityService#getIdentity 1");
 
     var deferred = this.q.defer();
 
@@ -64,14 +68,15 @@ IdentityService.prototype = {
       return deferred.promise;
     }
 
-    // console.info("IdentityService#getIdentity 3");
+    console.info("IdentityService#getIdentity 3");
 
     // otherwise, retrieve the identity data from the server, update the identity object, and then resolve.
     this.identityResource.getCurrentUser().then(
       function(data) {
         console.info("IdentityService#getIdentity success");
+        console.info(data);
         this.identity = data;
-        // this.identity.$ok = true;
+        this.identity.$ok = true;
         deferred.resolve(this.identity);
       }.bind(this), function () {
         console.info("IdentityService#getIdentity error");

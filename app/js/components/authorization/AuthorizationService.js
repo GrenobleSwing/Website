@@ -15,14 +15,14 @@ AuthorizationService.prototype = {
 
   handleSuccess_: function handleSuccess_() {
     var isAuthenticated = this.identityService.isAuthenticated();
-
+console.info("AuthorizationService#handleSuccess_ 0");
     if (!!this.rootScope.toState.data.roles && this.rootScope.toState.data.roles.length > 0 && !this.identityService.isInAnyRole(this.rootScope.toState.data.roles)) {
       if (isAuthenticated) {
-        // console.info("AuthorizationService#handleSuccess_ 1");
+        console.info("AuthorizationService#handleSuccess_ 1");
         // user is signed in but not authorized for desired state
         this.state.go('accessdenied');
       } else {
-        // console.info("AuthorizationService#handleSuccess_ 2");
+        console.info("AuthorizationService#handleSuccess_ 2");
 
         // user is not authenticated. stow the state they wanted before you
         // send them to the signin state, so you can return them when you're done
@@ -32,12 +32,14 @@ AuthorizationService.prototype = {
         // now, send them to the signin state so they can log in
         this.state.go('login');
       }
+    } else {
+        console.info("AuthorizationService#handleSuccess_ 3");
     }
 
   },
 
   handleError_: function handleError_() {
-    // console.info("AuthorizationService#handleError_");
+    console.info("AuthorizationService#handleError_");
     this.state.go('login');
   }
 };
