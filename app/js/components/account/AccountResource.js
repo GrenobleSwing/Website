@@ -11,10 +11,6 @@ AccountResource.prototype = {
         this.handleError_ = this.handleError_.bind(this);
     },
 
-    getById: function getById(id) {
-        return this.http.get(this.config.apiUrl + '/api/account/' + id).$promise.then(this.handleSuccess_, this.handleError_('Error getting account by id'));
-    },
-
     /**
   	 *
   	 * @return {
@@ -31,7 +27,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     getByUserId: function getByUserId(userId) {
-        return this.http.get(this.config.apiUrl + '/api/account/user/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
+        return this.http.get(this.config.apiUrl + '/api/account/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
     },
 
     /**

@@ -8,6 +8,6 @@ LogoutController.prototype =  {
     logout: function logout() {
       this.authenticationService.clearCredentials();
       this.identityService.clearIdentity();
-      this.state.go('login');
+      this.state.go('index.login');
     }
 };

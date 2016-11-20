@@ -41,8 +41,10 @@ LoginController.prototype = {
       } else if(this.identityService.isInRole('TREASURER')){
         console.info("goToState: " + 'admin.treasury');
         this.state.go('admin.treasury');
+      } else {
+        console.info("goToState: logout....");
+        this.state.go('logout');
       }
-      console.info("goToState: somewhere....");
     }.bind(this));
   }
 };

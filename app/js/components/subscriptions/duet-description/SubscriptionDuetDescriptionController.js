@@ -46,7 +46,7 @@ SubscriptionDuetDescriptionController.prototype = {
     var subscription = this.subscription;
     var modalInstance = this.modal.open({
           animation: true,
-          templateUrl: 'js/components/subscriptions/duet-dialog/subscription.duet.dialog.html',
+          templateUrl: 'components/subscriptions/duet-dialog/subscription.duet.dialog.html',
           controller: 'subscriptionDuetDialogController',
           controllerAs: 'ctrl',
           resolve: {
@@ -83,7 +83,7 @@ SubscriptionDuetDescriptionController.prototype = {
     var subscription = this.subscription;
     var modalInstance = this.modal.open({
           animation: true,
-          templateUrl: 'js/components/subscriptions/duet-dialog/subscription.duet.dialog.html',
+          templateUrl: 'components/subscriptions/duet-dialog/subscription.duet.dialog.html',
           controller: 'subscriptionDuetDialogController',
           controllerAs: 'ctrl',
           resolve: {

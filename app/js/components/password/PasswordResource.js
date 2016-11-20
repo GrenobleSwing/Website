@@ -11,8 +11,8 @@ PasswordResource.prototype = {
         this.handleError_ = this.handleError_.bind(this);
     },
 
-    change: function updchangeate(account, password) {
-        return this.http.put(this.config.apiUrl + '/api/account/change-password/' + account.id, password).then(this.handleSuccess_, this.handleError_('Error changing password'));
+    change: function change(account, data) {
+        return this.http.put(this.config.apiUrl + '/api/account/change-password/' + account.id, data).then(this.handleSuccess_, this.handleError_('Error changing password'));
     },
 
     // private functions

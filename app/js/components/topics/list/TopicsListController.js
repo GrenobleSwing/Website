@@ -5,6 +5,16 @@ function TopicsListController($modal, topicService) {
 
   this.items = [];
 
+  this.gridOpts = {
+    columnDefs: [
+      { name: 'Type', field: 'type' },
+      { name: 'Title', field: 'title' },
+      { name: 'Is active ?', field: 'active' },
+      { name: 'State', field: 'state' }
+    ],
+    data: []
+  };
+
   this.init_();
 }
 
@@ -20,7 +30,7 @@ TopicsListController.prototype = {
   editTopic: function editTopic(topic) {
       var modalInstance = this.modal.open({
             animation: true,
-            templateUrl: 'js/components/topics/edit-dialog/topic.edit.html',
+            templateUrl: 'components/topics/edit-dialog/topic.edit.html',
             controller: 'topicEditController',
             controllerAs: 'ctrl',
             resolve: {
@@ -38,7 +48,8 @@ TopicsListController.prototype = {
   },
 
   handleInitSuccess_: function handleInitSuccess_(data, status, headers, config) {
-     this.items = data.list;
+     this.items = angular.copy(data.list);
+     this.gridOpts.data = this.items;
      return data;
   },
 

@@ -1,15 +1,16 @@
 function PasswordEditController(passwordService) {
-  this.password = "";
-  this.passwordConfirm = "";
+  this.oldPassword = "";
+  this.newPassword = "";
+  this.newPasswordConfirm = "";
 
   this.user = {$ok : false};
 
-  this.passwordService = passwordService;
+  this.passwordService = newPasswordService;
 }
 
 PasswordEditController.prototype = {
 
   save: function save() {
-    return this.passwordService.updatePassword(this.user, password, passwordConfirm);
+    return this.newPasswordService.updatePassword(this.user, oldPassword, newPassword, newPasswordConfirm);
   }
 };

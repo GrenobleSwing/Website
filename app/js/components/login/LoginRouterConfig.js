@@ -1,16 +1,18 @@
 function LoginRouterConfig($stateProvider) {
   $stateProvider
-    .state('login', {
-      url: "/login",
+    .state('index.login', {
+      parent: 'index',
+      url: '',
       views: {
-        content: {
-          templateUrl: 'js/components/login/login.html',
+        'content@': {
+          templateUrl: 'components/login/login.html',
           controller: "loginController",
           controllerAs: "ctrl"
         }
       },
       data: {
-        roles: []
+        roles: [],
+        requireLogin: false
       },
     });
 }

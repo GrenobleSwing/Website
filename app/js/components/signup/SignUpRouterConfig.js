@@ -4,7 +4,7 @@ function SignUpRouterConfig($stateProvider) {
       url: "/sign-up",
       views: {
         content: {
-          templateUrl: "js/components/signup/signup.html",
+          templateUrl: "components/signup/signup.html",
           controller: "signUpController",
           controllerAs: "ctrl"
         }

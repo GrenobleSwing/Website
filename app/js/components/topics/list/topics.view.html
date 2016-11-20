@@ -1,9 +1,17 @@
-<table>
-  <tr ng-repeat="topic in ctrl.items">
+<button type="button" id="addData" class="btn btn-success" ng-click="ctrl.addTopic()">Add Data</button>
+<table class="table table-striped">
+  <tr>
+    <th>Type</th>
+    <th>Title</th>
+    <th>State</th>
+    <th>Is active ?</th>
+    <th>Actions</th>
+  </tr>
+  <tr ng-repeat="topic in ctrl.gridOpts.data">
     <td>{{topic.type}}</td>
     <td>{{topic.title}}</td>
-    <td>{{topic.active}}</td>
     <td>{{topic.state}}</td>
+    <td>{{topic.active}}</td>
     <td><a class="btn" ng-click="ctrl.editTopic(topic)"><i class="glyphicon glyphicon-edit"></i></a></td>
   </tr>
 </table>

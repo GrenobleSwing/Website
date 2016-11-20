@@ -1,4 +1,4 @@
-angular.module('app.admin.secretariat', ['app.config', 'ui.router', 'ui.grid'])
+angular.module('app.admin.secretariat', ['app.config', 'ui.router'])
   .config(['$stateProvider', SecretariatRouterConfig])
   // .service('membersResource', ['$filter', '$q', '$resource', MembersResourceStub])
   .service('membersResource', ['$resource', 'config', MembersResource])

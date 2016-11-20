@@ -16,7 +16,7 @@ AuthResource.prototype = {
     },
 
     terminate: function terminate(identity) {
-        return this.http.post(this.config.apiUrl + '/api/logout/', {login: identity.login}).then(this.handleSuccess_, this.handleError_('Error disconnecting current user ' + login));
+        return this.http.post(this.config.apiUrl + '/api/logout/', {login: identity.login}).then(this.handleSuccess_, this.handleError_('Error disconnecting current user ' + identity.login));
     },
 
     // private functions

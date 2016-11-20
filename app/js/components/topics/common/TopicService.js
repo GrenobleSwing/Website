@@ -26,7 +26,7 @@ TopicService.prototype = {
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
       return {
-        list: res,
+        list: angular.copy(res),
         $ok : true
       };
     },

@@ -25,8 +25,8 @@
   }, {
      "id" : 3,
      "userId" : 3,
-     "firstName": "Admin",
+     "firstName": "Teacher",
      "lastName": "Nimda",
-     "login": "admin@test.com",
+     "login": "teacher@test.com",
      "age": 0
    }]

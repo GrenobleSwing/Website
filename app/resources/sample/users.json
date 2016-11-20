@@ -10,7 +10,7 @@
   "roles" : ["USER"]
 }, {
   "id" : 3,
-  "login": "admin@test.com",
+  "login": "teacher@test.com",
   "password": "admin",
   "roles" : ["ADMIN", "TOPIC_MANAGER", "SECRETARY", "TREASURER"]
 }]

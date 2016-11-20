@@ -1,7 +1,7 @@
 function SubscriptionResource($resource, config) {
   this.resource = $resource(config.apiUrl + '/api/subscription/:subscriptionId', {subscriptionId:'@id'}, {
-    'get':    { method:'GET' },
-    'getAmount':    { method:'GET' },
+    'get': { method:'GET' },
+    'getAmount': { method:'GET' },
     'validate': { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },
@@ -27,11 +27,11 @@ SubscriptionResource.prototype = {
   	 * }
   	 */
     getById: function getById(id) {
-        return this.resource.get(id).then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+        return this.resource.get({subscriptionId: id}).$promise.then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
     },
 
     getAmountByUserId: function getAmountByUserId(userId) {
-        return this.resource.getAmount(userId).then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+        return this.resource.getAmount(userId).$promise.then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
     },
 
     /**
@@ -43,7 +43,7 @@ SubscriptionResource.prototype = {
   	 * }, ...]
   	 */
 	  getAll: function getAll(params) {
-        return this.resource.query(params).then(this.handleSuccess_, this.handleError_('Error getting all subscriptions'));
+        return this.resource.query(params).$promise.then(this.handleSuccess_, this.handleError_('Error getting all subscriptions'));
     },
 
     /**
@@ -63,8 +63,8 @@ SubscriptionResource.prototype = {
     },
 
     // private functions
-    handleSuccess_ : function handleSuccess_(res) {
-        return res.data;
+    handleSuccess_ : function handleSuccess_(data) {
+        return data;
     },
 
     handleError_: function handleError_(error) {

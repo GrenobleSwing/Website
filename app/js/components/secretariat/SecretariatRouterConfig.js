@@ -7,7 +7,7 @@ function SecretariatRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          templateUrl: 'js/components/secretariat/members.view.html',
+          templateUrl: 'components/secretariat/members.view.html',
           controller: 'membersListController',
           controllerAs: 'ctrl'
         }

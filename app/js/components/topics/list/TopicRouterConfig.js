@@ -7,7 +7,7 @@ function TopicRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          templateUrl: 'js/components/topics/list/topics.view.html',
+          templateUrl: 'components/topics/list/topics.view.html',
           controller: 'topicsListController',
           controllerAs: 'ctrl'
         }

@@ -7,7 +7,9 @@
               <a href ng-click="ctrl.openDescription(subscription)">{{subscription.topicTitle}}</a>
             </span>
             <span class="col-md-3">
-              <p ng-if="!!subscription.selected">{{subscription.state}}</p>
+              <span ng-if="!!subscription.selected"
+                class="alert"
+                ng-class="{'alert-success' : subscription.state == 'paid', 'alert-warning' : subscription.state == 'waiting_for_payment'}">{{subscription.state translate}}</span>
             </span>
             <span class="col-md-1">
               <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': !!subscription.isOpen, 'glyphicon-chevron-right': !subscription.isOpen}"></i>

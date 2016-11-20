@@ -10,7 +10,8 @@ var jshint = require('gulp-jshint'),
     inject = require('gulp-inject'),
     series = require('stream-series'),
     del = require('del'),
-    connect = require('gulp-connect');
+    connect = require('gulp-connect'),
+    templateCache = require('gulp-angular-templatecache');
 
 // Lint Task
 gulp.task('lint', function() {
@@ -32,6 +33,7 @@ gulp.task('clean:dist', function () {
     ]);
 });
 
+
 // Concatenate JS
 gulp.task('build', ['clean:build'], function() {
 
@@ -39,10 +41,12 @@ gulp.task('build', ['clean:build'], function() {
     var styleStream = series(gulp.src(config.app_files.styles), gulp.src(config.lib_files.styles))
         .pipe(gulp.dest(config.build_dir.css));
 
+    var assetsStream = gulp.src(config.lib_files.assets)
+      .pipe(gulp.dest(config.build_dir.fonts));
+
     // Concatenate vendor scripts
     var vendorStream = gulp.src(config.lib_files.js)
-      .pipe(concat('vendors.js'))
-      .pipe(gulp.dest(config.build_dir.js));
+      .pipe(gulp.dest(config.build_dir.js.vendors));
 
     // Concatenate App JS
     var appStream = gulp.src(config.app_files.js);
@@ -50,12 +54,19 @@ gulp.task('build', ['clean:build'], function() {
     var mainStream = gulp.src('app/js/main.js');
 
     var sourceStream = series(appStream, configStream, mainStream)
-      .pipe(gulp.dest(config.build_dir.js));
+      .pipe(gulp.dest(config.build_dir.js.src));
+
+    // Concatenate HTML templates
+    var templates = gulp.src(config.app_files.tpl)
+      .pipe(templateCache('templates.js', {module : 'app' }))
+      .pipe(gulp.dest(config.build_dir.tpl));
 
     // Populate index.html with JS
     var htmlStream = gulp.src('app/index.html')
-      .pipe(inject(series(styleStream, vendorStream, appStream, configStream, mainStream), {ignorePath: 'build'}))
+      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {ignorePath: ['build', 'app']}))
       .pipe(gulp.dest(config.build_dir.root));
+
+
 });
 
 gulp.task('connect:build', function () {

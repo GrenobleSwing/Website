@@ -17,28 +17,28 @@ TopicResource.prototype = {
     },
 
     getById: function getById(id) {
-        return this.resource.get(id).then(this.handleSuccess_, this.handleError_('Error getting topic by id'));
+        return this.resource.get({topicId: id}).$promise.then(this.handleSuccess_, this.handleError_('Error getting topic by id'));
     },
 
 	  getAll: function getAll(params) {
-        return this.resource.query(params).then(this.handleSuccess_, this.handleError_('Error getting all topics'));
+        return this.resource.query(params).$promise.then(this.handleSuccess_, this.handleError_('Error getting all topics'));
     },
 
     create: function create(topic) {
-        return this.resource.create(topic).then(this.handleSuccess_, this.handleError_('Error creating topic'));
+        return this.resource.create(topic).$promise.then(this.handleSuccess_, this.handleError_('Error creating topic'));
     },
 
     update: function update(topic) {
-        return this.resource.update(topic).then(this.handleSuccess_, this.handleError_('Error updating topic'));
+        return this.resource.update(topic).$promise.then(this.handleSuccess_, this.handleError_('Error updating topic'));
     },
 
     remove: function remove(id) {
-        return this.resource.delete(id).then(this.handleSuccess_, this.handleError_('Error deleting topic'));
+        return this.resource.delete(id).$promise.then(this.handleSuccess_, this.handleError_('Error deleting topic'));
     },
 
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
-        return res.data;
+        return res;
     },
 
     handleError_: function handleError_(error) {

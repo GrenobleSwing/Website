@@ -1,4 +1,4 @@
-angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
+angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
     'ui.router',
     'ngMessages',
     'ui.grid',
@@ -36,21 +36,18 @@ angular.module('app', ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ngResource',
     'rorymadden.date-dropdowns'
   ])
   .config(['$stateProvider', '$urlRouterProvider', DefaultRouteConfig])
-  .config(['$translateProvider', TranslateConfiguration])
-  .run(['$rootScope', '$state', '$stateParams', 'authorizationService', 'identityService', run]);
+  .config(['$translateProvider', TranslateConfiguration]);
 
 function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('index', {
       abstract: true,
-      resolve: {
-        authorize: ['authorizationService',
-          function(authService) {
-            return authService.authorize();
-          }]
-      },
+      url: '/',
       views: {
         'nav@': {
+          template: ''
+        },
+        'content@': {
           template: ''
         }
       }
@@ -65,10 +62,13 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       },
       views: {
         'nav@': {
-          templateUrl: 'js/components/member-navigation/navbar.html',
+          templateUrl: 'components/member-navigation/navbar.html',
           controller: 'memberNavController',
           controllerAs: 'ctrl'
         }
+      },
+      data: {
+        requireLogin: true,
       }
     })
     .state('admin', {
@@ -81,17 +81,17 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       },
       views: {
         'nav@': {
-          templateUrl: 'js/components/admin-navigation/navbar.html',
+          templateUrl: 'components/admin-navigation/navbar.html',
           controller: 'adminNavController',
           controllerAs: 'ctrl'
         }
+      },
+      data: {
+        requireLogin: true,
       }
     })
     .state('accessdenied', {
       url: '/denied',
-      data: {
-        roles: []
-      },
       views: {
         'nav': {
           template: ''
@@ -99,6 +99,10 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
         'content@': {
           template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="index.home">Return home.</a></p></alert>'
         }
+      },
+      data: {
+        requireLogin: false,
+        roles: []
       }
     });
 
@@ -109,9 +113,11 @@ function run($rootScope, $state, $stateParams, authService, identityService) {
   $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
     $rootScope.toState = toState;
     $rootScope.toStateParams = toStateParams;
-
+    // console.info("requireLogin : " + toState.data.requireLogin);
     if (identityService.isIdentityResolved()) {
       authService.authorize();
     }
   });
 }
+
+angular.module('app').run(['$rootScope', '$state', '$stateParams', 'authorizationService', 'identityService', run]);

@@ -18,7 +18,7 @@ SubscriptionsListController.prototype = {
     },
 
     handleInitSuccess_ : function handleInitSuccess_(data) {
-      this.list = data;
+      this.list = angular.copy(data);
       this.originalList = angular.copy(data);
       return this.list;
     },

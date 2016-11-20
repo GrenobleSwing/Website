@@ -24,7 +24,7 @@ SubscriptionService.prototype = {
 
       this.subscriptionResource.getAll({userId: userId, yearId: "2016-2017"})
           .then(function(res) {
-              this.subscriptions = res;
+              this.subscriptions = angular.copy(res);
               deferred.resolve(this.subscriptions);
               return res;
           }, this.handleError_('Error retrieving subscriptions by User'));

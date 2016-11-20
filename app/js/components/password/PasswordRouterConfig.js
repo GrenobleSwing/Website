@@ -7,7 +7,7 @@ function PasswordRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          templateUrl: 'js/components/password/password.edit.html',
+          templateUrl: 'components/password/password.edit.html',
           controller: "passwordEditController",
           controllerAs: "ctrl"
         }
