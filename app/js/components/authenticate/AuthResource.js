@@ -12,7 +12,8 @@ AuthResource.prototype = {
     },
 
     authenticate: function authenticate(login, password) {
-        return this.http.post(this.config.apiUrl + '/api/auth/', {login: login, password: password}).then(this.handleSuccess_, this.handleError_('Error authenticating current user ' + login));
+        return this.http.post(this.config.apiUrl + '/api/auth/', {login: login, password: password});
+        // .then(this.handleSuccess_, this.handleError_('Error authenticating current user ' + login));
     },
 
     terminate: function terminate(identity) {

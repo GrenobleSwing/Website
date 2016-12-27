@@ -1,4 +1,5 @@
-function MainNavController($state, authenticationService, identityService) {
+function MainNavController($scope, $state, authenticationService, identityService) {
+  this.scope = $scope;
   this.state = $state;
   this.identityService = identityService;
   this.authenticationService = authenticationService;
@@ -12,8 +13,12 @@ function MainNavController($state, authenticationService, identityService) {
 MainNavController.prototype = {
 
   init_: function init_() {
-    this.identity = this.identityService.getIdentity().then(function(data) {
+    this.identityService.addListener(function(data) {
       this.identity = data;
+    }.bind(this), 'MainNavController');
+
+    this.scope.$on("$destroy", function() {
+        this.identityService.removeListener('MainNavController');
     }.bind(this));
   },
 
@@ -33,6 +38,6 @@ MainNavController.prototype = {
   logout: function logout() {
     this.authenticationService.clearCredentials();
     this.identityService.clearIdentity();
-    this.state.go('login');
+    this.state.go('index.login');
   }
 };

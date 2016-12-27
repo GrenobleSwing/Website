@@ -2,20 +2,31 @@
   <div class="col-md-4  col-md-offset-2 bg-info">
       <h4>{{'LOGIN.TITLE' | translate}}</h4>
       <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">
-          <div class="form-group" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
-              <label for="login" class="control-label">{{ 'ACCOUNT.EMAIL' | translate}}</label>
-              <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
-              <span ng-if="form.login.$dirty && form.login.$invalid"
-                    class="glyphicon glyphicon-remove form-control-feedback">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</span>
+          <div class="form-group row" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
+              <label for="login" class="col-sm-4 control-label">{{ 'ACCOUNT.EMAIL' | translate}}</label>
+              <div class="col-sm-8">
+                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" />
+                <small ng-if="form.login.$dirty && form.login.$invalid"
+                       class="has-error help-block">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</small>
+              </div>
           </div>
-          <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
-              <label for="password" class="control-label">{{ 'ACCOUNT.PASSWORD' | translate }}</label>
-              <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />
-              <span ng-if="form.password.$dirty && form.password.$error.required"
-                    class="glyphicon glyphicon-remove form-control-feedback">{{ 'ACCOUNT.PASSWORD_REQUIRED' | translate}}</span>
+          <div class="form-group row" ng-class="{ 'has-error': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">
+              <label for="password" class="col-sm-4 control-label">{{ 'ACCOUNT.PASSWORD' | translate }}</label>
+              <div class="col-sm-8">
+                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />
+                <small ng-if="form.password.$dirty && form.password.$error.required"
+                       class="has-error help-block">{{ 'ACCOUNT.PASSWORD_REQUIRED' | translate}}</small>
+                <small ng-if="ctrl.authFailed"
+                       class="has-error help-block">{{ 'ACCOUNT.PASSWORD_FAILED' | translate}}</small>
+              </div>
           </div>
-          <div class="form-actions">
+          <div class="form-actions row">
+            <div class="col-md-offset-1 col-sm-4">
               <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ 'ACTION.CONNECT' | translate}}</button>
+            </div>
+            <div class="col-md-offset-1 col-sm-4">
+              <a href="#/forgot-password" class="btn btn-link">{{ 'ACTION.FORGOT_PASSWORD' | translate}}</a>
+            </div>
           </div>
       </form>
   </div>

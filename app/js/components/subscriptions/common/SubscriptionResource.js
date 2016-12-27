@@ -5,7 +5,7 @@ function SubscriptionResource($resource, config) {
     'validate': { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },
-    'query':  { method:'GET', isArray:true },
+    'query':  { method:'GET', isArray:true, params: {'fields' : 'id,type,topicTitle,state'} },
     'delete': { method:'DELETE' }
   });
 
@@ -27,11 +27,11 @@ SubscriptionResource.prototype = {
   	 * }
   	 */
     getById: function getById(id) {
-        return this.resource.get({subscriptionId: id}).$promise.then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+        return this.resource.get({subscriptionId: id}).$promise;
     },
 
     getAmountByUserId: function getAmountByUserId(userId) {
-        return this.resource.getAmount(userId).$promise.then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+        return this.resource.getAmount(userId).$promise;
     },
 
     /**
@@ -43,7 +43,7 @@ SubscriptionResource.prototype = {
   	 * }, ...]
   	 */
 	  getAll: function getAll(params) {
-        return this.resource.query(params).$promise.then(this.handleSuccess_, this.handleError_('Error getting all subscriptions'));
+        return this.resource.query(params).$promise;
     },
 
     /**
@@ -55,11 +55,11 @@ SubscriptionResource.prototype = {
   	 * }, ...]
   	 */
     updateSubscriptions: function updateSubscriptions(subscriptions) {
-        return this.resource.update(subscriptions).success(this.handleSuccess_).error(this.handleError_('Error updating subscription'));
+        return this.resource.update(subscriptions);
     },
 
     updateSubscription: function updateSubscription(subscription) {
-        return this.resource.update(subscription).success(this.handleSuccess_).error(this.handleError_('Error updating subscription'));
+        return this.resource.update(subscription);
     },
 
     // private functions

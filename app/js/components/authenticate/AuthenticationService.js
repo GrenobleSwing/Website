@@ -14,7 +14,7 @@ AuthenticationService.prototype = {
     },
 
     login: function login(username, password) {
-      return this.authResource.authenticate(username, password).then(this.handleSuccess_, this.handleError_);
+      return this.authResource.authenticate(username, password).then(this.handleSuccess_);
     },
 
     clearCredentials : function clearCredentials() {
@@ -37,8 +37,8 @@ AuthenticationService.prototype = {
       this.cookies.put('globals', this.rootScope.globals, {expires: expirationDate});
 
       this.http.defaults.headers.common['Authorization'] = 'Basic ' + data.token; // jshint ignore:line
-      console.info("AuthenticationService#login#handleSuccess_");
-      console.info(data);
+      // console.info("AuthenticationService#login#handleSuccess_");
+      // console.info(data);
       return data;
     },
 

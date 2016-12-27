@@ -10,7 +10,7 @@
       <tr ng-repeat="subscription in ctrl.list | orderBy : 'id'">
         <td>{{subscription.topicTitle}}</td>
         <td>{{subscription.state}}</td>
-        <td>{{subscription.balance}}</td>
+        <td>{{subscription.amount}}</td>
       </tr>
     </table>
     <h4>Reste à payer: {{ctrl.total | currency : '€'}}</h4>

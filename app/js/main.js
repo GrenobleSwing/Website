@@ -33,7 +33,8 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
     'app.topic.list',
     'app.users',
     'pascalprecht.translate',
-    'rorymadden.date-dropdowns'
+    'rorymadden.date-dropdowns',
+    'sdt.models'
   ])
   .config(['$stateProvider', '$urlRouterProvider', DefaultRouteConfig])
   .config(['$translateProvider', TranslateConfiguration]);
@@ -90,7 +91,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
         requireLogin: true,
       }
     })
-    .state('accessdenied', {
+    .state('access-denied', {
       url: '/denied',
       views: {
         'nav': {
@@ -114,7 +115,7 @@ function run($rootScope, $state, $stateParams, authService, identityService) {
     $rootScope.toState = toState;
     $rootScope.toStateParams = toStateParams;
     // console.info("requireLogin : " + toState.data.requireLogin);
-    if (identityService.isIdentityResolved()) {
+    if (identityService.isAuthenticated()) {
       authService.authorize();
     }
   });

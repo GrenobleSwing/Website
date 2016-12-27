@@ -1,4 +1,4 @@
-function SubscriptionResource($resource, config) {
+function SubscriptionSummaryResource($resource, config) {
   this.resource = $resource(config.apiUrl + '/api/summary/:subscriptionId', {subscriptionId:'@id'}, {
     'get': { method:'GET' },
     'query':  { method:'GET', isArray:true },
@@ -7,7 +7,7 @@ function SubscriptionResource($resource, config) {
   this.init_();
 }
 
-SubscriptionResource.prototype = {
+SubscriptionSummaryResource.prototype = {
     init_ : function init_() {
         this.handleSuccess_ = this.handleSuccess_.bind(this);
         this.handleError_ = this.handleError_.bind(this);
@@ -22,7 +22,7 @@ SubscriptionResource.prototype = {
   	 * }
   	 */
     getById: function getById(id) {
-        return this.resource.get({subscriptionId: id}).$promise.then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+        return this.resource.get({subscriptionId: id}).$promise;
     },
 
     /**
@@ -34,7 +34,7 @@ SubscriptionResource.prototype = {
   	 * }, ...]
   	 */
 	  getAll: function getAll(params) {
-        return this.resource.query(params).$promise.then(this.handleSuccess_, this.handleError_('Error getting all subscriptions'));
+        return this.resource.query(params).$promise;
     },
 
     // private functions

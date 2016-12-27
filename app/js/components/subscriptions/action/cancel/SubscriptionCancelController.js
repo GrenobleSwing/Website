@@ -1,0 +1,7 @@
+function SubscriptionCancelController() {
+
+}
+
+SubscriptionCancelController.prototype = {
+
+};

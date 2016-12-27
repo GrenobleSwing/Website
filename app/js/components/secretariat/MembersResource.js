@@ -26,15 +26,15 @@ MembersResource.prototype = {
    * }
    */
   getById: function getById(id) {
-      return this.resource.get(id).then(this.handleSuccess_, this.handleError_('Error getting subscription by id'));
+      return this.resource.get(id).$promise;
   },
 
   getAll: function getAll(params) {
-      return this.resource.query(params).then(this.handleSuccess_, this.handleError_('Error getting all subscriptions'));
+      return this.resource.query(params).$promise;
   },
 
   update: function update(member) {
-      return this.resource.update(member).success(this.handleSuccess_).error(this.handleError_('Error updating subscription'));
+      return this.resource.update(member).$promise;
   },
 
   // private functions

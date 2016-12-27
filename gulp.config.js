@@ -31,7 +31,7 @@ module.exports = {
       'app/index.html'
     ],
     styles: [
-      'app/styles/main.css'
+      'app/styles/**.*'
     ]
   },
   lib_files: {
@@ -48,7 +48,7 @@ module.exports = {
       'bower_components/bootstrap/js/bootstrap.js',
     ],
     styles: [
-      'bower_components/bootstrap/dist/css/bootstrap.css',
+      // 'bower_components/bootstrap/dist/css/bootstrap.css',
       'bower_components/angular-ui-grid/ui-grid.css',
       'bower_components/angular-ui-grid/ui-grid.ttf',
       'bower_components/angular-ui-grid/ui-grid.woff'

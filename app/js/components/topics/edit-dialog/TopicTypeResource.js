@@ -13,7 +13,7 @@ BalanceResource.prototype = {
     },
 
 	  getAll: function getAll() {
-        return this.resource.query().then(this.handleSuccess_, this.handleError_('Error getting all subscriptions'));
+        return this.resource.query().$promise;
     },
 
     // private functions

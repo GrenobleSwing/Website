@@ -24,7 +24,10 @@ function TranslateConfiguration($translateProvider) {
       'LEADER': 'Leader',
       'MALE' : 'Homme',
       'PASSWORD': 'Mot de passe',
-      'PASSWORD_REQUIRED': 'Le mot de passe est requis',
+      'PASSWORD_NEW': 'Nouveau mot de passe',
+      'PASSWORD_OLD': 'Ancien mot de passe',
+      'PASSWORD_REQUIRED': 'Le mot de passe est requis.',
+      'PASSWORD_FAILED': 'Le mot de passe est erroné. Veuillez réessayer.',
       'PASSWORD_CONFIRM': 'Confirmation du mot de passe',
       'PASSWORD_CONFIRM_REQUIRED': 'Le mot de passe est erroné',
       'PHONE': 'Téléphone',
@@ -55,8 +58,12 @@ function TranslateConfiguration($translateProvider) {
       'CONNECT' : 'Ouvrir une session',
       'SIGNUP' : 'Continuer',
       'CHANGE' : 'Modifier',
-      'CANCEL' : 'Annuler'
-    }
+      'CANCEL' : 'Annuler',
+      'FORGOT_PASSWORD' : 'Mot de passe oublié ?'
+    },
+    'waiting_for_payment' : 'En attente de paiement',
+    'paid' : 'Payé',
+    'unpicked' : ''
   });
   $translateProvider.useSanitizeValueStrategy(null);
   $translateProvider.preferredLanguage('fr');

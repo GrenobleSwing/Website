@@ -31,7 +31,7 @@ FakeSummaryResource.prototype = {
 
       var sum = 0;
       angular.forEach(filtered,function(value){
-          sum = sum + parseInt(value.balance);
+          sum = sum + parseInt(value.amount);
       });
       deferred.resolve(sum);
       return deferred.promise;

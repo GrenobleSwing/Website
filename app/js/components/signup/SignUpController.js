@@ -19,6 +19,6 @@ SignUpController.prototype = {
     },
 
     handleResponse_ : function handleResponse_(response) {
-        this.state.go('login');
+        this.state.go('index.login');
     }
 };
