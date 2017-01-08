@@ -13,6 +13,7 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
     'app.common',
     'app.config',
     'app.home',
+    'app.http',
     'app.identity',
     'app.invoice.request',
     'app.login',
@@ -114,7 +115,6 @@ function run($rootScope, $state, $stateParams, authService, identityService) {
   $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
     $rootScope.toState = toState;
     $rootScope.toStateParams = toStateParams;
-    // console.info("requireLogin : " + toState.data.requireLogin);
     if (identityService.isAuthenticated()) {
       authService.authorize();
     }

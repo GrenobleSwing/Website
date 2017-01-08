@@ -17,12 +17,12 @@
       <div class="row">
         <p>Requiert :</p>
         <span class="col-md-12">
-            <div ng-if="ctrl.subscription.requiredSubscriptions.length > 0">
-              <ul ng-repeat="item in ctrl.subscription.requiredSubscriptions">
-                <li>{{item.topicTitle}}</li>
+            <div ng-if="ctrl.subscription.requirements.length > 0">
+              <ul ng-repeat="item in ctrl.subscription.requirements">
+                <li>{{item.title}}</li>
               </ul>
             </div>
-            <div ng-if="ctrl.subscription.requiredSubscriptions.length === 0">
+            <div ng-if="ctrl.subscription.requirements.length === 0">
               <ul><li>aucun pré-requis</li></ul>
             </div>
         </span>

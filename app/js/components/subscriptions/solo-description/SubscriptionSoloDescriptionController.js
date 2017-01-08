@@ -30,8 +30,8 @@ SubscriptionSoloDescriptionController.prototype = {
 
     this.subscriptionService.saveSubscription(this.subscription);
 
-    for (var i = 0; i < this.subscription.requiredSubscriptions.length; i++) {
-      this.subscriptionObservableService.notifyListeners(this.subscription.requiredSubscriptions[i]);
+    for (var i = 0; i < this.subscription.requirements.length; i++) {
+      this.subscriptionObservableService.notifyListeners(this.subscription.requirements[i]);
     }
   },
 
