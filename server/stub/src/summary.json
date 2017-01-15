@@ -1,0 +1,122 @@
+[{
+  "id" : 1,
+  "topicId" : 1,
+  "topicTitle" : "Adhésion année 2015-2016",
+  "userId" : 1,
+  "description" : "Permet de devenir membre de l'association GrenobleSwing pour l'année 2015-2016",
+  "amount": 0,
+  "selected": true,
+  "yearId": "2015-2016",
+  "state": "paid",
+  "type":"subscribe"
+}, {
+  "id" : 2,
+  "topicId" : 1,
+  "topicTitle" : "Adhésion année 2015-2016",
+  "description" : "Permet de devenir membre de l'association GrenobleSwing pour l'année 2015-2016",
+  "userId" : 2,
+  "amount": 0,
+  "selected": true,
+  "yearId": "2015-2016",
+  "state": "paid",
+  "type":"subscribe"
+}, {
+  "id" : 3,
+  "topicId" :2,
+  "topicTitle" : "Adhésion année 2016-2017",
+  "description" : "Permet de devenir membre de l'association GrenobleSwing pour l'année 2016-2017",
+  "userId" : 2,
+  "amount": 10,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "type":"subscribe"
+}, {
+  "id" : 4,
+  "topicId" : 3,
+  "topicTitle" : "Cours niveau 1 année 2016-2017",
+  "description" : "Cours débutant les mercredis, de 20h30 à 21h30, à Danse Théâtre, avec Ludo et Aurore",
+  "userId" : 2,
+  "amount": 190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "type":"duet"
+}, {
+  "id" : 5,
+  "topicId" : 4,
+  "topicTitle" : "Cours niveau 2 année 2016-2017",
+  "description" : "Cours intermédiaire les mardis, de 21h30 à 22h30, à Studio Soanne, avec X et Y",
+  "userId" : 2,
+  "amount": 190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "type":"duet"
+}, {
+  "id" : 6,
+  "topicId" : 1,
+  "topicTitle" : "Adhésion année 2015-2016",
+  "description" : "Permet de devenir membre de l'association GrenobleSwing pour l'année 2015-2016",
+  "userId" : 1,
+  "amount": 0,
+  "selected": true,
+  "yearId": "2015-2016",
+  "state": "paid",
+  "type":"subscribe"
+}, {
+  "id" : 7,
+  "topicId" :2,
+  "topicTitle" : "Adhésion année 2016-2017",
+  "description" : "Permet de devenir membre de l'association GrenobleSwing pour l'année 2016-2017",
+  "userId" : 1,
+  "amount": 10,
+  "selected": true,
+  "yearId": "2016-2017",
+  "state": "waiting_for_payment",
+  "type":"subscribe"
+}, {
+  "id" : 8,
+  "topicId" : 3,
+  "topicTitle" : "Cours niveau 1 année 2016-2017",
+  "description" : "Cours débutant les mercredis, de 20h30 à 21h30, à Danse Théâtre, avec Ludo et Aurore",
+  "userId" : 1,
+  "amount": 190,
+  "selected": true,
+  "yearId": "2016-2017",
+  "state": "waiting_for_payment",
+  "type":"duet"
+}, {
+  "id" : 9,
+  "topicId" : 4,
+  "topicTitle" : "Cours niveau 2 année 2016-2017",
+  "description" : "Cours intermédiaire les mardis, de 21h30 à 22h30, à Studio Soanne, avec X et Y",
+  "userId" : 1,
+  "amount": 190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "type":"duet"
+}, {
+  "id" : 10,
+  "topicId" : 4,
+  "topicTitle" : "Jazz Root niveau 2 année 2016-2017",
+  "description" : "Cours Solo les mardis, de 21h30 à 22h30, à Studio Soanne, avec X",
+  "userId" : 1,
+  "amount": 190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "type":"solo"
+}, {
+  "id" : 11,
+  "topicId" : 4,
+  "topicTitle" : "Jazz Root niveau 2 année 2016-2017",
+  "description" : "Cours Solo les mardis, de 21h30 à 22h30, à Studio Soanne, avec X",
+  "userId" : 2,
+  "amount": 190,
+  "selected": false,
+  "yearId": "2016-2017",
+  "state": "unpicked",
+  "type":"solo"
+}]

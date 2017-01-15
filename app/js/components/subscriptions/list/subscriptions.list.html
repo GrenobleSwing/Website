@@ -1,25 +1,34 @@
 <div ng-repeat="subscription in ctrl.list | orderBy : 'id'" class="col-md-8 col-md-offset-2">
-    <uib-accordion>
-      <div uib-accordion-group>
-        <uib-accordion-heading>
-          <div class="panel-header row">
-            <span class="col-md-8">
-              <a href ng-click="ctrl.openDescription(subscription)">{{subscription.topicTitle}}</a>
-            </span>
-            <span class="col-md-3">
-              <span ng-if="!!subscription.selected"
-                class="alert"
-                ng-class="{'alert-success' : subscription.state == 'paid', 'alert-warning' : subscription.state == 'waiting_for_payment'}">{{subscription.state translate}}</span>
-            </span>
-            <span class="col-md-1">
-              <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': !!subscription.isOpen, 'glyphicon-chevron-right': !subscription.isOpen}"></i>
-            </span>
+  <div class="panel-header row">
+    <span class="col-md-8">
+      <uib-accordion>
+        <div uib-accordion-group>
+          <uib-accordion-heading>
+            <div class="panel-header row">
+              <span class="col-md-8">
+                <a href ng-click="ctrl.openDescription(subscription)">{{subscription.topicTitle}}</a>
+              </span>
+              <span class="col-md-3">
+                <span ng-if="!!subscription.selected"
+                  class="alert"
+                  ng-class="{'alert-success' : subscription.state == 'paid', 'alert-warning' : subscription.state == 'waiting_for_payment'}">{{subscription.state translate}}</span>
+              </span>
+              <span class="col-md-1">
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': !!subscription.isOpen, 'glyphicon-chevron-right': !subscription.isOpen}"></i>
+              </span>
+            </div>
+          </uib-accordion-heading>
+          <div class="panel-collapse collapse" uib-collapse="!subscription.isOpen">
+            <div gs-subscription-duet-description data-subscription="subscription" ng-if="subscription.type === 'duet'"></div>
+            <div gs-subscription-solo-description data-subscription="subscription" ng-if="subscription.type !== 'duet'"></div>
           </div>
-        </uib-accordion-heading>
-        <div class="panel-collapse collapse" uib-collapse="!subscription.isOpen">
-          <div gs-subscription-duet-description data-subscription="subscription" ng-if="subscription.type === 'duet'"></div>
-          <div gs-subscription-solo-description data-subscription="subscription" ng-if="subscription.type !== 'duet'"></div>
         </div>
-      </div>
-    </uib-accordion>
+      </uib-accordion>
+    </span>
+    <span class="col-md-4">
+      <div gs-subscription-add    data-subscription="subscription"></div>
+      <div gs-subscription-update data-subscription="subscription"></div>
+      <div gs-subscription-cancel data-subscription="subscription"></div>
+    </span>
+  </div>
 </div>

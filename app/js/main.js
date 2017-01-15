@@ -112,6 +112,13 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
 }
 
 function run($rootScope, $state, $stateParams, authService, identityService) {
+  identityService.getIdentity(true).then(function(data) {
+
+  }, function(error) {
+    identityService.clearIdentity();
+    $state.go('login');
+  });
+
   $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
     $rootScope.toState = toState;
     $rootScope.toStateParams = toStateParams;

@@ -1,0 +1,13 @@
+  {
+   "id" : 1,
+   "userId" : 1,
+   "firstName": "Jack",
+   "lastName": "Smith",
+   "login": "jack.smith@test.com",
+   "age": 25,
+   "streetAddress": "21 2nd Street",
+   "city": "New York",
+   "state": "NY",
+   "postalCode": "10021",
+   "preferredRole": "lead"
+ }

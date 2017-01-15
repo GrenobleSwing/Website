@@ -1,12 +1,12 @@
 function SubscriptionAddController($scope, $modal, subscriptionService) {
-  this.scope = $scope;
+  this.subscription = $scope.subscription;
   this.modal = $modal;
   this.subscriptionService = subscriptionService;
 }
 
 SubscriptionAddController.prototype = {
   validateSubscription : function validateSubscription() {
-    var subscription = this.scope.subscription;
+    var subscription = this.subscription;
     if (subscription.type == 'solo') {
       this.validateSoloSubscription_(subscription);
     } else {

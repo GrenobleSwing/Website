@@ -2,7 +2,7 @@ function HttpInterceptor($q, $location) {
   return {
     'response': function(response) {
         if (response.status === 401) {
-            $location.path('/signin');
+            $location.path('/login');
             return $q.reject(response);
         }
         return response || $q.when(response);
@@ -16,6 +16,5 @@ function HttpInterceptor($q, $location) {
         }
         return $q.reject(rejection);
     }
-
-    };
+  };
 }

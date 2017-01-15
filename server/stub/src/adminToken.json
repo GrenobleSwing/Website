@@ -1,0 +1,6 @@
+{
+  "id" : 3,
+  "login": "admin@test.com",
+  "token": "Ouaich ! Man !",
+  "expires_in": 86400
+}

@@ -36,14 +36,6 @@
           <a class="btn btn-primary" role="button" disabled>{{ctrl.subscription.state | translate}}</a>
         </span>
       </div>
-      <div class="row">
-        <span ng-if="!ctrl.subscription.selected">
-          <a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()">ajouter</a>
-        </span>
-        <span ng-if="ctrl.subscription.selected && ctrl.subscription.state == 'waiting_for_payment'">
-          <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isCancellable()" ng-click="ctrl.cancelSubscription()"><i class="glyphicon glyphicon-trash"></i> supprimer</a>
-        </span>
-      </div>
     </span>
   </div>
 </div>
