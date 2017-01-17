@@ -1,0 +1,27 @@
+[{
+   "classId" : 2,
+   "name" : "Ludo",
+   "type" : "leader",
+   "partner" : "Aurore"
+}, {
+    "classId" : 2,
+    "name" : "Aurore",
+    "type" : "follower",
+    "partner" : "Ludo"
+}, {
+   "classId" : 2,
+   "name" : "X",
+   "type" : "leader"
+}, {
+    "classId" : 2,
+    "name" : "Y",
+    "type" : "follower"
+}, {
+   "classId" : 1,
+   "name" : "A",
+   "type" : "leader"
+}, {
+    "classId" : 1,
+    "name" : "B",
+    "type" : "follower"
+}]

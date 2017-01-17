@@ -1,0 +1,7 @@
+function StudentsListController() {
+
+}
+
+StudentsListController.prototype = {
+
+};

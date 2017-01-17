@@ -50,7 +50,7 @@
   "requirements": [{
     "id" : 3,
     "topicId" :2,
-    "topicTitle" : "Adhésion année 2016-2017",
+    "title" : "Adhésion année 2016-2017",
     "type": "membership"
   }],
   "type":"duet"
@@ -69,7 +69,7 @@
   "requirements": [{
     "id" : 3,
     "topicId" :2,
-    "topicTitle" : "Adhésion année 2016-2017",
+    "title" : "Adhésion année 2016-2017",
     "type": "membership"
   }, {
     "title" : "au minimum 1 an de lindy hop",

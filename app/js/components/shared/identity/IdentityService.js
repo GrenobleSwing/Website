@@ -59,12 +59,12 @@ IdentityService.prototype = {
 
     var deferred = this.q.defer();
 
-    if (force === true) {
-      this.clearIdentity();
-    }
+    // if (force === true) {
+    //   this.clearIdentity();
+    // }
 
     // check and see if we have retrieved the identity data from the server. if we have, reuse it by immediately resolving
-    if (this.isAuthenticated()) {
+    if (this.isAuthenticated() && !force) {
       // console.info("IdentityService#getIdentity 2");
       deferred.resolve(this.getIdentity_());
 

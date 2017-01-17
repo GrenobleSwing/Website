@@ -9,6 +9,8 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
     'app.admin.secretariat',
     'app.admin.treasury',
     'app.auth',
+    'app.classes.common',
+    'app.classes.list',
     'app.cnil',
     'app.common',
     'app.config',
@@ -22,6 +24,8 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
     'app.member.nav',
     'app.password',
     'app.signup',
+    'app.students.common',
+    'app.students.list',
     'app.subscriptions.common',
     'app.subscriptions.list',
     'app.subscriptions.description.duet',
@@ -57,9 +61,11 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
     .state('member', {
       abstract: true,
       resolve: {
-        authorize: ['authorizationService',
-          function(authService) {
-            return authService.authorize();
+        authorize: ['authorizationService', '$state',
+          function(authService, $state) {
+            return authService.authorize().catch(function() {
+              $state.go('logout');
+            });
           }]
       },
       views: {
@@ -76,9 +82,11 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
     .state('admin', {
       abstract: true,
       resolve: {
-        authorize: ['authorizationService',
-          function(authService) {
-            return authService.authorize();
+        authorize: ['authorizationService', '$state',
+          function(authService, $state) {
+            return authService.authorize().catch(function() {
+              $state.go('logout');
+            });
           }]
       },
       views: {
