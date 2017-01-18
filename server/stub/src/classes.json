@@ -1,7 +1,10 @@
-  [{
-   "id" : 1,
-   "label": "Cours niveau 1 année 2016-2017, étudiants sur le campus"
- }, {
-    "id" : 2,
-    "label": "Cours niveau 2 année 2016-2017, les mercredis à l'école du Rondeau"
-  }]
+[
+    {
+       "id" : 1,
+       "label": "Cours niveau 1 année 2016-2017, étudiants sur le campus"
+    },
+    {
+        "id" : 2,
+        "label": "Cours niveau 2 année 2016-2017, les mercredis à l'école du Rondeau"
+    }
+]

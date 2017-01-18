@@ -16,6 +16,13 @@ API allowing the management of members, and their registration.
             "token": "abcdef0123456789"
         }
 
++ Response 400 (application/json)
+
+        {
+            "errorCode": "BAD_REQUEST",
+            "message": "to be defined"
+        }
+
 ## Identity [/api/identity]
 
 ### Retrieve current identity [GET]
@@ -27,11 +34,18 @@ API allowing the management of members, and their registration.
             "login": "example@test.com"
         }
 
++ Response 400 (application/json)
+
+        {
+            "errorCode": "BAD_REQUEST",
+            "message": "to be defined"
+        }
+
 + Response 401 (application/json)
 
         {
-            "user_id": 1234,
-            "login": "example@test.com"
+            "errorCode": "UNAUTHORIZED",
+            "message": "to be defined"
         }
 
 ## Account [/api/account]
@@ -192,7 +206,7 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "unpicked",
               "requiredTopicId" : 0,
-              "requiredSubscriptions": [],
+              "requirements": [],
               "type":"subscribe"
             }, {
               "id" : 4,
@@ -205,10 +219,10 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "unpicked",
               "requiredTopicId" : 2,
-              "requiredSubscriptions": [{
+              "requirements": [{
                 "id" : 3,
                 "topicId" :2,
-                "topicTitle" : "Adhésion année 2016-2017"
+                "title" : "Adhésion année 2016-2017"
               }],
               "type":"duet"
             }, {
@@ -223,7 +237,7 @@ API allowing the management of members, and their registration.
               "state": "unpicked",
               "requiredTopicId" : 2,
               "type":"duet",
-              "requiredSubscriptions": [{
+              "requirements": [{
                 "id" : 3,
                 "topicId" :2,
                 "topicTitle" : "Adhésion année 2016-2017"
@@ -251,7 +265,7 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "waiting_for_payment",
               "type":"subscribe",
-              "requiredSubscriptions": []
+              "requirements": []
             }, {
               "id" : 8,
               "topicId" : 3,
@@ -263,10 +277,10 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "waiting_for_payment",
               "type":"duet",
-              "requiredSubscriptions": [{
+              "requirements": [{
                 "id" : 7,
                 "topicId" :2,
-                "topicTitle" : "Adhésion année 2016-2017"
+                "title" : "Adhésion année 2016-2017"
               }]
             }, {
               "id" : 9,
@@ -279,10 +293,10 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "unpicked",
               "type":"duet",
-              "requiredSubscriptions": [{
+              "requirements": [{
                 "id" : 7,
                 "topicId" :2,
-                "topicTitle" : "Adhésion année 2016-2017"
+                "title" : "Adhésion année 2016-2017"
               }]
             }, {
               "id" : 10,
@@ -295,10 +309,10 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "unpicked",
               "type":"solo",
-              "requiredSubscriptions": [{
+              "requirements": [{
                 "id" : 7,
                 "topicId" :2,
-                "topicTitle" : "Adhésion année 2016-2017"
+                "title" : "Adhésion année 2016-2017"
               }]
             }, {
               "id" : 11,
@@ -311,10 +325,10 @@ API allowing the management of members, and their registration.
               "yearId": "2016-2017",
               "state": "unpicked",
               "type":"solo",
-              "requiredSubscriptions": [{
+              "requirements": [{
                 "id" : 3,
                 "topicId" :2,
-                "topicTitle" : "Adhésion année 2016-2017"
+                "title" : "Adhésion année 2016-2017"
               }]
             }
         ]
@@ -334,11 +348,6 @@ API allowing the management of members, and their registration.
           "yearId": "2016-2017",
           "state": "unpicked",
           "requiredTopicId" : 2,
-          "requiredSubscriptions": [{
-            "id" : 3,
-            "topicId" :2,
-            "topicTitle" : "Adhésion année 2016-2017"
-          }],
           "type":"duet"
         }
 
@@ -566,3 +575,60 @@ API allowing the management of members, and their registration.
             }
 
 + Response 200 (application/json)
+
+## Classes  [/api/class]
+
+### Retrieve a list of classes [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+               "id" : 1,
+               "label": "Cours niveau 1 année 2016-2017, étudiants sur le campus"
+            },
+            {
+                "id" : 2,
+                "label": "Cours niveau 2 année 2016-2017, les mercredis à l'école du Rondeau"
+            }
+        ]
+## Students  [/api/student]
+
+### Retrieve a list of students [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+               "classId" : 2,
+               "name" : "Ludo",
+               "type" : "leader",
+               "partner" : "Aurore"
+            },
+            {
+                "classId" : 2,
+                "name" : "Aurore",
+                "type" : "follower",
+                "partner" : "Ludo"
+            },
+            {
+               "classId" : 2,
+               "name" : "X",
+               "type" : "leader"
+            },
+            {
+                "classId" : 2,
+                "name" : "Y",
+                "type" : "follower"
+            },
+            {
+               "classId" : 1,
+               "name" : "A",
+               "type" : "leader"
+            },
+            {
+                "classId" : 1,
+                "name" : "B",
+                "type" : "follower"
+            }
+        ]
