@@ -9,7 +9,7 @@
       </tr>
       <tr ng-repeat="subscription in ctrl.list | orderBy : 'id'">
         <td>{{subscription.topicTitle}}</td>
-        <td>{{subscription.state}}</td>
+        <td>{{subscription.state | translate }}</td>
         <td>{{subscription.amount}}</td>
       </tr>
     </table>

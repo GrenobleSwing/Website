@@ -12,8 +12,7 @@ function StudentResource($resource, config) {
 
 StudentResource.prototype = {
     init_ : function init_() {
-        this.handleSuccess_ = this.handleSuccess_.bind(this);
-        this.handleError_ = this.handleError_.bind(this);
+
     },
 
     /**

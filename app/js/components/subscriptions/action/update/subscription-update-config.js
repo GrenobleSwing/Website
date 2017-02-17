@@ -1,3 +1,3 @@
 angular.module('app.subscriptions.actions.update', ['ui.bootstrap', 'app.subscriptions.common'])
-    .controller('subscriptionUpdateController', ['$scope', '$modal', 'subscriptionService', SubscriptionUpdateController])
+    .controller('subscriptionUpdateController', ['$scope', '$uibModal', 'subscriptionService', SubscriptionUpdateController])
     .directive('gsSubscriptionUpdate', SubscriptionUpdateDirective);

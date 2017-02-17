@@ -1,6 +1,6 @@
 function SubscriptionDuetDescriptionDirective() {
   return {
-    truc: 'AE',
+    restrict: 'AE',
     require: '^subscriptionsListDirective',
     templateUrl: 'components/subscriptions/duet-description/subscription.description.html',
     controller: 'subscriptionDuetDescriptionController',

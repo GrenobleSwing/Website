@@ -1,6 +1,6 @@
 function SubscriptionSoloDescriptionDirective() {
   return {
-    truc: 'AE',
+    restrict: 'AE',
     require: '^subscriptionsListDirective',
     templateUrl: 'components/subscriptions/solo-description/subscription.description.html',
     controller: 'subscriptionSoloDescriptionController',

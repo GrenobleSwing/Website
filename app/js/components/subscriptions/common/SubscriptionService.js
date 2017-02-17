@@ -37,8 +37,8 @@ SubscriptionService.prototype = {
           .then(this.handleSuccess_, this.handleError_('Error retrieving subscriptions by User'));
     },
 
-    cancelSubscription: function cancelSubscription(userId, topicId) {
-      return this.subscriptionResource.remove({userId: userId, topicId: topicId})
+    cancelSubscription: function cancelSubscription(subscription) {
+      return this.subscriptionResource.removeSubscription(subscription)
         .then(this.handleSuccess_, this.handleError_('Error cancelling subscription'));
     },
 

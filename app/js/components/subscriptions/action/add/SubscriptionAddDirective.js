@@ -1,8 +1,9 @@
 function SubscriptionAddDirective() {
   return {
-    truc: 'AE',
-    template: '<span ng-if="!ctrl.subscription.selected"><a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()">ajouter</a></span>',
+    restrict: 'AE',
+    template: '<span ng-if="!ctrl.subscription.selected"><a class="btn btn-primary" role="button" ng-click="ctrl.validateSubscription()"><i class="glyphicon glyphicon-plus-sign"></a></span>',
     controller: 'subscriptionAddController',
+    controllerAs: 'ctrl',
     scope : {
       subscription: "="
     }

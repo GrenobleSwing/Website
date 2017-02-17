@@ -14,8 +14,7 @@ function SubscriptionResource($resource, config) {
 
 SubscriptionResource.prototype = {
     init_ : function init_() {
-        this.handleSuccess_ = this.handleSuccess_.bind(this);
-        this.handleError_ = this.handleError_.bind(this);
+
     },
 
     /**
@@ -55,21 +54,14 @@ SubscriptionResource.prototype = {
   	 * }, ...]
   	 */
     updateSubscriptions: function updateSubscriptions(subscriptions) {
-        return this.resource.update(subscriptions);
+        return this.resource.update(subscriptions).$promise;
     },
 
     updateSubscription: function updateSubscription(subscription) {
-        return this.resource.update(subscription);
+        return this.resource.update(subscription).$promise;
     },
 
-    // private functions
-    handleSuccess_ : function handleSuccess_(data) {
-        return data;
-    },
-
-    handleError_: function handleError_(error) {
-        return function () {
-            return { success: false, message: error };
-        };
+    removeSubscription: function removeSubscription(subscription) {
+        return this.resource.remove({subscriptionId: subscription.id}).$promise;
     }
 };

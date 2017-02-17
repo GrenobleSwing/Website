@@ -30,6 +30,10 @@ UserService.prototype = {
         return this.usersResource.remove(id).then(this.handleSuccess_, this.handleError_('Error deleting user'));
     },
 
+    resetPassword : function resetPassword(email) {
+      return this.usersResource.reset(email);
+    },
+
     // private functions
     handleSuccess_ : function handleSuccess_(res) {
         res.$ok = true;

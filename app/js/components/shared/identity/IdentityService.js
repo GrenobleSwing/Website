@@ -55,7 +55,7 @@ IdentityService.prototype = {
   },
 
   getIdentity: function getIdentity(force) {
-    // console.info("IdentityService#getIdentity 1");
+    console.info("IdentityService#getIdentity 1");
 
     var deferred = this.q.defer();
 
@@ -65,28 +65,28 @@ IdentityService.prototype = {
 
     // check and see if we have retrieved the identity data from the server. if we have, reuse it by immediately resolving
     if (this.isAuthenticated() && !force) {
-      // console.info("IdentityService#getIdentity 2");
+      console.info("IdentityService#getIdentity 2");
       deferred.resolve(this.getIdentity_());
 
       return deferred.promise;
     }
 
-    // console.info("IdentityService#getIdentity 3");
+    console.info("IdentityService#getIdentity 3");
 
     // otherwise, retrieve the identity data from the server, update the identity object, and then resolve.
     this.identityResource.getCurrentUser().then(
       function(data) {
-        // console.info("IdentityService#getIdentity success");
-        // console.info(data);
+        console.info("IdentityService#getIdentity success");
+        console.info(data);
         var identity = angular.copy(data.data);
         identity.$ok = true;
         this.setIdentity_(identity);
         deferred.resolve(identity);
       }.bind(this), function () {
-        // console.info("IdentityService#getIdentity error");
+        console.info("IdentityService#getIdentity error");
 
         this.clearIdentity();
-        deferred.resolve(this.identity);
+        deferred.reject(this.identity);
       }.bind(this))
       .finally(function() {
         this.observerService.notify('change-user', this.getIdentity_());

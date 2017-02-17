@@ -1,0 +1,3 @@
+function SubscriptionPaidDirective() {
+  return {};
+}

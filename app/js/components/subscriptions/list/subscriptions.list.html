@@ -1,20 +1,22 @@
-<div ng-repeat="subscription in ctrl.list | orderBy : 'id'" class="col-md-8 col-md-offset-2">
+<div ng-repeat="subscription in ctrl.list | orderBy : 'id'" class="col-md-12">
   <div class="panel-header row">
     <span class="col-md-8">
       <uib-accordion>
         <div uib-accordion-group>
           <uib-accordion-heading>
             <div class="panel-header row">
-              <span class="col-md-8">
+              <span class="col-md-6">
                 <a href ng-click="ctrl.openDescription(subscription)">{{subscription.topicTitle}}</a>
               </span>
-              <span class="col-md-3">
+              <span class="col-md-5">
                 <span ng-if="!!subscription.selected"
                   class="alert"
-                  ng-class="{'alert-success' : subscription.state == 'paid', 'alert-warning' : subscription.state == 'waiting_for_payment'}">{{subscription.state translate}}</span>
+                  ng-class="{'alert-success' : subscription.state == 'paid', 'alert-warning' : subscription.state == 'waiting_for_payment'}">{{subscription.state | translate}}</span>
               </span>
               <span class="col-md-1">
-                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': !!subscription.isOpen, 'glyphicon-chevron-right': !subscription.isOpen}"></i>
+                <a href ng-click="ctrl.openDescription(subscription)">
+                  <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': !subscription.isOpen, 'glyphicon-chevron-right': !!subscription.isOpen}"></i>
+                </a>
               </span>
             </div>
           </uib-accordion-heading>
@@ -26,9 +28,9 @@
       </uib-accordion>
     </span>
     <span class="col-md-4">
-      <div gs-subscription-add    data-subscription="subscription"></div>
-      <div gs-subscription-update data-subscription="subscription"></div>
-      <div gs-subscription-cancel data-subscription="subscription"></div>
+      <span gs-subscription-add    data-subscription="subscription"></span>
+      <span gs-subscription-update data-subscription="subscription"></span>
+      <span gs-subscription-cancel data-subscription="subscription"></span>
     </span>
   </div>
 </div>

@@ -1,10 +1,7 @@
 function ClassResource($resource, config) {
   this.resource = $resource(config.apiUrl + '/api/class/:classId', {classId:'@id'}, {
     'get': { method:'GET' },
-    'create': { method:'POST' },
-    'update': { method:'PUT' },
-    'query':  { method:'GET', isArray:true, params: {'fields' : 'id,label'} },
-    'delete': { method:'DELETE' }
+    'query':  { method:'GET', isArray:true, params: {'fields' : 'id,label'} }
   });
 
   this.init_();
@@ -12,8 +9,7 @@ function ClassResource($resource, config) {
 
 ClassResource.prototype = {
     init_ : function init_() {
-        this.handleSuccess_ = this.handleSuccess_.bind(this);
-        this.handleError_ = this.handleError_.bind(this);
+
     },
 
     /**
