@@ -1,5 +1,5 @@
 function SubscriptionResource($resource, config) {
-  this.resource = $resource(config.apiUrl + '/api/subscription/:subscriptionId', {subscriptionId:'@id'}, {
+  this.resource = $resource(config.apiUrl + '/subscription/:subscriptionId', {subscriptionId:'@id'}, {
     'get': { method:'GET' },
     'getAmount': { method:'GET' },
     'validate': { method:'GET' },

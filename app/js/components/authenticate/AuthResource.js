@@ -12,12 +12,12 @@ AuthResource.prototype = {
     },
 
     authenticate: function authenticate(login, password) {
-        return this.http.post(this.config.apiUrl + '/api/auth/', {login: login, password: password});
+        return this.http.post(this.config.apiUrl + '/auth/', {login: login, password: password});
         // .then(this.handleSuccess_, this.handleError_('Error authenticating current user ' + login));
     },
 
     terminate: function terminate(identity) {
-        return this.http.post(this.config.apiUrl + '/api/logout/', {login: identity.login}).then(this.handleSuccess_, this.handleError_('Error disconnecting current user ' + identity.login));
+        return this.http.post(this.config.apiUrl + '/logout/', {login: identity.login}).then(this.handleSuccess_, this.handleError_('Error disconnecting current user ' + identity.login));
     },
 
     // private functions

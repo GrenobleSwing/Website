@@ -19,7 +19,7 @@ UsersResource.prototype = {
      * }
   	 */
     getById: function getById(id) {
-        return this.http.get(this.config.apiUrl + '/api/user/' + id).$promise;
+        return this.http.get(this.config.apiUrl + '/user/' + id).$promise;
     },
 
     /**
@@ -31,7 +31,7 @@ UsersResource.prototype = {
      * }
      */
     getByUsername: function getByUsername(username) {
-        return this.http.get(this.config.apiUrl + '/api/user/' + username).$promise;
+        return this.http.get(this.config.apiUrl + '/user/' + username).$promise;
     },
 
     /**
@@ -43,7 +43,7 @@ UsersResource.prototype = {
      * }, ...
      */
 	  getAll: function getAll() {
-        return this.http.get(this.config.apiUrl + '/api/users').$promise;
+        return this.http.get(this.config.apiUrl + '/users').$promise;
     },
 
     /**
@@ -54,7 +54,7 @@ UsersResource.prototype = {
      * }
      */
     create: function create(user) {
-        return this.http.post(this.config.apiUrl + '/api/user', user).$promise;
+        return this.http.post(this.config.apiUrl + '/user', user).$promise;
     },
 
     /**
@@ -66,7 +66,7 @@ UsersResource.prototype = {
      * }
      */
     update: function update(user) {
-        return this.http.put(this.config.apiUrl + '/api/user/' + user.id, user).$promise;
+        return this.http.put(this.config.apiUrl + '/user/' + user.id, user).$promise;
     },
 
     /**
@@ -74,6 +74,6 @@ UsersResource.prototype = {
   	 * @param id user's identifier
   	 */
     remove: function remove(id) {
-        return this.http.delete(this.config.apiUrl + '/api/user/' + id).$promise;
+        return this.http.delete(this.config.apiUrl + '/user/' + id).$promise;
     }
 };

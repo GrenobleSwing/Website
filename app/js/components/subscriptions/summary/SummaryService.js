@@ -2,6 +2,8 @@ function SummaryService(resource) {
 
   this.subscriptionResource = resource;
 
+  this.currentYear = yearService.getCurrentYear();
+
   this.subscriptions = [];
   this.subscriptionsLoaded = false;
 
@@ -15,11 +17,11 @@ SummaryService.prototype = {
     },
 
     getSubscriptionsByUserId: function getSubscriptionsByUserId(userId) {
-      return this.subscriptionResource.getAll({userId: userId, yearId: "2016-2017"});
+      return this.subscriptionResource.getAll({userId: userId, yearId: this.currentYear});
     },
 
     getAmountByUserId: function getAmountByUserId(userId) {
-      return this.subscriptionResource.getAmount({userId: userId, yearId: "2016-2017"});
+      return this.subscriptionResource.getAmount({userId: userId, yearId: this.currentYear});
     },
 
     // private functions

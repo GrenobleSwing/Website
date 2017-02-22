@@ -1,5 +1,5 @@
 function StudentResource($resource, config) {
-  this.resource = $resource(config.apiUrl + '/api/student/:studentId', {studentId:'@id'}, {
+  this.resource = $resource(config.apiUrl + '/student/:studentId', {studentId:'@id'}, {
     'get': { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },

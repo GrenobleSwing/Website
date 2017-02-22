@@ -1,7 +1,8 @@
-function ClassService($q, resource) {
+function ClassService($q, resource, yearService) {
   this.q = $q;
   this.classResource = resource;
 
+  this.currentYear = yearService.getCurrentYear();
   this.class = [];
   this.classLoaded = false;
 
@@ -22,7 +23,7 @@ ClassService.prototype = {
           return deferred.promise;
       }
 
-      this.classResource.getAll({userId: userId, yearId: "2016-2017"})
+      this.classResource.getAll({userId: userId, yearId: this.currentYear})
           .then(function(res) {
               this.class = angular.copy(res);
               deferred.resolve(this.class);

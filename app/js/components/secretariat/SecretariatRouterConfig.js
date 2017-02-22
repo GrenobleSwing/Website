@@ -3,7 +3,10 @@ function SecretariatRouterConfig($stateProvider) {
       parent: 'admin',
       url: "/secretariat",
       data: {
-        roles: ['SECRETARY']
+        // roles: ['SECRETARY'],
+        permissions: {
+          only: ['ROLE_SECRETARY']
+        }
       },
       views: {
         'content@': {

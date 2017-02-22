@@ -27,7 +27,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     getByUserId: function getByUserId(userId) {
-        return this.http.get(this.config.apiUrl + '/api/account/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
+        return this.http.get(this.config.apiUrl + '/account/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
     },
 
     /**
@@ -42,7 +42,7 @@ AccountResource.prototype = {
   	 * }, ...]
   	 */
 	  getAll: function getAll() {
-        return this.http.get(this.config.apiUrl + '/api/account').then(this.handleSuccess_, this.handleError_('Error getting all accounts'));
+        return this.http.get(this.config.apiUrl + '/account').then(this.handleSuccess_, this.handleError_('Error getting all accounts'));
     },
 
     /**
@@ -60,7 +60,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     create: function create(account) {
-        return this.http.post(this.config.apiUrl + '/api/account', account).then(this.handleSuccess_, this.handleError_('Error creating account'));
+        return this.http.post(this.config.apiUrl + '/account', account).then(this.handleSuccess_, this.handleError_('Error creating account'));
     },
 
     /**
@@ -78,11 +78,11 @@ AccountResource.prototype = {
   	 * }
   	 */
     update: function update(account) {
-        return this.http.put(this.config.apiUrl + '/api/account/' + account.id, account).then(this.handleSuccess_, this.handleError_('Error updating account'));
+        return this.http.put(this.config.apiUrl + '/account/' + account.id, account).then(this.handleSuccess_, this.handleError_('Error updating account'));
     },
 
     // remove: function remove(id) {
-    //     return this.http.delete('/api/account/' + id).then(this.handleSuccess_, this.handleError_('Error deleting account'));
+    //     return this.http.delete('/account/' + id).then(this.handleSuccess_, this.handleError_('Error deleting account'));
     // },
 
     // private functions

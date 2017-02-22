@@ -1,5 +1,5 @@
 function SubscriptionSummaryResource($resource, config) {
-  this.resource = $resource(config.apiUrl + '/api/summary/:subscriptionId', {subscriptionId:'@id'}, {
+  this.resource = $resource(config.apiUrl + '/summary/:subscriptionId', {subscriptionId:'@id'}, {
     'get': { method:'GET' },
     'query':  { method:'GET', isArray:true },
   });

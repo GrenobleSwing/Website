@@ -3,7 +3,10 @@ function TopicRouterConfig($stateProvider) {
       parent: 'admin',
       url: "/topics",
       data: {
-        roles: ['TOPIC_MANAGER']
+        // roles: ['TOPIC_MANAGER'],
+        permissions: {
+          only: ['ROLE_TOPIC_MANAGER']
+        }
       },
       views: {
         'content@': {

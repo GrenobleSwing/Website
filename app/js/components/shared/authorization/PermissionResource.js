@@ -4,7 +4,7 @@ function PermissionResource($http) {
 
 PermissionResource.prototype = {
   getAll : function getAll() {
-    return this.http.get('/api/permissions').then(this.handleSuccess_, this.handleError_('Error getting all permissions'));
+    return this.http.get('/permissions').then(this.handleSuccess_, this.handleError_('Error getting all permissions'));
   },
 
   // private functions

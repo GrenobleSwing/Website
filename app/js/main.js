@@ -43,6 +43,7 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'app.topic.edit',
         'app.topic.list',
         'app.users',
+        'app.year',
         'pascalprecht.translate',
         'rorymadden.date-dropdowns',
         'sdt.models'
@@ -62,19 +63,15 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 'content@': {
                     template: ''
                 }
+            },
+            data: {
+                permissions: {
+                  only: ['ANONYMOUS']
+                }
             }
         })
         .state('member', {
             abstract: true,
-            resolve: {
-                authorize: ['authorizationService', '$state',
-                    function(authService, $state) {
-                        return authService.authorize().catch(function() {
-                            $state.go('logout');
-                        });
-                    }
-                ]
-            },
             views: {
                 'nav@': {
                     templateUrl: 'components/member-navigation/navbar.html',
@@ -83,20 +80,13 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 }
             },
             data: {
-                requireLogin: true,
+                permissions: {
+                  only: ['ROLE_MEMBER']
+                }
             }
         })
         .state('admin', {
             abstract: true,
-            resolve: {
-                authorize: ['authorizationService', '$state',
-                    function(authService, $state) {
-                        return authService.authorize().catch(function() {
-                            $state.go('logout');
-                        });
-                    }
-                ]
-            },
             views: {
                 'nav@': {
                     templateUrl: 'components/admin-navigation/navbar.html',
@@ -105,7 +95,9 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 }
             },
             data: {
-                requireLogin: true,
+                permissions: {
+                  only: ['ROLE_TEACHER', 'ROLE_SECREATARY', 'ROLE_TREASURER']
+                }
             }
         })
         .state('access-denied', {
@@ -120,13 +112,16 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             },
             data: {
                 requireLogin: false,
-                roles: []
+                roles: [],
+                permissions: {
+                  except: ['ANONYMOUS']
+                }
             }
         });
 
     $urlRouterProvider.otherwise( function($injector) {
       var $state = $injector.get("$state");
-      $state.go('/somestate');
+      $state.go('index.login');
     });
 }
 
@@ -148,4 +143,47 @@ function run($rootScope, $state, $stateParams, authService, identityService) {
     });
 }
 
-angular.module('app').run(['$rootScope', '$state', '$stateParams', 'authorizationService', 'identityService', run]);
+// function withPermissions(PermPermissionStore) {
+//   var permissions = ['listMeeting', 'seeMeeting', 'editMeeting', 'deleteMeeting'];
+//
+//   PermPermissionStore.defineManyPermissions(permissions, /*@ngInject*/ function (permissionName) {
+//     return _.contains(permissions, permissionName);
+//   });
+// }
+
+function withRoles(PermRoleStore, identityService, $q) {
+  PermRoleStore
+    // Or use your own function/service to validate role
+    .defineManyRoles({
+      'ANONYMOUS'      : function (stateParams, roleName) {
+           var deferred = $q.defer();
+
+           identityService.getIdentity().then(function (data) {
+             deferred.reject();
+           }, function () {
+             // Error with request
+             deferred.resolve();
+           });
+
+           return deferred.promise;
+       },
+      'AUTHORIZED'     : function (stateParams, roleName) { return identityService.getIdentity(); },
+      'ROLE_MEMBER'    : function (stateParams, roleName) {
+        return IdentityService.hasRole(roleName);
+      },
+      'ROLE_TEACHER'   : function (stateParams, roleName) {
+        return IdentityService.hasRole(roleName);
+      },
+      'ROLE_SECRETARY' : function (stateParams, roleName) {
+        return IdentityService.hasRole(roleName);
+      },
+      'ROLE_TREASURER' : function (stateParams, roleName) {
+        return IdentityService.hasRole(roleName);
+      }
+    });
+}
+
+angular
+  .module('app')
+  .run(['$rootScope', '$state', '$stateParams', 'authorizationService', 'identityService', run])
+  .run(['PermRoleStore', 'identityService', '$q', withRoles]);

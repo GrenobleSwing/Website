@@ -1,7 +1,8 @@
-function SubscriptionService($q, resource) {
+function SubscriptionService($q, resource, yearService) {
   this.q = $q;
   this.subscriptionResource = resource;
 
+  this.currentYear = yearService.getCurrentYear();
   this.subscriptions = [];
   this.subscriptionsLoaded = false;
 
@@ -22,7 +23,7 @@ SubscriptionService.prototype = {
           return deferred.promise;
       }
 
-      this.subscriptionResource.getAll({userId: userId, yearId: "2016-2017"})
+      this.subscriptionResource.getAll({userId: userId, yearId: this.currentYear})
           .then(function(res) {
               this.subscriptions = angular.copy(res);
               deferred.resolve(this.subscriptions);

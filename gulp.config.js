@@ -39,6 +39,8 @@ module.exports = {
       'bower_components/angular/angular.js',
       'bower_components/angular-cookies/angular-cookies.js',
       'bower_components/angular-messages/angular-messages.js',
+      'bower_components/angular-permission/dist/angular-permission.js',
+      'bower_components/angular-permission/dist/angular-permission-ui.js',
       'bower_components/angular-resource/angular-resource.js',
       'bower_components/angular-translate/angular-translate.js',
       'bower_components/angular-bootstrap/ui-bootstrap.js',

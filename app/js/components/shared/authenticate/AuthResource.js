@@ -11,10 +11,10 @@ AuthResource.prototype = {
     },
 
     authenticate: function authenticate(login, password) {
-        return this.http.post(this.config.apiUrl + '/api/auth/', {login: login, password: password});
+        return this.http.post(this.config.apiUrl + '/auth/', {login: login, password: password});
     },
 
     terminate: function terminate(identity) {
-        return this.http.post(this.config.apiUrl + '/api/logout/', {login: identity.login});
+        return this.http.post(this.config.apiUrl + '/logout/', {login: identity.login});
     }
 };

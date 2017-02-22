@@ -12,7 +12,7 @@ PasswordResource.prototype = {
     },
 
     change: function change(account, data) {
-        return this.http.put(this.config.apiUrl + '/api/account/change-password/' + account.id, data).then(this.handleSuccess_, this.handleError_('Error changing password'));
+        return this.http.put(this.config.apiUrl + '/account/change-password/' + account.id, data).then(this.handleSuccess_, this.handleError_('Error changing password'));
     },
 
     // private functions

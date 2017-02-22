@@ -1,5 +1,5 @@
 function ClassResource($resource, config) {
-  this.resource = $resource(config.apiUrl + '/api/class/:classId', {classId:'@id'}, {
+  this.resource = $resource(config.apiUrl + '/class/:classId', {classId:'@id'}, {
     'get': { method:'GET' },
     'query':  { method:'GET', isArray:true, params: {'fields' : 'id,label'} }
   });

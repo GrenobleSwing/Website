@@ -10,9 +10,9 @@ function LoginRouterConfig($stateProvider) {
           controllerAs: "ctrl"
         }
       },
-      data: {
-        roles: [],
-        requireLogin: false
-      },
+      // data: {
+      //   roles: [],
+      //   requireLogin: false
+      // },
     });
 }

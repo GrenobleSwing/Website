@@ -1,5 +1,5 @@
 function TopicResource($resource, config) {
-  this.resource = $resource(config.apiUrl + '/api/topic/:topicId', {topicId:'@id'}, {
+  this.resource = $resource(config.apiUrl + '/topic/:topicId', {topicId:'@id'}, {
     'get':    { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },

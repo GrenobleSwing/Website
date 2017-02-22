@@ -1,5 +1,5 @@
 function BalanceResource($resource) {
-  this.resource = $resource('/api/topic-type', {}, {
+  this.resource = $resource('/topic-type', {}, {
     'query':  { method:'GET', isArray:true }
   });
 

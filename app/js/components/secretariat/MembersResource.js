@@ -1,6 +1,6 @@
 function MembersResource($resource, config) {
   this.config = config;
-  this.resource = $resource(this.config.apiUrl + '/api/member/:memberId', {memberId:'@id'}, {
+  this.resource = $resource(this.config.apiUrl + '/member/:memberId', {memberId:'@id'}, {
     'get':    { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },

@@ -1,5 +1,5 @@
 function BalanceResource($resource) {
-  this.resource = $resource('/api/balance/:userId', {userId:'@id'}, {
+  this.resource = $resource('/balance/:userId', {userId:'@id'}, {
     'get':    { method:'GET' },
     'query':  { method:'GET', isArray:true }
   });
