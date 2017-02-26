@@ -8,7 +8,7 @@ function IdentityService($cookies, $q, identityResource, authResource, $timeout,
 
   this.authenticated = false;
 
-  this.unIndentified = {$ok : false, roles : []};
+  this.anonymous = {$ok : false, roles : ['ANONYMOUS']};
 }
 
 IdentityService.prototype = {
@@ -36,7 +36,7 @@ IdentityService.prototype = {
   clearIdentity: function clearIdentity() {
     if (this.isAuthenticated()) {
       this.authResource.terminate(this.getIdentity_()).finally(function() {
-        this.setIdentity_(this.unIndentified);
+        this.setIdentity_(this.anonymous);
       }.bind(this));
     }
   },
@@ -48,7 +48,7 @@ IdentityService.prototype = {
   getIdentity_ : function getIdentity_() {
     var identity = this.cookies.getObject('current-user');
     if (identity === undefined || identity === null) {
-      identity = this.unIndentified;
+      identity = this.anonymous;
       this.setIdentity_(identity);
     }
     return identity;

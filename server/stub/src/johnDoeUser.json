@@ -2,5 +2,5 @@
   "id" : 2,
   "login": "john.doe@test.com",
   "password": "test",
-  "roles" : ["USER"]
+  "roles" : ["ROLE_MEMBER"]
 }

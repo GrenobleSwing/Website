@@ -2,5 +2,5 @@
   "id" : 3,
   "login": "admin@test.com",
   "password": "admin",
-  "roles" : ["ADMIN", "TOPIC_MANAGER", "SECRETARY", "TREASURER"]
+  "roles" : ["ROLE_TEACHER", "ROLE_SECRETARY", "ROLE_TREASURER"]
 }

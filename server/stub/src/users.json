@@ -2,15 +2,15 @@
   "id" : 1,
   "login": "jack.smith@test.com",
   "password": "test",
-  "roles" : ["USER", "TOPIC_OWNER", "TOPIC_MANAGER", "MEMBERS_MANAGER", "SECRETARY", "TREASURER"]
+  "roles" : ["ROLE_MEMBER", "ROLE_TEACHER", "ROLE_SECRETARY", "ROLE_TREASURER"]
 }, {
   "id" : 2,
   "login": "john.doe@test.com",
   "password": "test",
-  "roles" : ["USER"]
+  "roles" : ["ROLE_MEMBER"]
 }, {
   "id" : 3,
   "login": "admin@test.com",
   "password": "admin",
-  "roles" : ["ADMIN", "TOPIC_MANAGER", "SECRETARY", "TREASURER"]
+  "roles" : ["ROLE_TEACHER", "ROLE_SECRETARY", "ROLE_TREASURER"]
 }]

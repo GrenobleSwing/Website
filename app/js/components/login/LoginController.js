@@ -29,24 +29,25 @@ LoginController.prototype = {
   handleSuccess_ : function handleSuccess_() {
     this.identityService.getIdentity().then(function(identity) {
       // console.info("LoginController#connect#handleSuccess_");
-      if (!!this.scope.returnToState && this.scope.returnToState.name !== 'index.home') {
+      if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
+        this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
         // console.info("returnToState: " + this.scope.returnToState.name);
         this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
-      } else if(this.identityService.isInRole('USER')){
+      } else if(this.identityService.isInRole('ROLE_MEMBER')){
         // console.info("goToState: " + 'member.account');
         this.state.go('member.account');
-      } else if(this.identityService.isInRole('TOPIC_MANAGER')){
+      } else if(this.identityService.isInRole('ROLE_TEACHER')){
         // console.info("goToState: " + 'admin.admin');
         this.state.go('admin.admin');
-      } else if(this.identityService.isInRole('SECRETARY')){
+      } else if(this.identityService.isInRole('ROLE_SECRETARY')){
         // console.info("goToState: " + 'admin.secretariat');
         this.state.go('admin.secretariat');
-      } else if(this.identityService.isInRole('TREASURER')){
+      } else if(this.identityService.isInRole('ROLE_TREASURER')){
         // console.info("goToState: " + 'admin.treasury');
         this.state.go('admin.treasury');
-      } else {
-        // console.info("goToState: logout....");
-        this.state.go('logout');
+      // } else {
+      //   // console.info("goToState: logout....");
+      //   this.state.go('logout');
       }
     }.bind(this));
   },

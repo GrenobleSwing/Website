@@ -2,7 +2,7 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui',
         'ngMessages',
         'app.account',
-        'app.acl',
+        // 'app.acl',
         'app.admin',
         'app.admin.nav',
         'app.admin.secretariat',
@@ -55,15 +55,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('index', {
             abstract: true,
-            url: '/',
-            views: {
-                'nav@': {
-                    template: ''
-                },
-                'content@': {
-                    template: ''
-                }
-            },
+            url: '/login',
             data: {
                 permissions: {
                   only: ['ANONYMOUS']
@@ -72,6 +64,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
         })
         .state('member', {
             abstract: true,
+            url: '/home',
             views: {
                 'nav@': {
                     templateUrl: 'components/member-navigation/navbar.html',
@@ -81,7 +74,8 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             },
             data: {
                 permissions: {
-                  only: ['ROLE_MEMBER']
+                  only: ['ROLE_MEMBER'],
+                  redirectTo: 'access-denied'
                 }
             }
         })
@@ -96,7 +90,8 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             },
             data: {
                 permissions: {
-                  only: ['ROLE_TEACHER', 'ROLE_SECREATARY', 'ROLE_TREASURER']
+                  only: ['ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER'],
+                  redirectTo: 'access-denied'
                 }
             }
         })
@@ -109,37 +104,34 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 'content@': {
                     template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="index.home">Return home.</a></p></alert>'
                 }
-            },
-            data: {
-                requireLogin: false,
-                roles: [],
-                permissions: {
-                  except: ['ANONYMOUS']
+            }
+        })
+        .state('404', {
+            url: '/error',
+            views: {
+                'nav':  {
+                    template: ''
+                },
+                'content@': {
+                    template: '<alert type="danger"><strong>Erreur 404</strong><p></p></alert>'
                 }
             }
         });
 
     $urlRouterProvider.otherwise( function($injector) {
       var $state = $injector.get("$state");
-      $state.go('index.login');
+      $state.go('404', null, { location: false });
     });
 }
 
-function run($rootScope, $state, $stateParams, authService, identityService) {
-    identityService.getIdentity(true).then(function(data) {
-        console.info("run - getIdentity succeeded...");
-    }, function(error) {
-        console.info("run - getIdentity failed...");
-        identityService.clearIdentity();
+function run($rootScope, $state, $stateParams, identityService) {
+    if (!identityService.isAuthenticated()) {
         $state.go('index.login');
-    });
+    }
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         $rootScope.toState = toState;
         $rootScope.toStateParams = toStateParams;
-        if (identityService.isAuthenticated()) {
-            authService.authorize();
-        }
     });
 }
 
@@ -156,34 +148,27 @@ function withRoles(PermRoleStore, identityService, $q) {
     // Or use your own function/service to validate role
     .defineManyRoles({
       'ANONYMOUS'      : function (stateParams, roleName) {
-           var deferred = $q.defer();
-
-           identityService.getIdentity().then(function (data) {
-             deferred.reject();
-           }, function () {
-             // Error with request
-             deferred.resolve();
-           });
-
-           return deferred.promise;
+           return !identityService.isAuthenticated();
        },
-      'AUTHORIZED'     : function (stateParams, roleName) { return identityService.getIdentity(); },
+      'AUTHORIZED'     : function (stateParams, roleName) {
+        return identityService.isAuthenticated();
+      },
       'ROLE_MEMBER'    : function (stateParams, roleName) {
-        return IdentityService.hasRole(roleName);
+        return identityService.isInRole(roleName);
       },
       'ROLE_TEACHER'   : function (stateParams, roleName) {
-        return IdentityService.hasRole(roleName);
+        return identityService.isInRole(roleName);
       },
       'ROLE_SECRETARY' : function (stateParams, roleName) {
-        return IdentityService.hasRole(roleName);
+        return IdentityService.isInRole(roleName);
       },
       'ROLE_TREASURER' : function (stateParams, roleName) {
-        return IdentityService.hasRole(roleName);
+        return IdentityService.isInRole(roleName);
       }
     });
 }
 
 angular
   .module('app')
-  .run(['$rootScope', '$state', '$stateParams', 'authorizationService', 'identityService', run])
+  .run(['$rootScope', '$state', '$stateParams', 'identityService', run])
   .run(['PermRoleStore', 'identityService', '$q', withRoles]);

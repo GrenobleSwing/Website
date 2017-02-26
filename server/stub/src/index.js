@@ -26,7 +26,7 @@ function updateResponseHeader(response) {
 var accountRouter = express.Router();
 var account = require('./account.json');
 accountRouter.get('/:id', function(request, response) {
-  console.log("=================== /api/account/:id GET ===================");
+  console.log("=================== /api/v1/account/:id GET ===================");
   updateResponseHeader(response);
   response.write(JSON.stringify(account));
   response.end();
@@ -34,12 +34,12 @@ accountRouter.get('/:id', function(request, response) {
 
 var accounts = require('./accounts.json');
 accountRouter.get('/', function(request, response) {
-  console.log("=================== /api/account/ GET ===================");
+  console.log("=================== /api/v1/account/ GET ===================");
   updateResponseHeader(response);
   response.write(JSON.stringify(accounts));
   response.end();
 });
-app.use('/api/account/', accountRouter);
+app.use('/api/v1/account/', accountRouter);
 
 /**
  * SUBSCRIPTIONS
@@ -47,7 +47,7 @@ app.use('/api/account/', accountRouter);
 var subscriptionRouter = express.Router();
 var subscriptions = require('./subscriptions.json');
 subscriptionRouter.get('/', function(request, response) {
-  console.log("=================== /api/subscription/ GET ===================");
+  console.log("=================== /api/v1/subscription/ GET ===================");
   updateResponseHeader(response);
   var userId = request.query.userId;
   var yearId = request.query.yearId;
@@ -61,7 +61,7 @@ subscriptionRouter.get('/', function(request, response) {
 });
 
 subscriptionRouter.get('/:id', function(request, response) {
-  console.log("=================== /api/subscription/:id GET ===================");
+  console.log("=================== /api/v1/subscription/:id GET ===================");
   updateResponseHeader(response);
   var id = request.params.id;
   var filteredSubscriptions = subscriptions.filter(function(x) {
@@ -76,7 +76,7 @@ subscriptionRouter.get('/:id', function(request, response) {
   }
   response.end();
 });
-app.use('/api/subscription/', subscriptionRouter);
+app.use('/api/v1/subscription/', subscriptionRouter);
 
 /**
  * SUBSCRIPTIONS'SUMMARY
@@ -84,7 +84,7 @@ app.use('/api/subscription/', subscriptionRouter);
 var summaryRouter = express.Router();
 var summaries = require('./summary.json');
 summaryRouter.get('/:id', function(request, response) {
-  console.log("=================== /api/summary/:id GET ===================");
+  console.log("=================== /api/v1/summary/:id GET ===================");
   updateResponseHeader(response);
   var id = request.params.id;
   var filteredSummaries = summaries.filter(function(x) {
@@ -101,7 +101,7 @@ summaryRouter.get('/:id', function(request, response) {
 });
 
 summaryRouter.get('/', function(request, response) {
-  console.log("=================== /api/summary/ GET ===================");
+  console.log("=================== /api/v1/summary/ GET ===================");
   updateResponseHeader(response);
   var userId = request.query.userId;
   var yearId = request.query.yearId;
@@ -114,7 +114,7 @@ summaryRouter.get('/', function(request, response) {
   response.end();
 });
 
-app.use('/api/summary/', summaryRouter);
+app.use('/api/v1/summary/', summaryRouter);
 
 /**
  * TOPICS
@@ -122,19 +122,19 @@ app.use('/api/summary/', summaryRouter);
 var topicRouter = express.Router();
 var topics = require('./topics.json');
 topicRouter.get('/', function(request, response) {
-  console.log("=================== /api/topic/ GET ===================");
+  console.log("=================== /api/v1/topic/ GET ===================");
   updateResponseHeader(response);
   response.write(JSON.stringify(topics));
   response.end();
 });
-app.use('/api/topic/', topicRouter);
+app.use('/api/v1/topic/', topicRouter);
 
 /**
  * USERS
  */
  var userRouter = express.Router();
 userRouter.get('/:id', function(request, response) {
-  console.log("=================== /api/user/:id GET ===================");
+  console.log("=================== /api/v1/user/:id GET ===================");
   updateResponseHeader(response);
   if (request.params.id == 3) {
     response.write(JSON.stringify(johnDoeUser));    updateResponseHeader(response);
@@ -144,16 +144,16 @@ userRouter.get('/:id', function(request, response) {
   }
   response.end();
 });
-app.use('/api/user/', userRouter);
+app.use('/api/v1/user/', userRouter);
 
 var users = require('./users.json');
 userRouter.get('/', function(request, response) {
-  console.log("=================== /api/user/ GET ===================");
+  console.log("=================== /api/v1/user/ GET ===================");
   updateResponseHeader(response);
   response.write(JSON.stringify(users));
   response.end();
 });
-app.use('/api/user/', userRouter);
+app.use('/api/v1/user/', userRouter);
 
 /**
  * TOKEN
@@ -164,7 +164,7 @@ var johnDoeToken = require('./johnDoeToken.json');
 var adminUser = require('./adminUser.json');
 var johnDoeUser = require('./johnDoeUser.json');
 tokenRouter.post('/', function(request, response) {
-  console.log("=================== /api/auth/ POST ===================");
+  console.log("=================== /api/v1/auth/ POST ===================");
 
   cache.clear();
   request.on('data', function(chunk) {
@@ -192,7 +192,7 @@ tokenRouter.post('/', function(request, response) {
     }
   });
 });
-app.use('/api/auth/', tokenRouter);
+app.use('/api/v1/auth/', tokenRouter);
 
 /**
  * IDENTITY
@@ -200,7 +200,7 @@ app.use('/api/auth/', tokenRouter);
 var identityRouter = express.Router();
 identityRouter.get('/', function(request, response) {
   updateResponseHeader(response);
-  console.log("=================== /api/identity GET ===================");
+  console.log("=================== /api/v1/identity GET ===================");
 
   var identity = cache.get('identity');
   if (identity !== null) {
@@ -209,14 +209,14 @@ identityRouter.get('/', function(request, response) {
   }
   response.end();
 });
-app.use('/api/identity/', identityRouter);
+app.use('/api/v1/identity/', identityRouter);
 
 /**
  * LOGOUT
  */
  var logoutRouter = express.Router();
 logoutRouter.post('/', function(request, response) {
-  console.log("=================== /api/logout/ POST ===================");
+  console.log("=================== /api/v1/logout/ POST ===================");
 
   response.setHeader('Content-Type', 'application/json');
   response.setHeader('Access-Control-Allow-Origin', '*');
@@ -227,7 +227,34 @@ logoutRouter.post('/', function(request, response) {
   response.write(JSON.stringify(johnDoeUser));
   response.end();
 });
-app.use('/api/logout/', logoutRouter);
+app.use('/api/v1/logout/', logoutRouter);
+
+/**
+ * YEARS
+ */
+var yearRouter = express.Router();
+yearRouter.get('/current', function(request, response) {
+  console.log("=================== /api/v1/year/current GET ===================");
+  updateResponseHeader(response);
+  response.write(JSON.stringify("2016-2017"));
+  response.end();
+});
+
+yearRouter.get('/next', function(request, response) {
+  console.log("=================== /api/v1/year/next GET ===================");
+  updateResponseHeader(response);
+  response.write(JSON.stringify("2017-2018"));
+  response.end();
+});
+
+yearRouter.get('/all', function(request, response) {
+  console.log("=================== /api/v1/year/all GET ===================");
+  updateResponseHeader(response);
+  response.write(JSON.stringify({"current" : "2016-2017", "next" : "2017-2018"}));
+  response.end();
+});
+app.use('/api/v1/year/', yearRouter);
+
 
 app.listen(port, function() {
   console.log("Server listening to http://localhost:%s", port);

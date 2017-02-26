@@ -1,17 +1,12 @@
 function HomeRouterConfig($stateProvider) {
   $stateProvider
-    .state('index.home', {
-      parent: 'index',
-      url: '/home',
-      data: {
-        roles: []
-      },
+    .state('member.home', {
+      parent: 'member',
+      url: '',
       views: {
-        'nav@': {
-          template: ''
-        },
         'content@': {
-          templateUrl: "components/home/home.html",
+          // templateUrl: "components/home/home.html",
+          template : '<p>HOME</p>',
           controller: "homeController",
           controllerAs: "ctrl"
         }
