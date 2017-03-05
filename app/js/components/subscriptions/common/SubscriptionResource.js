@@ -5,7 +5,7 @@ function SubscriptionResource($resource, config) {
     'validate': { method:'GET' },
     'create': { method:'POST' },
     'update': { method:'PUT' },
-    'query':  { method:'GET', isArray:true, params: {'fields' : 'id,type,topicTitle,state'} },
+    'query':  { method : 'GET', isArray : true, params : {'fields' : 'id,type,topicTitle,state'} },
     'delete': { method:'DELETE' }
   });
 

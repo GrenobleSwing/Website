@@ -1,18 +1,16 @@
 function YearResource($http, config) {
   this.http = $http;
   this.config = config;
-
-  this.init_();
 }
 
 YearResource.prototype = {
 
     getCurrent: function getCurrent() {
-        return this.http.get(this.config.apiUrl + '/year/current');
+        return this.http.get(this.config.apiUrl + '/year/current', {cache : true});
     },
 
     getNext: function getNext() {
-        return this.http.get(this.config.apiUrl + '/year/next');
+        return this.http.get(this.config.apiUrl + '/year/next', {cache : true});
     },
 
     getPrevious: function getPrevious() {
@@ -20,6 +18,6 @@ YearResource.prototype = {
     },
 
     getAll: function getAll() {
-        return this.http.get(this.config.apiUrl + '/year/all');
+        return this.http.get(this.config.apiUrl + '/year');
     }
 };

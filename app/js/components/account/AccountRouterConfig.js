@@ -2,9 +2,6 @@ function AccountRouterConfig($stateProvider) {
   $stateProvider.state('member.account', {
       parent: 'member',
       url: "/account",
-      // data: {
-      //   roles: ['USER']
-      // },
       views: {
         'content@': {
           templateUrl: 'components/account/account.edit.html',

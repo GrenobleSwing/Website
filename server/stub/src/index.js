@@ -222,9 +222,9 @@ logoutRouter.post('/', function(request, response) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.writeHead(200, {'Content-Type': 'text/plain'});
 
   cache.clear();
-  response.write(JSON.stringify(johnDoeUser));
   response.end();
 });
 app.use('/api/v1/logout/', logoutRouter);
@@ -235,22 +235,37 @@ app.use('/api/v1/logout/', logoutRouter);
 var yearRouter = express.Router();
 yearRouter.get('/current', function(request, response) {
   console.log("=================== /api/v1/year/current GET ===================");
-  updateResponseHeader(response);
-  response.write(JSON.stringify("2016-2017"));
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.writeHead(200, {'Content-Type': 'application/json'});
+
+  response.write(JSON.stringify({current : "2016-2017"}));
   response.end();
 });
 
 yearRouter.get('/next', function(request, response) {
   console.log("=================== /api/v1/year/next GET ===================");
-  updateResponseHeader(response);
-  response.write(JSON.stringify("2017-2018"));
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.writeHead(200, {'Content-Type': 'application/json'});
+
+  response.write(JSON.stringify({next : "2017-2018"}));
   response.end();
 });
 
-yearRouter.get('/all', function(request, response) {
+yearRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/year/all GET ===================");
-  updateResponseHeader(response);
-  response.write(JSON.stringify({"current" : "2016-2017", "next" : "2017-2018"}));
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.writeHead(200, {'Content-Type': 'application/json'});
+
+  response.write(JSON.stringify({current : "2016-2017", "next" : "2017-2018"}));
   response.end();
 });
 app.use('/api/v1/year/', yearRouter);

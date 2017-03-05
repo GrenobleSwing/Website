@@ -2,7 +2,7 @@ function SubscriptionService($q, resource, yearService) {
   this.q = $q;
   this.subscriptionResource = resource;
 
-  this.currentYear = yearService.getCurrentYear();
+  this.yearService = yearService;
   this.subscriptions = [];
   this.subscriptionsLoaded = false;
 
@@ -23,8 +23,13 @@ SubscriptionService.prototype = {
           return deferred.promise;
       }
 
-      this.subscriptionResource.getAll({userId: userId, yearId: this.currentYear})
-          .then(function(res) {
+      this.yearService
+        .getCurrentYear()
+        .then(function(data) {
+          this.subscriptionResource.getAll = this.subscriptionResource.getAll.bind(this.subscriptionResource);
+          return this.subscriptionResource.getAll({userId : userId, yearId : data});
+        }.bind(this))
+        .then(function(res) {
               this.subscriptions = angular.copy(res);
               deferred.resolve(this.subscriptions);
               return res;

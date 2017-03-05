@@ -11,8 +11,12 @@
   <body>
 
     <!-- MAIN NAVIGATION -->
-    <gs-main-nav></gs-main-nav>
-
+    <header>
+      <div class="navbar-collapse collapse" id="top-navbar">
+        <div ui-view="nav"></div>
+        <div ui-view="header"></div>
+      </div>
+    </header>
     <div class="row">
       <!-- MAIN CONTENT -->
       <div class="container">
@@ -24,6 +28,5 @@
     <!-- inject:js -->
     <!-- endinject -->
 
-    <script src="//localhost:9091"></script>
   </body>
 </html>

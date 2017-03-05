@@ -21,7 +21,7 @@ IdentityResource.prototype = {
   	 */
     getCurrentUser: function getCurrentUser() {
       // console.info("IdentityResource#getCurrentUser");
-      return this.http.get(this.config.apiUrl + '/identity'); //.then(this.handleSuccess_, this.handleError_('Error getting user by id'));
+      return this.http.get(this.config.apiUrl + '/identity', { cache: true}); //.then(this.handleSuccess_, this.handleError_('Error getting user by id'));
     },
 
     // private functions

@@ -30,6 +30,7 @@ AuthorizationService.prototype = {
         this.rootScope.returnToStateParams = this.rootScope.toStateParams;
 
         // now, send them to the signin state so they can log in
+        console.info("AuthorizationService#handleSuccess_");
         this.state.go('index.login');
       }
     } else {
@@ -39,7 +40,7 @@ AuthorizationService.prototype = {
   },
 
   handleError_: function handleError_() {
-    // console.info("AuthorizationService#handleError_");
+    console.info("AuthorizationService#handleError_");
     this.state.go('index.login');
   }
 };

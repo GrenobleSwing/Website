@@ -20,12 +20,11 @@
 
         <div class="form-group required">
             <label for="birthday" class='control-label'>Date de naissance</label>
-            <input rsmdatedropdowns
-                    id="birthday" name="birthday"
-                    ng-model="ctrl.account.birthday"
-                    day-class="day-selector"
-                    month-class="month-selector"
-                    year-class="year-selector">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+      				<li>
+      					<input rsmdatedropdowns ng-model="ctrl.account.birthday" />
+      				</li>
+            </ul>
             <div class="help-block" ng-messages="form.birthday.$error">
               <p ng-message="required">Birthday is required.</p>
             </div>

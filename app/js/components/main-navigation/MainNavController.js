@@ -13,13 +13,11 @@ function MainNavController($scope, $state, authenticationService, identityServic
 MainNavController.prototype = {
 
   init_: function init_() {
-    this.identityService.addListener(function(data) {
-      this.identity = data;
-    }.bind(this), 'MainNavController');
-
-    this.scope.$on("$destroy", function() {
-        this.identityService.removeListener('MainNavController');
-    }.bind(this));
+    this.identityService
+      .getIdentity()
+      .then(function(data) {
+        this.identity = data;
+      }.bind(this));
   },
 
   isLogged: function isLogged() {
@@ -36,6 +34,7 @@ MainNavController.prototype = {
 
 
   logout: function logout() {
+    console.info("MainNavController#controller#logout");
     this.authenticationService.clearCredentials();
     this.identityService.clearIdentity();
     this.state.go('index.login');

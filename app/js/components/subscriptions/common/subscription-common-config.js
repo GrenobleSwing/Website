@@ -1,5 +1,4 @@
-angular.module('app.subscriptions.common', ['app.config'])
+angular.module('app.subscriptions.common', ['app.config', 'app.year'])
     .service('subscriptionObservableService', SubscriptionObservableService)
-    // .service('subscriptionResource', ['$timeout', '$filter', '$q', '$resource', FakeSubscriptionResource])
     .service('subscriptionResource', ['$resource', 'config', SubscriptionResource])
-    .service('subscriptionService', ['$q', 'subscriptionResource', SubscriptionService]);
+    .service('subscriptionService', ['$q', 'subscriptionResource', 'yearService', SubscriptionService]);

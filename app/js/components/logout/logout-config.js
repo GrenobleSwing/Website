@@ -1,3 +1,3 @@
 angular
-    .module('app.logout', ['app.users'])
+    .module('app.logout', ['ui.router'])
     .config(['$stateProvider', LogoutRouterConfig]);

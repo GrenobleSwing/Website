@@ -1,5 +1,5 @@
-angular.module('app.summary', ['app.users', 'ui.router', 'app.subscriptions.common'])
+angular.module('app.summary', ['app.users', 'ui.router', 'app.subscriptions.common', 'app.year'])
     .config(['$stateProvider', SummaryRouterConfig])
     .directive('gsSubscriptionsSummary', SummaryDirective)
-    .service('summaryService', ['subscriptionResource', SummaryService])
+    .service('summaryService', ['subscriptionResource', 'yearService', SummaryService])
     .controller('summaryController', ['identityService', 'summaryService', SummaryController]);
