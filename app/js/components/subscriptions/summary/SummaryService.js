@@ -1,8 +1,8 @@
-function SummaryService(resource) {
+function SummaryService(resource, yearService) {
 
   this.subscriptionResource = resource;
 
-  this.currentYear = yearService.getCurrentYear();
+  this.yearService = yearService;
 
   this.subscriptions = [];
   this.subscriptionsLoaded = false;
@@ -13,25 +13,24 @@ function SummaryService(resource) {
 SummaryService.prototype = {
 
     init_ : function init_() {
-        this.handleError_ = this.handleError_.bind(this);
+
     },
 
     getSubscriptionsByUserId: function getSubscriptionsByUserId(userId) {
-      return this.subscriptionResource.getAll({userId: userId, yearId: this.currentYear});
+      return this.yearService
+        .getCurrentYear()
+        .then(function(data) {
+          this.subscriptionResource.getAll = this.subscriptionResource.getAll.bind(this.subscriptionResource);
+          return this.subscriptionResource.getAll({userId: userId, yearId: data});
+        }.bind(this));
     },
 
     getAmountByUserId: function getAmountByUserId(userId) {
-      return this.subscriptionResource.getAmount({userId: userId, yearId: this.currentYear});
-    },
-
-    // private functions
-    handleSuccess_ : function handleSuccess_(res) {
-        return res;
-    },
-
-    handleError_: function handleError_(error) {
-        return function () {
-            return { $ok: false, message: error };
-        };
+      return this.yearService
+        .getCurrentYear()
+        .then(function(data) {
+          this.subscriptionResource.getAmount = this.subscriptionResource.getAmount.bind(this.subscriptionResource);
+          return this.subscriptionResource.getAmount({userId: userId, yearId: data});
+        }.bind(this));
     }
 };
