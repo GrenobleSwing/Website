@@ -67,7 +67,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             url: '/member',
             views: {
                 'nav@': {
-                    templateUrl: 'components/member-navigation/navbar.html',
+                    templateUrl: 'components/member/member-navigation/navbar.html',
                     controller: 'memberNavController',
                     controllerAs: 'ctrl'
                 },
@@ -85,7 +85,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             url : '/admin',
             views: {
                 'nav@': {
-                    templateUrl: 'components/admin-navigation/navbar.html',
+                    templateUrl: 'components/admin/admin-navigation/navbar.html',
                     controller: 'adminNavController',
                     controllerAs: 'ctrl'
                 },
@@ -166,7 +166,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
     });
 }
 
-function run($rootScope, $state, $stateParams, identityService, yearService) {
+function run($rootScope, $state, $stateParams, tokenService, yearService) {
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         $rootScope.toState = toState;
@@ -185,18 +185,18 @@ function run($rootScope, $state, $stateParams, identityService, yearService) {
       console.info("Access to the target state " + toState.name + " is not granted.");
     });
 
-    yearService.getCurrentYear()
-      .then(function(year) {
-        console.info("year is identified");
-        console.info(year);
-      })
-      .then(identityService.getIdentity.bind(identityService))
-      .then(function(user) {
+    tokenService.isValid()
+    .then(function(token) {
         console.info("user is identified");
       }, function() {
         console.info("user is unknown");
         $state.go('index.login');
-    });
+      })
+    .then(yearService.getCurrentYear.bind(yearService))
+    .then(function(year) {
+        console.info("year is identified");
+        console.info(year);
+      });
 }
 
 function withPermissions(PermPermissionStore, identityService) {
@@ -210,19 +210,24 @@ function withPermissions(PermPermissionStore, identityService) {
   // console.info(PermPermissionStore.getStore());
 }
 
-function withRoles(PermRoleStore, identityService) {
+function withRoles(PermRoleStore, identityService, $q) {
   PermRoleStore
     .defineRole('ANONYMOUS', function (stateParams, roleName) {
-      var result =  !identityService.isAuthenticated();
-        console.info('anonymous ? ' + result);
-        return result;
+      var deferred = $q.defer();
+      identityService.getIdentity()
+      .then(function(response) {
+        if (!response.data.$ok) {
+          deferred.resolve(response.data);
+        } else {
+          deferred.reject(response.data);
+        }
+      });
+      return deferred.promise;
      });
 
    PermRoleStore
      .defineRole('AUTHORIZED', function (stateParams, roleName) {
-       var result =  identityService.isAuthenticated();
-         console.info('authorized ? ' + result);
-         return result;
+         return identityService.getIdentity();
       });
 
   PermRoleStore
@@ -246,6 +251,6 @@ function withRoles(PermRoleStore, identityService) {
 
 angular
   .module('app')
-  .run(['$rootScope', '$state', '$stateParams', 'identityService', 'yearService', run])
+  .run(['$rootScope', '$state', '$stateParams', 'tokenService', 'yearService', run])
   .run(['PermPermissionStore', 'identityService', withPermissions])
   .run(['PermRoleStore', 'identityService', withRoles]);

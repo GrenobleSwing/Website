@@ -130,6 +130,80 @@ topicRouter.get('/', function(request, response) {
 app.use('/api/v1/topic/', topicRouter);
 
 /**
+ * CLASSES
+ */
+var classRouter = express.Router();
+var classes = require('./classes.json');
+classRouter.get('/', function(request, response) {
+  console.log("=================== /api/v1/class/ GET ===================");
+  updateResponseHeader(response);
+  var userId = request.query.userId;
+  var yearId = request.query.yearId;
+  console.log("userId: " + userId);
+  console.log("yearId: " + yearId);
+  var filteredclasses = classes.filter(function(x) {
+    return x.userId == userId && x.yearId == yearId;
+  });
+  response.write(JSON.stringify(filteredclasses));
+  response.end();
+});
+
+classRouter.get('/:id', function(request, response) {
+  console.log("=================== /api/v1/class/:id GET ===================");
+  updateResponseHeader(response);
+  var id = request.params.id;
+  var filteredclasses = classes.filter(function(x) {
+    return x.id == id;
+  });
+  if (filteredclasses.length == 1) {
+    response.write(JSON.stringify(filteredclasses[0]));
+  } else if (filteredclasses.length === 0) {
+    response.writeHead(500, {'Content-Type': 'text/plain'});
+  } else {
+    response.writeHead(500, {'Content-Type': 'text/plain'});
+  }
+  response.end();
+});
+app.use('/api/v1/class/', classRouter);
+
+/**
+ * STUDENTS
+ */
+var studentRouter = express.Router();
+var students = require('./students.json');
+studentRouter.get('/', function(request, response) {
+  console.log("=================== /api/v1/student/ GET ===================");
+  updateResponseHeader(response);
+  var userId = request.query.userId;
+  var yearId = request.query.yearId;
+  console.log("userId: " + userId);
+  console.log("yearId: " + yearId);
+  var filteredstudents = students.filter(function(x) {
+    return x.userId == userId && x.yearId == yearId;
+  });
+  response.write(JSON.stringify(filteredstudents));
+  response.end();
+});
+
+studentRouter.get('/:id', function(request, response) {
+  console.log("=================== /api/v1/student/:id GET ===================");
+  updateResponseHeader(response);
+  var id = request.params.id;
+  var filteredstudents = students.filter(function(x) {
+    return x.id == id;
+  });
+  if (filteredstudents.length == 1) {
+    response.write(JSON.stringify(filteredstudents[0]));
+  } else if (filteredstudents.length === 0) {
+    response.writeHead(500, {'Content-Type': 'text/plain'});
+  } else {
+    response.writeHead(500, {'Content-Type': 'text/plain'});
+  }
+  response.end();
+});
+app.use('/api/v1/student/', studentRouter);
+
+/**
  * USERS
  */
  var userRouter = express.Router();
@@ -156,14 +230,14 @@ userRouter.get('/', function(request, response) {
 app.use('/api/v1/user/', userRouter);
 
 /**
- * TOKEN
+ * AUTH
  */
-var tokenRouter = express.Router();
+var authRouter = express.Router();
 var adminToken = require('./adminToken.json');
 var johnDoeToken = require('./johnDoeToken.json');
 var adminUser = require('./adminUser.json');
 var johnDoeUser = require('./johnDoeUser.json');
-tokenRouter.post('/', function(request, response) {
+authRouter.post('/', function(request, response) {
   console.log("=================== /api/v1/auth/ POST ===================");
 
   cache.clear();
@@ -192,7 +266,32 @@ tokenRouter.post('/', function(request, response) {
     }
   });
 });
-app.use('/api/v1/auth/', tokenRouter);
+app.use('/api/v1/auth/', authRouter);
+
+/**
+ * TOKEN
+ */
+ var tokenRouter = express.Router();
+ tokenRouter.get('/', function(request, response) {
+   response.setHeader('Content-Type', 'application/json');
+   response.setHeader('Access-Control-Allow-Origin', '*');
+   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+   response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+   console.log("=================== /api/v1/token GET ===================");
+   response.writeHead(200, {'Content-Type': 'text/plain'});
+
+   var identity = cache.get('identity');
+   if (identity !== null) {
+     console.log(identity);
+     response.write(JSON.stringify({token : "mySuperToken", status: "OK", expiresIn : 86400}));
+   } else {
+     response.write(JSON.stringify({token : "", status: "NOK", expiresIn : 0}));
+   }
+   response.end();
+ });
+ app.use('/api/v1/token/', tokenRouter);
+
 
 /**
  * IDENTITY
