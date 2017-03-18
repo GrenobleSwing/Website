@@ -1,6 +1,6 @@
-function AdminNavController($state, identityService) {
+function AdminNavController($state, aclService) {
   this.state = $state;
-  this.identityService = identityService;
+  this.aclService = aclService;
 }
 
 AdminNavController.prototype = {
@@ -9,6 +9,6 @@ AdminNavController.prototype = {
   },
 
   hasPermission: function hasPermission(role) {
-    return this.identityService.isInRole(role);
+    return this.aclService.isInRole(role);
   }
 };

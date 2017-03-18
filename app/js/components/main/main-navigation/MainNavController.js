@@ -1,7 +1,7 @@
-function MainNavController($scope, $state, authenticationService, identityService) {
+function MainNavController($scope, $state, authenticationService, aclService) {
   this.scope = $scope;
   this.state = $state;
-  this.identityService = identityService;
+  this.aclService = aclService;
   this.authenticationService = authenticationService;
 
   this.isOpen = false;
@@ -25,7 +25,7 @@ MainNavController.prototype = {
   },
 
   hasPermission: function hasPermission(role) {
-    return this.identityService.isInRole(role);
+    return this.aclService.isInRole(role);
   },
 
   hasPermissions: function hasPermissions(roles) {

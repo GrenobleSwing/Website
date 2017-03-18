@@ -14,6 +14,7 @@ function updateResponseHeader(response) {
 
   var identity = cache.get('identity');
   if (identity === null) {
+    console.log("identity is missing...");
     response.writeHead(400, {'Content-Type': 'text/plain'});
   } else {
     response.writeHead(200, {'Content-Type': 'text/plain'});

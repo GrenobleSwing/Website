@@ -2,6 +2,7 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission',
         'ngMessages',
         'app.account',
+        'app.acl',
         'app.admin',
         'app.admin.nav',
         'app.admin.secretariat',
@@ -142,24 +143,26 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise( function($injector) {
       var state = $injector.get("$state");
       var identityService = $injector.get("identityService");
-      // state.go('404', null, { location: false });
+      var aclService = $injector.get("aclService");
+
       console.info("go for otherwise");
+
       if (identityService.isAuthenticated()) {
-        if(identityService.isInRole('ROLE_MEMBER')){
-          console.info("goToState: " + 'member.account');
-          state.go('member.account');
-        } else if(identityService.isInRole('ROLE_TEACHER')){
-          console.info("goToState: " + 'admin.admin');
-          state.go('admin.admin');
-        } else if(identityService.isInRole('ROLE_SECRETARY')){
-          console.info("goToState: " + 'admin.secretariat');
-          state.go('admin.secretariat');
-        } else if(identityService.isInRole('ROLE_TREASURER')){
-          console.info("goToState: " + 'admin.treasury');
-          state.go('admin.treasury');
-        } else {
-          state.go('access-denied');
-        }
+        // if(aclService.isInRole('ROLE_MEMBER')){
+        //   console.info("goToState: " + 'member.account');
+        //   state.go('member.account');
+        // } else if(aclService.isInRole('ROLE_TEACHER')){
+        //   console.info("goToState: " + 'admin.admin');
+        //   state.go('admin.admin');
+        // } else if(aclService.isInRole('ROLE_SECRETARY')){
+        //   console.info("goToState: " + 'admin.secretariat');
+        //   state.go('admin.secretariat');
+        // } else if(aclService.isInRole('ROLE_TREASURER')){
+        //   console.info("goToState: " + 'admin.treasury');
+        //   state.go('admin.treasury');
+        // } else {
+        //   state.go('access-denied');
+        // }
       } else {
         state.go('index.login');
       }
