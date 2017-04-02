@@ -11,7 +11,7 @@ SubscriptionCancelController.prototype = {
     },
 
     cancelSubscription: function cancelSubscription() {
-      this.subscriptionService.cancelSubscription(this.subscription).then(function() {
+      this.subscriptionService.cancel(this.subscription).then(function() {
         this.subscription.selected = false;
         this.subscription.state = 'unpicked';
       }.bind(this));
