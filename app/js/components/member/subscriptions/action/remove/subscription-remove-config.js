@@ -1,3 +1,3 @@
-angular.module('app.subscriptions.actions.cancel', ['app.subscriptions.common'])
+angular.module('app.subscriptions.actions.remove', ['app.subscriptions.common'])
     .controller('subscriptionRemoveController', ['$scope', 'subscriptionCommandService', SubscriptionRemoveController])
     .directive('gsSubscriptionRemove', SubscriptionRemoveDirective);
