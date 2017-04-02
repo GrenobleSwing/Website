@@ -1,8 +1,8 @@
-function SubscriptionsSummaryController(identityService, subscriptionAmountService, subscriptionObservableService) {
+function SubscriptionsSummaryController(authenticationService, subscriptionAmountService, subscriptionObservableService) {
   this.subscriptionService = subscriptionAmountService;
   this.subscriptionObservableService = subscriptionObservableService;
 
-  this.user = identityService.getIdentity();
+  this.user = authenticationService.getIdentity();
 
   this.init_();
 }

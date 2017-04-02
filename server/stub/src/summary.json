@@ -73,7 +73,7 @@
   "amount": 10,
   "selected": true,
   "yearId": "2016-2017",
-  "state": "waiting_for_payment",
+  "state": "waiting",
   "type":"subscribe"
 }, {
   "id" : 8,
@@ -84,7 +84,7 @@
   "amount": 190,
   "selected": true,
   "yearId": "2016-2017",
-  "state": "waiting_for_payment",
+  "state": "waiting",
   "type":"duet"
 }, {
   "id" : 9,

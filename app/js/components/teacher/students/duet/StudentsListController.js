@@ -1,4 +1,4 @@
-function StudentsListController($scope, identityService, studentService) {
+function StudentsListController($scope, authenticationService, studentService) {
   this.class = $scope.class;
 
   this.studentService = studentService;

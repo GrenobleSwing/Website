@@ -63,10 +63,10 @@ function TranslateConfiguration($translateProvider) {
       'FORGOT_PASSWORD' : 'Mot de passe oublié ?',
       'RESET_PASSWORD' : 'Réinitialiser mon mot de passe'
     },
-    'waiting_for_payment' : 'En attente de paiement',
+    'submitted' : 'Demande transmise',
+    'waiting' : 'En attente de validation',
     'paid' : 'Payé',
     'unpicked' : '',
-    'waiting' : 'en attente',
     'ok' : 'OK'
   });
   $translateProvider.useSanitizeValueStrategy(null);

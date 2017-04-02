@@ -1,5 +1,5 @@
-angular.module('app.subscriptions.amount', ['app.users', 'app.subscriptions.common'])
+angular.module('app.subscriptions.amount', ['app.auth', 'app.subscriptions.common'])
   .directive('gsSubscriptionsAmount', SubscriptionsAmountDirective)
   .service('subscriptionAmountResource', ['$filter', '$q', '$resource', FakeSubscriptionAmountResource])
   .service('subscriptionAmountService', ['subscriptionAmountResource', SubscriptionsAmountService])
-  .controller('subscriptionsSummaryController', ['identityService', 'subscriptionAmountService', 'subscriptionObservableService', SubscriptionsSummaryController]);
+  .controller('subscriptionsSummaryController', ['authenticationService', 'subscriptionAmountService', 'subscriptionObservableService', SubscriptionsSummaryController]);

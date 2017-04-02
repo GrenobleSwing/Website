@@ -1,5 +1,5 @@
-function AccountEditController(identityService, accountService) {
-  this.identityService = identityService;
+function AccountEditController(authenticationService, accountService) {
+  this.authenticationService = authenticationService;
   this.accountService = accountService;
   this.account = {$ok: false};
   this.phonePattern = /^((\+|00)33\s?|0)[1-5](\s?\d{2}){4}$/;
@@ -11,7 +11,7 @@ AccountEditController.prototype = {
   		this.handleInitResponse_ = this.handleInitResponse_.bind(this);
       this.handleSaveResponse_ = this.handleSaveResponse_.bind(this);
 
-      this.identityService.getIdentity().then(function (user) {
+      this.authenticationService.getIdentity().then(function (user) {
         this.account = this.accountService.getByUserId(user.id).then(this.handleInitResponse_);
       }.bind(this));
     },

@@ -1,14 +1,17 @@
 function HomeRouterConfig($stateProvider) {
   $stateProvider
-    .state('member.home', {
-      parent: 'member',
+    .state('index.home', {
+      parent: 'index',
       url: '',
       views: {
         'content@': {
-          // templateUrl: "components/home/home.html",
-          template : '<p>HOME</p>',
+          templateUrl: "components/main/home/home.html",
+          // template : '<p>HOME</p>',
           controller: "homeController",
           controllerAs: "ctrl"
+        },
+        'header@' : {
+          template : '<gs-main-nav></gs-main-nav>'
         }
       }
   });

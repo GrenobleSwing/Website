@@ -1,4 +1,4 @@
-function LoginController($scope, $state, authenticationService, aclService) {
+function LoginController($scope, $state, authService, aclService) {
   this.scope = $scope;
   this.state = $state;
 
@@ -6,7 +6,7 @@ function LoginController($scope, $state, authenticationService, aclService) {
   this.password = "";
   this.authFailed = false;
 
-  this.authenticationService = authenticationService;
+  this.authService = authService;
   this.aclService = aclService;
 
   this.init_();
@@ -16,19 +16,13 @@ LoginController.prototype = {
   init_ : function init_() {
     this.handleSuccess_ = this.handleSuccess_.bind(this);
     this.handleError_ = this.handleError_.bind(this);
-
-    this.aclService.isInRole = this.aclService.isInRole.bind(this.aclService);
-
-    // this.authenticationService.clearCredentials();
-    // this.identityService.clearIdentity();
   },
 
   connect : function connect() {
     console.info("LoginController#connect");
     this.authFailed = false;
-    this.authenticationService
+    this.authService
       .login(this.login, this.password)
-      // .then(this.aclService.getIdentity.bind(this.identityService), this.handleError_)
       .then(this.handleSuccess_, this.handleError_);
   },
 
@@ -39,13 +33,13 @@ LoginController.prototype = {
       console.info("returnToState: " + this.scope.returnToState.name);
       this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
-      this.aclService
-        .isInAnyRole('ROLE_MEMBER', 'ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER')
+      return this.aclService
+        .isInAnyRole(['ROLE_MEMBER', 'ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER'])
         .then(function(response) {
           console.info(response);
-          console.info(response.data.defaultState.role + "go for state " + response.data.defaultState);
-          this.state.go(response.data.defaultState);
-        });
+          console.info(response.defaultState.role + " go for state " + response.defaultState);
+          this.state.go('index.home');
+        }.bind(this), this.handleError_);
     }
   },
 

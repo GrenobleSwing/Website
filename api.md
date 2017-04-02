@@ -249,7 +249,7 @@ API allowing the management of members, and their registration.
               "balance": -10,
               "selected": true,
               "yearId": "2016-2017",
-              "state": "waiting_for_payment",
+              "state": "waiting",
               "type":"subscribe",
               "requiredSubscriptions": []
             }, {
@@ -261,7 +261,7 @@ API allowing the management of members, and their registration.
               "balance": -190,
               "selected": true,
               "yearId": "2016-2017",
-              "state": "waiting_for_payment",
+              "state": "waiting",
               "type":"duet",
               "requiredSubscriptions": [{
                 "id" : 7,

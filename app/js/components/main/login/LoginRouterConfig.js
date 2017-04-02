@@ -11,8 +11,7 @@ function LoginRouterConfig($stateProvider) {
       },
       data: {
           permissions: {
-            except: ['AUTHORIZED'],
-            redirectTo : 'member.account'
+            only: ['ANONYMOUS']
           }
       }
     });

@@ -2,5 +2,6 @@
   "id" : 3,
   "login": "admin@test.com",
   "token": "Ouaich ! Man !",
-  "expires_in": 86400
+  "expires_in": 86400,
+  "roles" : ["ROLE_TEACHER", "ROLE_TOPIC_MANAGER"]
 }

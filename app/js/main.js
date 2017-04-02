@@ -1,5 +1,5 @@
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
-        'ui.router', 'permission',
+        'ui.router', 'permission', 'permission.ui',
         'ngMessages',
         'app.account',
         'app.acl',
@@ -15,7 +15,6 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'app.config',
         'app.home',
         'app.http',
-        'app.identity',
         'app.invoice.request',
         'app.login',
         'app.logout',
@@ -49,6 +48,10 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'sdt.models'
     ])
     .config(['$stateProvider', '$urlRouterProvider', DefaultRouteConfig])
+    // .config(function($interpolateProvider) {
+    //     $interpolateProvider.startSymbol('||');
+    //     $interpolateProvider.endSymbol('||');
+    // })
     .config(['$translateProvider', TranslateConfiguration]);
 
 function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
@@ -108,10 +111,10 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
         .state('access-denied', {
             url: '/denied',
             views: {
-                'nav':  {
+                'nav@':  {
                     template: ''
                 },
-                'header' : {
+                'header@' : {
                   template : ''
                 },
                 'content@': {
@@ -125,7 +128,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 'nav@':  {
                     template: ''
                 },
-                'header' : {
+                'header@' : {
                   template : ''
                 },
                 'content@': {
@@ -142,118 +145,75 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.otherwise( function($injector) {
       var state = $injector.get("$state");
-      var identityService = $injector.get("identityService");
-      var aclService = $injector.get("aclService");
+      var authenticationService = $injector.get("authenticationService");
 
-      console.info("go for otherwise");
+      // console.info("go for otherwise");
+      authenticationService.getIdentity().then(function() {
 
-      if (identityService.isAuthenticated()) {
-        // if(aclService.isInRole('ROLE_MEMBER')){
-        //   console.info("goToState: " + 'member.account');
-        //   state.go('member.account');
-        // } else if(aclService.isInRole('ROLE_TEACHER')){
-        //   console.info("goToState: " + 'admin.admin');
-        //   state.go('admin.admin');
-        // } else if(aclService.isInRole('ROLE_SECRETARY')){
-        //   console.info("goToState: " + 'admin.secretariat');
-        //   state.go('admin.secretariat');
-        // } else if(aclService.isInRole('ROLE_TREASURER')){
-        //   console.info("goToState: " + 'admin.treasury');
-        //   state.go('admin.treasury');
-        // } else {
-        //   state.go('access-denied');
-        // }
-      } else {
-        state.go('index.login');
-      }
+      }, function() {
+        state.go('index.logout');
+      });
     });
 }
 
-function run($rootScope, $state, $stateParams, tokenService, yearService) {
+function run($rootScope, $state, $stateParams, yearService, authenticationService, $cookies) {
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         $rootScope.toState = toState;
         $rootScope.toStateParams = toStateParams;
     });
 
-    $rootScope.$on('$stateChangePermissionStart', function(event, toState, toParams, options) {
-      console.info("Start of authorizing change to state " + toState.name);
-    });
-
-    $rootScope.$on('$stateChangePermissionAccepted', function(event, toState, toParams, options) {
-      console.info("One of the permissions has been accepted and the state changes successfully to " + toState.name);
-    });
-
-    $rootScope.$on('$stateChangePermissionDenied', function(event, toState, toParams, options) {
-      console.info("Access to the target state " + toState.name + " is not granted.");
-    });
-
-    tokenService.isValid()
-    .then(function(token) {
-        console.info("user is identified");
-      }, function() {
-        console.info("user is unknown");
-        $state.go('index.login');
-      })
-    .then(yearService.getCurrentYear.bind(yearService))
-    .then(function(year) {
-        console.info("year is identified");
-        console.info(year);
-      });
+    authenticationService
+      .getIdentity(true)
+      .then(function(response) {
+          console.info("user is identified");
+          return yearService.getCurrentYear().then(function(response) {
+              console.info("year is identified");
+              console.info(response);
+              $state.go('index.home');
+              return response;
+            });
+        }, function(error) {
+          console.info("user is unknown");
+          $state.go('index.login');
+          return error;
+        });
 }
 
-function withPermissions(PermPermissionStore, identityService) {
+function withPermissions(PermPermissionStore, aclService) {
   var permissions = ['canViewProfile', 'canViewSubscriptions', 'canViewTopics', 'canViewClasses'];
 
   PermPermissionStore.defineManyPermissions(permissions, function (permissionName, transitionProperties) {
-    // console.info("withPermission : " + permissionName);
-    return identityService.hasPermission(permissionName);
+    return aclService.hasPermission(permissionName);
   });
-
-  // console.info(PermPermissionStore.getStore());
 }
 
-function withRoles(PermRoleStore, identityService, $q) {
+function withRoles(PermRoleStore, authenticationService, aclService, $q) {
   PermRoleStore
     .defineRole('ANONYMOUS', function (stateParams, roleName) {
-      var deferred = $q.defer();
-      identityService.getIdentity()
-      .then(function(response) {
-        if (!response.data.$ok) {
-          deferred.resolve(response.data);
-        } else {
-          deferred.reject(response.data);
-        }
-      });
-      return deferred.promise;
-     });
-
-   PermRoleStore
-     .defineRole('AUTHORIZED', function (stateParams, roleName) {
-         return identityService.getIdentity();
-      });
-
-  PermRoleStore
-
-  .defineRole('ROLE_MEMBER', function(roleName, transitionProperties) {
-    var result =  identityService.isInRole(roleName);
-    console.info(roleName + ' ? ' + result);
-    return result;
-  });
-  PermRoleStore
-    .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
-      var result =  identityService.isInRole(roleName);
-      console.info(roleName + ' ? ' + result);
-      return result;
+      console.info('check ANONYMOUS');
+      return authenticationService.isAnonymous();
     });
 
-    // console.info(PermRoleStore.getStore());
+  PermRoleStore
+    .defineRole('AUTHORIZED', function (stateParams, roleName) {
+      console.info('check AUTHORIZED');
+      return authenticationService.isAuthenticated();
+    });
 
-    // console.info(PermRoleStore.getRoleDefinition('ROLE_MEMBER'));
+  PermRoleStore
+    .defineRole('ROLE_MEMBER', function(roleName, transitionProperties) {
+      return aclService.isInRole(roleName);
+    });
+
+  PermRoleStore
+    .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
+      return aclService.isInRole(roleName);
+    });
 }
 
 angular
   .module('app')
-  .run(['$rootScope', '$state', '$stateParams', 'tokenService', 'yearService', run])
-  .run(['PermPermissionStore', 'identityService', withPermissions])
-  .run(['PermRoleStore', 'identityService', withRoles]);
+  .run(['$rootScope', '$state', '$stateParams', 'yearService', 'authenticationService', run])
+  .run(['PermPermissionStore', 'authenticationService', withPermissions])
+  .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);

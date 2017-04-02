@@ -21,4 +21,4 @@ angular.module('app.acl', ['app.users'])
           'defaultState' : 'admin.treasury'
       }
     })
-    .service('aclService', ['$q', 'roleMap', 'identityService', AclService]);
+    .service('aclService', ['$q', 'roleMap', 'authenticationService', AclService]);

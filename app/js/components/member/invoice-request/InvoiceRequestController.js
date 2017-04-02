@@ -1,8 +1,8 @@
-function InvoiceRequestController($http, config, identityService) {
+function InvoiceRequestController($http, config, authenticationService) {
   this.http = $http;
   this.config = config;
 
-  this.identity = identityService.getIdentity().then(this.init_);
+  this.identity = authenticationService.getIdentity().then(this.init_);
 }
 
 InvoiceRequestController.prototype = {

@@ -1,6 +1,6 @@
-function AclService($q, roleMap, identityService)  {
-
-  this.identityService = identityService;
+function AclService($q, roleMap, authenticationService)  {
+  this.q = $q;
+  this.authenticationService = authenticationService;
 
   this.roleMap = roleMap;
 
@@ -9,49 +9,55 @@ function AclService($q, roleMap, identityService)  {
 }
 
 AclService.prototype = {
+
   isInRole: function isInRole(role) {
+    var deferred = this.q.defer();
 
-    return this.identityService.getIdentity().then(function(response) {
+    this.authenticationService.getIdentity().then(function(response) {
       console.info(response);
-      var deferred = this.q;
 
-      if (response.data.roles.indexOf(role) != -1) {
-        deferred.resolve(this.roleMap(role));
+      if (response.data.roles.indexOf(role) != -1 && this.roleMap[role] !== undefined) {
+        console.info("AclService#isInRole#accept for " + role);
+        deferred.resolve(this.roleMap[role]);
       } else {
+        console.info("AclService#isInRole#reject for " + role);
         deferred.reject({'role' : 'none'});
       }
-      return deferred.promise;
     }.bind(this));
+    return deferred.promise;
   },
 
   isInAnyRole: function isInAnyRole(roles) {
-
-    return this.identityService.getIdentity().then(function(response) {
+    var deferred = this.q.defer();
+    console.info(roles);
+    this.authenticationService.getIdentity().then(function(response) {
       console.info(response);
-      var deferred = this.q;
       var result = false;
+      var targetRole = "none";
       for (var i = 0; i < roles.length; i++) {
-        for (var j = 0 ; j < roles.length; j++) {
           if (response.data.roles.indexOf(roles[i]) != -1) {
               result = true;
+              targetRole = roles[i];
           }
-        }
       }
 
-      if (result) {
-        deferred.resolve({});
+      if (result && this.roleMap[targetRole] !== undefined) {
+        deferred.resolve(this.roleMap[targetRole]);
+        console.info("AclService#isInAnyRole#accept");
       } else {
+        console.info("AclService#isInAnyRole#reject");
         deferred.reject({});
       }
-      return deferred.promise;
-    }.bind(this));
 
+    }.bind(this));
+    return deferred.promise;
   },
 
   hasPermission : function hasPermission(permissionName) {
-    return this.identityService.getIdentity().then(function(response) {
+    var deferred = this.q.defer();
+    console.info(permissionName);
+    this.authenticationService.getIdentity().then(function(response) {
       console.info(response);
-      var deferred = this.q;
       var result = false;
       var roles = response.data.roles;
       var targetRole = 'none';
@@ -64,12 +70,14 @@ AclService.prototype = {
       }
 
       if (result) {
+        console.info("AclService#hasPermission#accept");
         deferred.resolve({'role' : targetRole});
       } else {
+        console.info("AclService#hasPermission#reject");
         deferred.reject({'role' : 'none'});
       }
-      return deferred.promise;
     }.bind(this));
+    return deferred.promise;
   },
 
 

@@ -1,7 +1,6 @@
-function MainNavController($scope, $state, authenticationService, aclService) {
-  this.scope = $scope;
+function MainNavController($state, authenticationService) {
   this.state = $state;
-  this.aclService = aclService;
+
   this.authenticationService = authenticationService;
 
   this.isOpen = false;
@@ -13,30 +12,16 @@ function MainNavController($scope, $state, authenticationService, aclService) {
 MainNavController.prototype = {
 
   init_: function init_() {
-    this.identityService
+    this.authenticationService
       .getIdentity()
-      .then(function(data) {
-        this.identity = data;
+      .then(function(response) {
+        console.info(response);
+        this.identity = response.data;
       }.bind(this));
   },
 
-  isLogged: function isLogged() {
-    return this.identityService.isAuthenticated();
-  },
-
-  hasPermission: function hasPermission(role) {
-    return this.aclService.isInRole(role);
-  },
-
-  hasPermissions: function hasPermissions(roles) {
-    return this.identityService.isInAnyRole(roles);
-  },
-
-
   logout: function logout() {
     console.info("MainNavController#controller#logout");
-    this.authenticationService.clearCredentials();
-    this.identityService.clearIdentity();
-    this.state.go('index.login');
+    this.state.go('index.logout');
   }
 };

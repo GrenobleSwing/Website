@@ -4,11 +4,10 @@ function LogoutRouterConfig($stateProvider) {
 		views: {
       'content@': {
         template : "<div />",
-        controller: function ($state, authenticationService, identityService) {
-          authenticationService.clearCredentials();
-          identityService
-            .clearIdentity()
-            .then(function() {
+        controller: function ($state, authenticationService) {
+          authenticationService
+            .clearCredentials()
+            .finally(function() {
               console.info("LogoutRouterConfig#logout");
               $state.go('index.login');
             });

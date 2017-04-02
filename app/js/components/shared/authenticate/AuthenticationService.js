@@ -1,7 +1,8 @@
-function AuthenticationService($rootScope, $cookies, $http, authResource) {
+function AuthenticationService($rootScope, $cookies, $http, $q, authResource) {
   this.authResource = authResource;
   this.rootScope = $rootScope;
   this.cookies = $cookies;
+  this.q = $q;
   this.http = $http;
 
   this.init_();
@@ -9,43 +10,73 @@ function AuthenticationService($rootScope, $cookies, $http, authResource) {
 
 AuthenticationService.prototype = {
     init_ : function init_() {
-      this.handleError_ = this.handleError_.bind(this);
-      this.handleSuccess_ = this.handleSuccess_.bind(this);
+      this.handleLoginSuccess_ = this.handleLoginSuccess_.bind(this);
     },
 
     login: function login(username, password) {
-      return this.authResource.authenticate(username, password).then(this.handleSuccess_);
+      return this.authResource.authenticate(username, password).then(this.handleLoginSuccess_);
     },
 
     clearCredentials : function clearCredentials() {
+
+      return this.authResource.terminate(this.cookies.getObject('globals').currentUser).then(function(response) {
         this.rootScope.globals = {};
         this.cookies.remove('globals');
-        this.http.defaults.headers.common.Authorization = 'Basic';
+        this.http.defaults.headers.common.Authorization = 'Bearer';
+        return response;
+      }.bind(this));
+    },
+
+    getIdentity: function getIdentity(force) {
+      var deferred = this.q.defer();
+
+      if (this.isIdentified_() && !force) {
+        deferred.resolve({data : this.cookies.getObject('globals').currentUser});
+        return deferred.promise;
+      }
+
+      return this.authResource.getCurrentUser();
+    },
+
+
+    isAnonymous : function isAnonymous() {
+      return !this.isIdentified_();
+    },
+
+    isAuthenticated : function isAuthenticated() {
+      return this.isIdentified_();
+    },
+
+    /**
+     * @private
+     */
+    isIdentified_: function isIdentified_() {
+      var data = this.cookies.getObject('globals');
+      console.info(data);
+      return data !== undefined && data.currentUser !== undefined && data.currentUser.userId !== undefined;
     },
 
     /**
      * @link https://jwt.io/introduction/
      * @private
      */
-    handleSuccess_ : function handleSuccess_(data) {
+    handleLoginSuccess_ : function handleLoginSuccess_(response) {
+      console.info(response);
+      var user = response.data;
       this.rootScope.globals = {
         currentUser: {
-            userId: data.id,
-            token: data.token
+            userId : user.id,
+            login : user.login,
+            roles : user.roles,
+            token : user.token
         }
       };
 
       var expirationDate = new Date();
-      expirationDate.setSeconds(data.expires_in);
-      this.cookies.put('globals', this.rootScope.globals, {expires: expirationDate});
+      expirationDate.setSeconds(user.expires_in);
+      this.cookies.putObject('globals', this.rootScope.globals, {expires: expirationDate});
 
-      this.http.defaults.headers.common['Authorization'] = 'Bearer ' + data.token; // jshint ignore:line
-      return data;
-    },
-
-    handleError_: function handleError_(error) {
-        return function () {
-            return { success: false, message: error };
-        };
+      this.http.defaults.headers.common.Authorization = 'Bearer ' + user.token;
+      return response;
     }
 };

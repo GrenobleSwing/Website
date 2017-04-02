@@ -1,4 +1,4 @@
-function ClassesListController(identityService, classService) {
+function ClassesListController(authenticationService, classService) {
   this.classService = classService;
 
   this.list = undefined;
@@ -6,7 +6,7 @@ function ClassesListController(identityService, classService) {
   this.init_ = this.init_.bind(this);
   this.handleInitSuccess_ = this.handleInitSuccess_.bind(this);
 
-  this.identity = identityService.getIdentity().then(this.init_);
+  this.identity = authenticationService.getIdentity().then(this.init_);
 }
 
 ClassesListController.prototype = {

@@ -17,7 +17,7 @@ SubscriptionAddController.prototype = {
 
   validateSoloSubscription_: function validateSoloSubscription_(subscription) {
     subscription.selected = true;
-    subscription.state = "waiting_for_payment";
+    subscription.state = "submitted";
 
     this.subscriptionService.saveSubscription(subscription);
 
@@ -43,22 +43,22 @@ SubscriptionAddController.prototype = {
         });
 
         modalInstance.result.then(function (value) {
-          this.subscription.role = value.role;
-          this.subscription.partnerName = value.partnerName;
+          subscription.role = value.role;
+          subscription.partnerName = value.partnerName;
           this.handleValidationSuccess_(subscription);
         }.bind(this), function () {
 
         });
   },
 
-  handleValidationSuccess_: function handleValidationSuccess_() {
-    this.subscription.selected = true;
-    this.subscription.state = "waiting_for_payment";
+  handleValidationSuccess_: function handleValidationSuccess_(subscription) {
+    subscription.selected = true;
+    subscription.state = "submitted";
 
-    this.subscriptionService.saveSubscription(this.subscription);
+    this.subscriptionService.saveSubscription(subscription);
 
-    for (var i = 0; i < this.subscription.requirements.length; i++) {
-      this.subscriptionObservableService.notifyListeners(this.subscription.requirements[i]);
+    for (var i = 0; i < subscription.requirements.length; i++) {
+      this.subscriptionObservableService.notifyListeners(subscription.requirements[i]);
     }
   }
 };

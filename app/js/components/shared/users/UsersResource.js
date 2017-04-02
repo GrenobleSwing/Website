@@ -1,14 +1,9 @@
 function UsersResource($http, config) {
   this.config = config;
   this.http = $http;
-
-  this.init_();
 }
 
 UsersResource.prototype = {
-    init_ : function init_() {
-
-    },
 
     /**
   	 *

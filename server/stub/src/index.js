@@ -6,19 +6,64 @@ var cors = require('cors');
 
 app.use(cors());
 
-function updateResponseHeader(response) {
-  response.setHeader('Content-Type', 'application/json');
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
-  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+function updateResponseHeader(request, response) {
 
-  var identity = cache.get('identity');
-  if (identity === null) {
-    console.log("identity is missing...");
-    response.writeHead(400, {'Content-Type': 'text/plain'});
-  } else {
-    response.writeHead(200, {'Content-Type': 'text/plain'});
+  // auth is in base64(username:password)  so we need to decode the base64
+  var auth = request.headers.authorization;
+  console.log("Authorization Header is: ", auth);
+
+  if(!auth) {
+       // No Authorization header was passed in so it's the first time the browser hit us
+
+         // Sending a 401 will require authentication, we need to send the 'WWW-Authenticate' to tell them the sort of authentication to use
+         // Basic auth is quite literally the easiest and least secure, it simply gives back  base64( username + ":" + password ) from the browser
+         response.statusCode = 401;
+         response.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+         response.setHeader('Content-Type', 'application/json');
+
+        //  response.end('<html><body>Need some creds son</body></html>');
+   } else {
+     // The Authorization was passed in so now we validate it
+
+       // var tmp = auth.split(' ');   // Split on a space, the original auth looks like  "Basic Y2hhcmxlczoxMjM0NQ==" and we need the 2nd part
+
+       // var buf = new Buffer(tmp[1], 'base64'); // create a buffer and tell it the data coming in is base64
+       // var plain_auth = buf.toString();        // read it back out as a string
+
+      //  console.log("Decoded Authorization ", plain_auth);
+
+       // At this point plain_auth = "username:password"
+
+      //  var creds = plain_auth.split(':');      // split on a ':'
+      //  var username = creds[0];
+      //  var password = creds[1];
+
+      //  if((username == 'hack') && (password == 'thegibson')) {   // Is the username/password correct?
+
+           response.statusCode = 200;  // OK
+           response.setHeader('Content-Type', 'application/json');
+           response.setHeader('Access-Control-Allow-Origin', '*');
+           response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+           response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      //  } else {
+      //    response.setHeader('Content-Type', 'application/json');
+      //      response.statusCode = 401; // Force them to retry authentication
+      //      response.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+
+           // res.statusCode = 403;   // or alternatively just reject them altogether with a 403 Forbidden
+
+          //  response.end('<html><body>You shall not pass</body></html>');
+      //  }
   }
+
+
+  // var identity = cache.get('identity');
+  // if (identity === null) {
+  //   console.log("identity is missing...");
+  //   response.writeHead(400, {'Content-Type': 'text/plain'});
+  // } else {
+  //   response.writeHead(200, {'Content-Type': 'text/plain'});
+  // }
 }
 
 /**
@@ -28,7 +73,8 @@ var accountRouter = express.Router();
 var account = require('./account.json');
 accountRouter.get('/:id', function(request, response) {
   console.log("=================== /api/v1/account/:id GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   response.write(JSON.stringify(account));
   response.end();
 });
@@ -36,7 +82,8 @@ accountRouter.get('/:id', function(request, response) {
 var accounts = require('./accounts.json');
 accountRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/account/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   response.write(JSON.stringify(accounts));
   response.end();
 });
@@ -49,7 +96,8 @@ var subscriptionRouter = express.Router();
 var subscriptions = require('./subscriptions.json');
 subscriptionRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/subscription/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var userId = request.query.userId;
   var yearId = request.query.yearId;
   console.log("userId: " + userId);
@@ -63,7 +111,8 @@ subscriptionRouter.get('/', function(request, response) {
 
 subscriptionRouter.get('/:id', function(request, response) {
   console.log("=================== /api/v1/subscription/:id GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var id = request.params.id;
   var filteredSubscriptions = subscriptions.filter(function(x) {
     return x.id == id;
@@ -77,6 +126,16 @@ subscriptionRouter.get('/:id', function(request, response) {
   }
   response.end();
 });
+
+subscriptionRouter.put('/:id', function(request, response) {
+  console.log("=================== /api/v1/subscription/:id PUT ===================");
+
+  updateResponseHeader(request, response);
+  var id = request.params.id;
+  console.log("subscriptionId="+id);
+
+  response.end();
+});
 app.use('/api/v1/subscription/', subscriptionRouter);
 
 /**
@@ -86,7 +145,8 @@ var summaryRouter = express.Router();
 var summaries = require('./summary.json');
 summaryRouter.get('/:id', function(request, response) {
   console.log("=================== /api/v1/summary/:id GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var id = request.params.id;
   var filteredSummaries = summaries.filter(function(x) {
     return x.id == id;
@@ -103,7 +163,8 @@ summaryRouter.get('/:id', function(request, response) {
 
 summaryRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/summary/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var userId = request.query.userId;
   var yearId = request.query.yearId;
 
@@ -124,7 +185,8 @@ var topicRouter = express.Router();
 var topics = require('./topics.json');
 topicRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/topic/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   response.write(JSON.stringify(topics));
   response.end();
 });
@@ -137,7 +199,8 @@ var classRouter = express.Router();
 var classes = require('./classes.json');
 classRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/class/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var userId = request.query.userId;
   var yearId = request.query.yearId;
   console.log("userId: " + userId);
@@ -151,7 +214,8 @@ classRouter.get('/', function(request, response) {
 
 classRouter.get('/:id', function(request, response) {
   console.log("=================== /api/v1/class/:id GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var id = request.params.id;
   var filteredclasses = classes.filter(function(x) {
     return x.id == id;
@@ -174,7 +238,8 @@ var studentRouter = express.Router();
 var students = require('./students.json');
 studentRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/student/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var userId = request.query.userId;
   var yearId = request.query.yearId;
   console.log("userId: " + userId);
@@ -188,7 +253,8 @@ studentRouter.get('/', function(request, response) {
 
 studentRouter.get('/:id', function(request, response) {
   console.log("=================== /api/v1/student/:id GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   var id = request.params.id;
   var filteredstudents = students.filter(function(x) {
     return x.id == id;
@@ -210,9 +276,10 @@ app.use('/api/v1/student/', studentRouter);
  var userRouter = express.Router();
 userRouter.get('/:id', function(request, response) {
   console.log("=================== /api/v1/user/:id GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   if (request.params.id == 3) {
-    response.write(JSON.stringify(johnDoeUser));    updateResponseHeader(response);
+    response.write(JSON.stringify(johnDoeUser));    updateResponseHeader(request, response);
 
   } else {
     response.write(JSON.stringify(adminUser));
@@ -224,9 +291,28 @@ app.use('/api/v1/user/', userRouter);
 var users = require('./users.json');
 userRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/user/ GET ===================");
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   response.write(JSON.stringify(users));
   response.end();
+});
+
+userRouter.post('/', function(request, response) {
+  console.log("=================== /api/v1/user/ POST ===================");
+
+
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.writeHead(201, {'Content-Type': 'text/plain'});
+
+  request.on('data', function(chunk) {
+    var data = JSON.parse(chunk);
+    console.log(data);
+    cache.put('user', data);
+    response.end();
+  });
 });
 app.use('/api/v1/user/', userRouter);
 
@@ -251,7 +337,12 @@ authRouter.post('/', function(request, response) {
       adminToken.token = createToken(login);
       cache.put('token', adminToken);
       cache.put('identity', adminUser);
-      updateResponseHeader(response);
+
+      response.statusCode = 200;  // OK
+      response.setHeader('Content-Type', 'application/json');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+      response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       response.write(JSON.stringify(adminToken));
       response.end();
     } else if (login === 'wrong@login.com') {
@@ -261,7 +352,12 @@ authRouter.post('/', function(request, response) {
       johnDoeToken.token = createToken(login);
       cache.put('token', johnDoeToken);
       cache.put('identity', johnDoeUser);
-      updateResponseHeader(response);
+
+      response.statusCode = 200;  // OK
+      response.setHeader('Content-Type', 'application/json');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+      response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       response.write(JSON.stringify(johnDoeToken));
       response.end();
     }
@@ -274,6 +370,8 @@ app.use('/api/v1/auth/', authRouter);
  */
  var tokenRouter = express.Router();
  tokenRouter.get('/', function(request, response) {
+
+
    response.setHeader('Content-Type', 'application/json');
    response.setHeader('Access-Control-Allow-Origin', '*');
    response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
@@ -282,9 +380,9 @@ app.use('/api/v1/auth/', authRouter);
    console.log("=================== /api/v1/token GET ===================");
    response.writeHead(200, {'Content-Type': 'text/plain'});
 
-   var identity = cache.get('identity');
-   if (identity !== null) {
-     console.log(identity);
+   var token = cache.get('token');
+   if (token !== null) {
+     console.log(token);
      response.write(JSON.stringify({token : "mySuperToken", status: "OK", expiresIn : 86400}));
    } else {
      response.write(JSON.stringify({token : "", status: "NOK", expiresIn : 0}));
@@ -299,7 +397,8 @@ app.use('/api/v1/auth/', authRouter);
  */
 var identityRouter = express.Router();
 identityRouter.get('/', function(request, response) {
-  updateResponseHeader(response);
+
+  updateResponseHeader(request, response);
   console.log("=================== /api/v1/identity GET ===================");
 
   var identity = cache.get('identity');
@@ -318,6 +417,7 @@ app.use('/api/v1/identity/', identityRouter);
 logoutRouter.post('/', function(request, response) {
   console.log("=================== /api/v1/logout/ POST ===================");
 
+
   response.setHeader('Content-Type', 'application/json');
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
@@ -335,6 +435,8 @@ app.use('/api/v1/logout/', logoutRouter);
 var yearRouter = express.Router();
 yearRouter.get('/current', function(request, response) {
   console.log("=================== /api/v1/year/current GET ===================");
+
+
   response.setHeader('Content-Type', 'application/json');
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
@@ -347,6 +449,8 @@ yearRouter.get('/current', function(request, response) {
 
 yearRouter.get('/next', function(request, response) {
   console.log("=================== /api/v1/year/next GET ===================");
+
+
   response.setHeader('Content-Type', 'application/json');
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
@@ -359,6 +463,7 @@ yearRouter.get('/next', function(request, response) {
 
 yearRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/year/all GET ===================");
+
   response.setHeader('Content-Type', 'application/json');
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');

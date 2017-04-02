@@ -1,4 +1,4 @@
-function SubscriptionsListController(identityService, subscriptionService) {
+function SubscriptionsListController(authenticationService, subscriptionService) {
   this.subscriptionService = subscriptionService;
   this.list = undefined;
   this.originalList = undefined;
@@ -7,14 +7,14 @@ function SubscriptionsListController(identityService, subscriptionService) {
   this.init_ = this.init_.bind(this);
   this.handleInitSuccess_ = this.handleInitSuccess_.bind(this);
 
-  this.identity = identityService.getIdentity().then(this.init_);
+  this.identity = authenticationService.getIdentity().then(this.init_);
 
 }
 
 SubscriptionsListController.prototype = {
     init_ : function init_(identity) {
-      this.identity = identity;
-      this.subscriptionService.getSubscriptionsByUserId(identity.id).then(this.handleInitSuccess_);
+      this.identity = identity.data;
+      this.subscriptionService.getSubscriptionsByUserId(this.identity.userId).then(this.handleInitSuccess_);
     },
 
     handleInitSuccess_ : function handleInitSuccess_(data) {
