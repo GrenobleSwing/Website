@@ -1,5 +1,12 @@
-function HttpInterceptor($q, $injector) {
+function HttpInterceptor($q, $injector, $cookies) {
   return {
+    'request': function (config) {
+        config.headers = config.headers || {};
+        if ($cookies.getObject('globals') && $cookies.getObject('globals').currentUser) {
+            config.headers.Authorization = 'Bearer ' + $cookies.getObject('globals').currentUser.token;
+        }
+        return config;
+    },
     'response': function(response) {
 
         if (response.status === 401) {

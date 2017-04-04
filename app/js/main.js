@@ -163,21 +163,21 @@ function run($rootScope, $state, $stateParams, yearService, authenticationServic
         $rootScope.toStateParams = toStateParams;
     });
 
-    authenticationService
-      .getIdentity(true)
-      .then(function(response) {
-          console.info("user is identified");
-          return yearService.getCurrentYear().then(function(response) {
-              console.info("year is identified");
-              console.info(response);
-              $state.go('index.home');
-              return response;
-            });
-        }, function(error) {
-          console.info("user is unknown");
-          $state.go('index.login');
-          return error;
-        });
+    // authenticationService
+    //   .getIdentity(true)
+    //   .then(function(response) {
+    //       console.info("user is identified");
+    //       return yearService.getCurrentYear().then(function(response) {
+    //           console.info("year is identified");
+    //           console.info(response);
+    //           $state.go('index.home');
+    //           return response;
+    //         });
+    //     }, function(error) {
+    //       console.info("user is unknown");
+    //       $state.go('index.login');
+    //       return error;
+    //     });
 }
 
 function withPermissions(PermPermissionStore, aclService) {

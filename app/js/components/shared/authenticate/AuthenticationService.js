@@ -19,12 +19,12 @@ AuthenticationService.prototype = {
 
     clearCredentials : function clearCredentials() {
 
-      return this.authResource.terminate(this.cookies.getObject('globals').currentUser).then(function(response) {
+      // return this.authResource.terminate(this.cookies.getObject('globals').currentUser).then(function(response) {
         this.rootScope.globals = {};
         this.cookies.remove('globals');
         this.http.defaults.headers.common.Authorization = 'Bearer';
-        return response;
-      }.bind(this));
+      //   return response;
+      // }.bind(this));
     },
 
     getIdentity: function getIdentity(force) {
