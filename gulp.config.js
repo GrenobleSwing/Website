@@ -12,7 +12,8 @@ module.exports = {
   dist_dir: {
       root: 'dist',
       js: 'dist/js',
-      css: 'dist/css'
+      css: 'dist/css',
+      tpl: 'dist/js',
   },
   app_files: {
     js: [

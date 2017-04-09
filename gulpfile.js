@@ -83,6 +83,9 @@ gulp.task('dist', ['clean:dist'], function() {
     var styleStream = series(gulp.src(config.app_files.styles), gulp.src(config.lib_files.styles))
         .pipe(gulp.dest(config.dist_dir.css));
 
+    var assetsStream = gulp.src(config.lib_files.assets)
+      .pipe(gulp.dest(config.build_dir.fonts));
+
     // Concatenate vendor scripts
     var vendorStream = gulp.src(config.lib_files.js)
       .pipe(concat('vendors.js'))
@@ -100,9 +103,16 @@ gulp.task('dist', ['clean:dist'], function() {
       .pipe(uglify())
       .pipe(gulp.dest(config.dist_dir.js));
 
+
+    // Concatenate HTML templates
+    var templates = gulp.src(config.app_files.tpl)
+      .pipe(templateCache('templates.js', {module : 'app' }))
+      .pipe(gulp.dest(config.dist_dir.tpl));
+
+
     // Populate index.html with JS
     var htmlStream = gulp.src('app/index.html')
-      .pipe(inject(series(styleStream, vendorStream, sourceStream), {ignorePath: 'dist'}))
+      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {ignorePath: 'dist'}))
       .pipe(gulp.dest(config.dist_dir.root));
 });
 
