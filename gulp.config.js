@@ -47,14 +47,11 @@ module.exports = {
       'bower_components/angular-bootstrap/ui-bootstrap.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'bower_components/angular-ui-router/release/angular-ui-router.js',
-      'bower_components/angular-ui-grid/ui-grid.js',
+      // 'bower_components/angular-ui-grid/ui-grid.js',
       'bower_components/bootstrap/js/bootstrap.js',
     ],
     styles: [
       // 'bower_components/bootstrap/dist/css/bootstrap.css',
-      'bower_components/angular-ui-grid/ui-grid.css',
-      'bower_components/angular-ui-grid/ui-grid.ttf',
-      'bower_components/angular-ui-grid/ui-grid.woff'
     ],
     assets: [
       'bower_components/bootstrap/fonts/**'
