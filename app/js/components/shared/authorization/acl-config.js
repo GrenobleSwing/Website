@@ -19,6 +19,11 @@ angular.module('app.acl', ['app.users'])
           'role': 'ROLE_TREASURER',
           'permissions' : [],
           'defaultState' : 'admin.treasury'
+      },
+      'ROLE_ADMIN': {
+        'role': 'ROLE_ADMIN',
+        'permissions' : [],
+        'defaultState' : 'index.home'
       }
     })
     .service('aclService', ['$q', 'roleMap', 'authenticationService', AclService]);
