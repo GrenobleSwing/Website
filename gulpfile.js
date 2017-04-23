@@ -63,7 +63,7 @@ gulp.task('build', ['clean:build'], function() {
 
     // Populate index.html with JS
     var htmlStream = gulp.src('app/index.html')
-      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {ignorePath: ['build', 'app']}))
+      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {ignorePath: ['build', 'app'], addRootSlash: false}))
       .pipe(gulp.dest(config.build_dir.root));
 
 
@@ -112,7 +112,7 @@ gulp.task('dist', ['clean:dist'], function() {
 
     // Populate index.html with JS
     var htmlStream = gulp.src('app/index.html')
-      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {ignorePath: 'dist'}))
+      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {ignorePath: 'dist', addRootSlash: false}))
       .pipe(gulp.dest(config.dist_dir.root));
 });
 
