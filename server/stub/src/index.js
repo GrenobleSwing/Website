@@ -78,13 +78,25 @@ accountRouter.get('/:id', function(request, response) {
   response.write(JSON.stringify(account));
   response.end();
 });
-
-var accounts = require('./accounts.json');
-accountRouter.get('/', function(request, response) {
-  console.log("=================== /api/v1/account/ GET ===================");
+accountRouter.get('/new', function(request, response) {
+  console.log("=================== /api/v1/account/new GET ===================");
 
   updateResponseHeader(request, response);
-  response.write(JSON.stringify(accounts));
+  response.write(JSON.stringify(form));
+  response.end();
+});
+accountRouter.get('/:id/remove', function(request, response) {
+  console.log("=================== /api/v1/account/:id /remove GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+accountRouter.get('/:id/edit', function(request, response) {
+  console.log("=================== /api/v1/account/:id /edit GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
   response.end();
 });
 app.use('/api/v1/account/', accountRouter);
@@ -188,6 +200,34 @@ topicRouter.get('/', function(request, response) {
 
   updateResponseHeader(request, response);
   response.write(JSON.stringify(topics));
+  response.end();
+});
+topicRouter.get('/new', function(request, response) {
+  console.log("=================== /api/v1/topic/new GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+topicRouter.get('/:id/remove', function(request, response) {
+  console.log("=================== /api/v1/topic/:id /remove GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+topicRouter.get('/:id/edit', function(request, response) {
+  console.log("=================== /api/v1/topic/:id /edit GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+topicRouter.get('/:id/activity/new', function(request, response) {
+  console.log("=================== /api/v1/topic/registration/new GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
   response.end();
 });
 app.use('/api/v1/topic/', topicRouter);
@@ -446,7 +486,6 @@ yearRouter.get('/current', function(request, response) {
   response.write(JSON.stringify({current : "2016-2017"}));
   response.end();
 });
-
 yearRouter.get('/next', function(request, response) {
   console.log("=================== /api/v1/year/next GET ===================");
 
@@ -460,7 +499,6 @@ yearRouter.get('/next', function(request, response) {
   response.write(JSON.stringify({next : "2017-2018"}));
   response.end();
 });
-
 yearRouter.get('/', function(request, response) {
   console.log("=================== /api/v1/year/all GET ===================");
 
@@ -473,8 +511,260 @@ yearRouter.get('/', function(request, response) {
   response.write(JSON.stringify({current : "2016-2017", "next" : "2017-2018"}));
   response.end();
 });
+yearRouter.get('/new', function(request, response) {
+  console.log("=================== /api/v1/year/new GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+yearRouter.get('/:id/remove', function(request, response) {
+  console.log("=================== /api/v1/year/:id /remove GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+yearRouter.get('/:id/edit', function(request, response) {
+  console.log("=================== /api/v1/year/:id /edit GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+yearRouter.get('/:id/activity/new', function(request, response) {
+  console.log("=================== /api/v1/year/:id /edit GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
 app.use('/api/v1/year/', yearRouter);
 
+var paymentRouter = express.Router();
+paymentRouter.get('/new', function(request, response) {
+ console.log("=================== /api/v1/payment/new GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+paymentRouter.get('/:id/edit', function(request, response) {
+ console.log("=================== /api/v1/payment/:id/edit GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+paymentRouter.get('/:id/remove', function(request, response) {
+ console.log("=================== /api/v1/payment/:id/remove GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+
+/**
+ * ACTIVITE
+ */
+ var activityRouter = express.Router();
+ activityRouter.get('/new', function(request, response) {
+   console.log("=================== /api/v1/activity/new GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ activityRouter.get('/:id/remove', function(request, response) {
+   console.log("=================== /api/v1/activity/:id /remove GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ activityRouter.get('/:id/edit', function(request, response) {
+   console.log("=================== /api/v1/activity/:id /edit GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ activityRouter.get('/:id/category/new', function(request, response) {
+   console.log("=================== /api/v1/activity/:id/category/new GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ activityRouter.get('/:id/discount/new', function(request, response) {
+   console.log("=================== /api/v1/activity/:id/discount/new GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ activityRouter.get('/:id/topic/new', function(request, response) {
+   console.log("=================== /api/v1/activity/:id/topic/new GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+app.use('/api/v1/activity/', activityRouter);
+
+/**
+ * CATEGORIE
+ */
+ var form = require('./form.json');
+ var categoryRouter = express.Router();
+ categoryRouter.get('/:id/edit', function(request, response) {
+   console.log("=================== /api/v1/category/:id/edit GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ categoryRouter.get('/:id/remove', function(request, response) {
+   console.log("=================== /api/v1/category/:id/remove GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ app.use('/api/v1/category/', categoryRouter);
+
+/**
+ * REMISE
+ */
+ var discountRouter = express.Router();
+ discountRouter.get('/:id/edit', function(request, response) {
+   console.log("=================== /api/v1/discount/:id/edit GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ discountRouter.get('/:id/remove', function(request, response) {
+   console.log("=================== /api/v1/discount/:id/remove GET ===================");
+
+   updateResponseHeader(request, response);
+   response.write(JSON.stringify(form));
+   response.end();
+ });
+ app.use('/api/v1/discount/', discountRouter);
+
+ /**
+  * INSCRIPTION
+  */
+var registrationRouter = express.Router();
+registrationRouter.get('/:id/edit', function(request, response) {
+  console.log("=================== /api/v1/registration/:id/edit GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+registrationRouter.get('/:id/remove', function(request, response) {
+  console.log("=================== /api/v1/registration/:id/remove GET ===================");
+
+  updateResponseHeader(request, response);
+  response.write(JSON.stringify(form));
+  response.end();
+});
+app.use('/api/v1/registration/', registrationRouter);
+
+/**
+ * VENUE
+ GET      /api/venue/new
+POST     /api/venue
+GET      /api/venue/{venue}/remove
+DELETE   /api/venue/{venue}
+GET      /api/venue/{venue}
+GET      /api/venue
+GET      /api/venue/{venue}/edit
+PUT      /api/venue/{venue}
+ */
+var venueRouter = express.Router();
+venueRouter.get('/new', function(request, response) {
+ console.log("=================== /api/v1/venue/new GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+venueRouter.post('/', function(request, response) {
+  console.log("=================== /api/v1/venue/ POST ===================");
+
+
+  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTION');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.writeHead(201, {'Content-Type': 'text/plain'});
+
+  request.on('data', function(chunk) {
+    var data = JSON.parse(chunk);
+    console.log(data);
+    cache.put('venue', data);
+    response.end();
+  });
+});
+venueRouter.delete('/:id', function(request, response) {
+ console.log("=================== /api/v1/venue/:id GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+venueRouter.get('/:id', function(request, response) {
+ console.log("=================== /api/v1/venue/:id GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify("venue"));
+ response.end();
+});
+venueRouter.get('/:id/edit', function(request, response) {
+ console.log("=================== /api/v1/venue/:id/edit GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+venueRouter.get('/:id/remove', function(request, response) {
+ console.log("=================== /api/v1/venue/:id/remove GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+app.use('/api/v1/venue/', paymentRouter);
+
+/**
+ * PAIEMENT
+ */
+var paymentRouter = express.Router();
+paymentRouter.get('/new', function(request, response) {
+ console.log("=================== /api/v1/payment/new GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+paymentRouter.get('/:id/edit', function(request, response) {
+ console.log("=================== /api/v1/payment/:id/edit GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+paymentRouter.get('/:id/remove', function(request, response) {
+ console.log("=================== /api/v1/payment/:id/remove GET ===================");
+
+ updateResponseHeader(request, response);
+ response.write(JSON.stringify(form));
+ response.end();
+});
+app.use('/api/v1/payment/', paymentRouter);
 
 app.listen(port, function() {
   console.log("Server listening to http://localhost:%s", port);

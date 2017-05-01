@@ -5,18 +5,18 @@ function SubscriptionCommandService($http, config) {
 SubscriptionCommandService.prototype = {
 
   wait: function wait(subscriptionId) {
-      return this.http.post(this.config.apiUrl + '/subscription/'+subscriptionId+'/wait');
+      return this.http.post(this.config.apiUrl + '/registration/'+subscriptionId+'/wait');
   },
 
   validate: function validate(subscriptionId) {
-      return this.http.post(this.config.apiUrl + '/subscription/'+subscriptionId+'/validate');
+      return this.http.post(this.config.apiUrl + '/registration/'+subscriptionId+'/validate');
   },
 
   pay: function pay(subscriptionId) {
-      return this.http.post(this.config.apiUrl + '/subscription/'+subscriptionId+'/pay');
+      return this.http.post(this.config.apiUrl + '/registration/'+subscriptionId+'/pay');
   },
 
   cancel: function cancel(subscriptionId) {
-      return this.http.post(this.config.apiUrl + '/subscription/'+subscriptionId+'/cancel');
+      return this.http.post(this.config.apiUrl + '/registration/'+subscriptionId+'/cancel');
   }
 };
