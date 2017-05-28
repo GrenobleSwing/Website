@@ -1,11 +1,11 @@
-function ActivityFormResource($http, config) {
+function YearFormResource($http, config) {
   this.http = $http;
   this.config = config;
 
   this.init_();
 }
 
-ActivityFormResource.prototype = {
+YearFormResource.prototype = {
     init_ : function init_() {
 
     },

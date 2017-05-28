@@ -12,7 +12,7 @@ AccountEditController.prototype = {
       this.handleSaveResponse_ = this.handleSaveResponse_.bind(this);
 
       this.authenticationService.getIdentity().then(function (user) {
-        this.account = this.accountService.getByUserId(user.id).then(this.handleInitResponse_);
+        this.account = this.accountService.getByUserId(user.data.id).then(this.handleInitResponse_);
       }.bind(this));
     },
 

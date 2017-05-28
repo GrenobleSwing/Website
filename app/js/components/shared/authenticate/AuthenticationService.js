@@ -28,12 +28,12 @@ AuthenticationService.prototype = {
     },
 
     getIdentity: function getIdentity(force) {
-      var deferred = this.q.defer();
-
-      if (this.isIdentified_() && !force) {
-        deferred.resolve({data : this.cookies.getObject('globals').currentUser});
-        return deferred.promise;
-      }
+      // var deferred = this.q.defer();
+      //
+      // if (this.isIdentified_() && !force) {
+      //   deferred.resolve({data : this.cookies.getObject('globals').currentUser});
+      //   return deferred.promise;
+      // }
 
       return this.authResource.getCurrentUser();
     },
@@ -53,7 +53,7 @@ AuthenticationService.prototype = {
     isIdentified_: function isIdentified_() {
       var data = this.cookies.getObject('globals');
       console.info(data);
-      return data !== undefined && data.currentUser !== undefined && data.currentUser.userId !== undefined;
+      return data !== undefined && data.currentUser !== undefined && data.currentUser.token !== undefined;
     },
 
     /**

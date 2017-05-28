@@ -21,7 +21,7 @@ SummaryService.prototype = {
         .getCurrentYear()
         .then(function(data) {
           this.subscriptionResource.getAll = this.subscriptionResource.getAll.bind(this.subscriptionResource);
-          return this.subscriptionResource.getAll({userId: userId, yearId: data});
+          return this.subscriptionResource.getAll({userId: userId, yearId: data.id});
         }.bind(this));
     },
 
@@ -30,7 +30,7 @@ SummaryService.prototype = {
         .getCurrentYear()
         .then(function(data) {
           this.subscriptionResource.getAmount = this.subscriptionResource.getAmount.bind(this.subscriptionResource);
-          return this.subscriptionResource.getAmount({userId: userId, yearId: data});
+          return this.subscriptionResource.getAmount({userId: userId, yearId: data.id});
         }.bind(this));
     }
 };

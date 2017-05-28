@@ -27,7 +27,7 @@ SubscriptionService.prototype = {
         .getCurrentYear()
         .then(function(data) {
           this.subscriptionResource.getAll = this.subscriptionResource.getAll.bind(this.subscriptionResource);
-          return this.subscriptionResource.getAll({userId : userId, yearId : data});
+          return this.subscriptionResource.getAll({userId : userId, yearId : data.id});
         }.bind(this))
         .then(function(res) {
               this.subscriptions = angular.copy(res);

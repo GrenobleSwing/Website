@@ -1,5 +1,6 @@
 function MemberNavController($state) {
   this.state = $state;
+  console.info("MemberNavController");
 }
 
 MemberNavController.prototype = {

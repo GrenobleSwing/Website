@@ -14,7 +14,7 @@ function SubscriptionsListController(authenticationService, subscriptionService)
 SubscriptionsListController.prototype = {
     init_ : function init_(identity) {
       this.identity = identity.data;
-      this.subscriptionService.getSubscriptionsByUserId(this.identity.userId).then(this.handleInitSuccess_);
+      this.subscriptionService.getSubscriptionsByUserId(this.identity.id).then(this.handleInitSuccess_);
     },
 
     handleInitSuccess_ : function handleInitSuccess_(data) {

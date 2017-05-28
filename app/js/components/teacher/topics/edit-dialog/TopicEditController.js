@@ -33,7 +33,7 @@ TopicEditController.prototype = {
   },
 
   showTeachers : function showTeachers() {
-    return this.topic.type == "duet" || this.topic.type == "solo";
+    return this.topic.type == "couple" || this.topic.type == "solo";
   },
 
   addTeacher: function addTeacher() {

@@ -8,7 +8,7 @@ function SubscriptionAddController($scope, $modal, subscriptionService, subscrip
 SubscriptionAddController.prototype = {
   validateSubscription : function validateSubscription() {
     var subscription = this.subscription;
-    if (subscription.type == 'duet') {
+    if (subscription.type == 'couple') {
       this.validateDuetSubscription_(subscription);
     } else {
       this.validateSoloSubscription_(subscription);

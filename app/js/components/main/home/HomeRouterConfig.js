@@ -6,7 +6,6 @@ function HomeRouterConfig($stateProvider) {
       views: {
         'content@': {
           templateUrl: "components/main/home/home.html",
-          // template : '<p>HOME</p>',
           controller: "homeController",
           controllerAs: "ctrl"
         },

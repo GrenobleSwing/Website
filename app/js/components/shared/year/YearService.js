@@ -22,8 +22,8 @@ YearService.prototype = {
       function(data) {
         // console.info("YearService#getCurrentYear success");
         // console.info(data);
-        this.cookies.putObject('current-year', data.data.current);
-        deferred.resolve(data.data.current);
+        this.cookies.putObject('current-year', data.data[0]);
+        deferred.resolve(data.data[0]);
       }.bind(this));
 
     return deferred.promise;

@@ -1,7 +1,7 @@
 angular.module('app.acl', ['app.users'])
     .constant("roleMap", {
-      'ROLE_MEMBER' : {
-          'role': 'ROLE_MEMBER',
+      'ROLE_USER' : {
+          'role': 'ROLE_USER',
           'permissions' : ['canViewProfile', 'canViewSubscriptions'],
           'defaultState' : 'member.account'
       },

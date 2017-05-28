@@ -1,7 +1,7 @@
 angular
   .module('app.config', [])
   .constant('config', {
-    apiUrl: 'http://localhost:8001/api/v1',
+    apiUrl: 'http://localhost/api',
     baseUrl: '/',
     enableDebug: true
   });

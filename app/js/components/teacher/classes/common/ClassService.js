@@ -25,9 +25,9 @@ ClassService.prototype = {
 
       this.yearService
         .getCurrentYear()
-        .then(function() {
+        .then(function(data) {
           return this.classResource
-            .getAll({userId: userId, yearId: this.currentYear})
+            .getAll({userId: userId, yearId: data.id})
             .then(function(res) {
                 this.class = angular.copy(res);
                 deferred.resolve(this.class);

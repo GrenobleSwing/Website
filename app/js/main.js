@@ -81,7 +81,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             },
             data: {
                 permissions: {
-                  only: ['ROLE_MEMBER']
+                  only: ['ROLE_USER']
                 }
             }
         })
@@ -147,9 +147,10 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
+      console.info(state);
       // console.info("go for otherwise");
       authenticationService.getIdentity().then(function() {
-
+        state.go('index.home');
       }, function() {
         state.go('index.logout');
       });
@@ -162,22 +163,6 @@ function run($rootScope, $state, $stateParams, yearService, authenticationServic
         $rootScope.toState = toState;
         $rootScope.toStateParams = toStateParams;
     });
-
-    // authenticationService
-    //   .getIdentity(true)
-    //   .then(function(response) {
-    //       console.info("user is identified");
-    //       return yearService.getCurrentYear().then(function(response) {
-    //           console.info("year is identified");
-    //           console.info(response);
-    //           $state.go('index.home');
-    //           return response;
-    //         });
-    //     }, function(error) {
-    //       console.info("user is unknown");
-    //       $state.go('index.login');
-    //       return error;
-    //     });
 }
 
 function withPermissions(PermPermissionStore, aclService) {
@@ -191,24 +176,30 @@ function withPermissions(PermPermissionStore, aclService) {
 function withRoles(PermRoleStore, authenticationService, aclService, $q) {
   PermRoleStore
     .defineRole('ANONYMOUS', function (stateParams, roleName) {
-      console.info('check ANONYMOUS');
-      return authenticationService.isAnonymous();
+      var result = authenticationService.isAnonymous();
+      console.info('check ANONYMOUS is ' + result);
+      return result;
     });
 
   PermRoleStore
     .defineRole('AUTHORIZED', function (stateParams, roleName) {
-      console.info('check AUTHORIZED');
-      return authenticationService.isAuthenticated();
+      var result = authenticationService.isAuthenticated();
+      console.info('check AUTHORIZED is '+ result);
+      return result;
     });
 
   PermRoleStore
-    .defineRole('ROLE_MEMBER', function(roleName, transitionProperties) {
-      return aclService.isInRole(roleName);
+    .defineRole('ROLE_USER', function(roleName, transitionProperties) {
+      var result = aclService.isInRole(roleName);
+      console.info('check ROLE_USER is '+ result);
+      return result;
     });
 
   PermRoleStore
     .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
-      return aclService.isInRole(roleName);
+      var result = aclService.isInRole(roleName);
+      console.info('check ROLE_TEACHER is '+ result);
+      return result;
     });
 }
 
