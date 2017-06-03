@@ -27,7 +27,7 @@ AccountResource.prototype = {
   	 * }
   	 */
     getByUserId: function getByUserId(userId) {
-        return this.http.get(this.config.apiUrl + '/account/' + userId).then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
+        return this.http.get(this.config.apiUrl + '/user/' + userId + '/account').then(this.handleSuccess_, this.handleError_('Error getting account by accountname'));
     },
 
     /**

@@ -1,9 +1,10 @@
-function AuthenticationService($rootScope, $cookies, $http, $q, authResource) {
-  this.authResource = authResource;
+function AuthenticationService($rootScope, $cookies, $http, config) {
+
   this.rootScope = $rootScope;
   this.cookies = $cookies;
-  this.q = $q;
+
   this.http = $http;
+  this.config = config;
 
   this.init_();
 }
@@ -14,28 +15,30 @@ AuthenticationService.prototype = {
     },
 
     login: function login(username, password) {
-      return this.authResource.authenticate(username, password).then(this.handleLoginSuccess_);
+      return this.http.post(this.config.apiUrl + '/auth', {"login": username, "password": password}).then(this.handleLoginSuccess_);
     },
 
     clearCredentials : function clearCredentials() {
 
-      // return this.authResource.terminate(this.cookies.getObject('globals').currentUser).then(function(response) {
         this.rootScope.globals = {};
         this.cookies.remove('globals');
         this.http.defaults.headers.common.Authorization = 'Bearer';
-      //   return response;
-      // }.bind(this));
     },
 
     getIdentity: function getIdentity(force) {
-      // var deferred = this.q.defer();
-      //
-      // if (this.isIdentified_() && !force) {
-      //   deferred.resolve({data : this.cookies.getObject('globals').currentUser});
-      //   return deferred.promise;
-      // }
+      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
+        console.info(response);
+        var data = JSON.parse(response);
+        data.login = data.email;
+        console.info(data);
+        return data;
+      }});
+    },
 
-      return this.authResource.getCurrentUser();
+    getCurrentAccount : function getCurrentAccount() {
+      return this.getIdentity().then(function(response) {
+        return this.http.get(this.config.apiUrl + '/user/' + response.data.id + '/account', { cache: true });
+      }.bind(this));
     },
 
 

@@ -23,5 +23,8 @@
     "angular-messages": "^1.6.4",
     "angular-resource": "^1.6.4",
     "angular-ui-router": "^0.3.2"
+  },
+  "dependencies": {
+    "angular-sanitize": "^1.6.4"
   }
 }
