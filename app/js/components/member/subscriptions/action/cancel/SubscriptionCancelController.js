@@ -13,7 +13,7 @@ SubscriptionCancelController.prototype = {
     cancelSubscription: function cancelSubscription() {
       this.subscriptionService.cancel(this.subscription).then(function() {
         this.subscription.selected = false;
-        this.subscription.state = 'unpicked';
+        this.subscription.state = 'UNPICKED';
       }.bind(this));
     },
 };

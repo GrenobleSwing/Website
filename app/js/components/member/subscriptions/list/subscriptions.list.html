@@ -4,7 +4,7 @@
         <span class="col-md-6">
           <h3 class="text-primary">{{subscription.topicTitle}}</h3>
           <span ng-if="!!subscription.selected"
-            ng-class="{'text-primary' : subscription.state == 'paid', 'text-warning' : subscription.state == 'submitted'}">{{subscription.state | translate}}</span>
+            ng-class="{'text-primary' : subscription.state == 'PAID', 'text-warning' : subscription.state == 'SUBMITTED'}">{{subscription.state | translate}}</span>
         </span>
         <span class="col-md-6">
           <span gs-subscription-add    data-subscription="subscription"></span>

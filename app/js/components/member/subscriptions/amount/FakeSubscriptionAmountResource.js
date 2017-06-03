@@ -20,7 +20,7 @@ FakeSubscriptionAmountResource.prototype = {
       return this.subscriptionResource.query().$promise.then(function(data) {
         var deferred = this.q.defer();
         var amount = 0;
-        var filtered = this.filter('filter')(data, { userId: id, selected : true, state: 'submitted' });
+        var filtered = this.filter('filter')(data, { userId: id, selected : true, state: 'SUBMITTED' });
         for (var i = 0; i < filtered.length; i++) {
           amount += filtered[i].amount;
         }

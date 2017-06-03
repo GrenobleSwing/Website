@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "title": "Annee 2015-2016",
+    "description": "description pour annee 2015-2016",
+    "startDate": "2015-09-01",
+    "endDate": "2016-08-31",
+    "state": "open",
+    "activities": [],
+    "owners": []
+  },
+  {
+    "id": 2,
+    "title": "Annee 2017-2018",
+    "description": "description pour annee 2017-2018",
+    "startDate": "2017-09-01",
+    "endDate": "2018-08-31",
+    "state": "open",
+    "activities": [],
+    "owners": []
+  },
+  {
+    "id": 3,
+    "title": "Annee 2016-2017",
+    "description": "description pour annee 2016-2017",
+    "startDate": "2016-09-01",
+    "endDate": "2017-08-31",
+    "state": "open",
+    "activities": [
+      1,
+      2
+    ],
+    "owners": []
+  }
+]

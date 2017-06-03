@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1,
+    "role": "leader",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 3
+  },
+  {
+    "id": 2,
+    "role": "leader",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 3
+  },
+  {
+    "id": 3,
+    "role": "leader",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 3
+  },
+  {
+    "id": 4,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 3
+  },
+  {
+    "id": 5,
+    "role": "follower",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 4
+  },
+  {
+    "id": 6,
+    "role": "follower",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 4
+  },
+  {
+    "id": 7,
+    "role": "follower",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 4
+  },
+  {
+    "id": 8,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 4
+  },
+  {
+    "id": 9,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 5
+  },
+  {
+    "id": 10,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 5
+  },
+  {
+    "id": 11,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 5
+  },
+  {
+    "id": 12,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 5
+  },
+  {
+    "id": 13,
+    "role": "follower",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 6
+  },
+  {
+    "id": 14,
+    "role": "follower",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 6
+  },
+  {
+    "id": 15,
+    "role": "follower",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 6
+  },
+  {
+    "id": 16,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 6
+  },
+  {
+    "id": 17,
+    "role": "leader",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 7
+  },
+  {
+    "id": 18,
+    "role": "leader",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 7
+  },
+  {
+    "id": 19,
+    "role": "leader",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 7
+  },
+  {
+    "id": 20,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 7
+  },
+  {
+    "id": 21,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 8
+  },
+  {
+    "id": 22,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 8
+  },
+  {
+    "id": 23,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 8
+  },
+  {
+    "id": 24,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 8
+  },
+  {
+    "id": 25,
+    "role": "leader",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 9
+  },
+  {
+    "id": 26,
+    "role": "leader",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 9
+  },
+  {
+    "id": 27,
+    "role": "leader",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 9
+  },
+  {
+    "id": 28,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 9
+  },
+  {
+    "id": 29,
+    "role": "follower",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 10
+  },
+  {
+    "id": 30,
+    "role": "follower",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 10
+  },
+  {
+    "id": 31,
+    "role": "follower",
+    "state": "VALIDATED",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 10
+  },
+  {
+    "id": 32,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 10
+  },
+  {
+    "id": 33,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 11
+  },
+  {
+    "id": 34,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 11
+  },
+  {
+    "id": 35,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 11
+  },
+  {
+    "id": 36,
+    "role": "leader",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 11
+  },
+  {
+    "id": 37,
+    "role": "follower",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 2,
+    "accountId": 12
+  },
+  {
+    "id": 38,
+    "role": "follower",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 3,
+    "accountId": 12
+  },
+  {
+    "id": 39,
+    "role": "follower",
+    "state": "WAITING",
+    "amountPaid": 0,
+    "options": [],
+    "topicId": 4,
+    "accountId": 12
+  },
+  {
+    "id": 40,
+    "role": "follower",
+    "state": "PAID",
+    "amountPaid": 190,
+    "options": [],
+    "topicId": 5,
+    "accountId": 12
+  }
+]

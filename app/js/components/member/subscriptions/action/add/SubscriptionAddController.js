@@ -17,7 +17,7 @@ SubscriptionAddController.prototype = {
 
   validateSoloSubscription_: function validateSoloSubscription_(subscription) {
     subscription.selected = true;
-    subscription.state = "submitted";
+    subscription.state = "SUBMITTED";
 
     this.subscriptionService.saveSubscription(subscription);
 
@@ -53,7 +53,7 @@ SubscriptionAddController.prototype = {
 
   handleValidationSuccess_: function handleValidationSuccess_(subscription) {
     subscription.selected = true;
-    subscription.state = "submitted";
+    subscription.state = "SUBMITTED";
 
     this.subscriptionService.saveSubscription(subscription);
 

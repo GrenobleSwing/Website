@@ -26,7 +26,7 @@ SubscriptionSoloDescriptionController.prototype = {
 
   validateSubscription: function validateSubscription() {
     this.subscription.selected = true;
-    this.subscription.state = "waiting";
+    this.subscription.state = "WAITING";
 
     this.subscriptionService.saveSubscription(this.subscription);
 

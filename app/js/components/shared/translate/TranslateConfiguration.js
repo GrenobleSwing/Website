@@ -63,11 +63,11 @@ function TranslateConfiguration($translateProvider) {
       'FORGOT_PASSWORD' : 'Mot de passe oublié ?',
       'RESET_PASSWORD' : 'Réinitialiser mon mot de passe'
     },
-    'submitted' : 'Demande transmise',
-    'waiting' : 'En attente de validation',
-    'paid' : 'Payé',
-    'unpicked' : '',
-    'ok' : 'OK'
+    'SUBMITTED' : 'Demande transmise',
+    'WAITING' : 'En attente de validation',
+    'PAID' : 'Payé',
+    'UNPICKED' : '',
+    'OK' : 'OK'
   });
   $translateProvider.useSanitizeValueStrategy(null);
   $translateProvider.preferredLanguage('fr');

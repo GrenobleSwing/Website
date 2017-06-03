@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "title": "Adhesion",
+    "description": "Adhesion annuelle a Grenoble Swing",
+    "state": "open",
+    "membership": false,
+    "year": 3,
+    "topics": [
+      1
+    ],
+    "categories": [
+      1
+    ],
+    "discounts": [],
+    "owners": []
+  },
+  {
+    "id": 2,
+    "title": "Cours et troupes",
+    "description": "Les cours et les troupes",
+    "state": "draft",
+    "membership": false,
+    "year": 3,
+    "topics": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "categories": [
+      2,
+      3
+    ],
+    "discounts": [
+      1,
+      2
+    ],
+    "owners": []
+  }
+]
