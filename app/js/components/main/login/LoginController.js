@@ -19,7 +19,7 @@ LoginController.prototype = {
   },
 
   connect : function connect() {
-    console.info("LoginController#connect");
+//    console.info("LoginController#connect");
     this.authFailed = false;
     this.authService
       .login(this.login, this.password)
@@ -27,17 +27,17 @@ LoginController.prototype = {
   },
 
   handleSuccess_ : function handleSuccess_(identity) {
-    console.info("LoginController#connect#handleSuccess_");
+//    console.info("LoginController#connect#handleSuccess_");
     if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
       this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
-      console.info("returnToState: " + this.scope.returnToState.name);
+//      console.info("returnToState: " + this.scope.returnToState.name);
       this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
       return this.aclService
         .isInAnyRole(['ROLE_USER', 'ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER'])
         .then(function(response) {
-          console.info(response);
-          console.info(response.defaultState.role + " go for state " + response.defaultState);
+//          console.info(response);
+//          console.info(response.defaultState.role + " go for state " + response.defaultState);
           this.state.go('index.home');
         }.bind(this), this.handleError_);
     }

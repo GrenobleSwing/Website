@@ -27,10 +27,10 @@ AuthenticationService.prototype = {
 
     getIdentity: function getIdentity(force) {
       return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
-        console.info(response);
+//        console.info(response);
         var data = JSON.parse(response);
         data.login = data.email;
-        console.info(data);
+//        console.info(data);
         return data;
       }});
     },
@@ -55,7 +55,7 @@ AuthenticationService.prototype = {
      */
     isIdentified_: function isIdentified_() {
       var data = this.cookies.getObject('globals');
-      console.info(data);
+      // console.info(data);
       return data !== undefined && data.currentUser !== undefined && data.currentUser.token !== undefined;
     },
 

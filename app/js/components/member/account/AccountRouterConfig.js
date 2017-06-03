@@ -4,7 +4,7 @@ function AccountRouterConfig($stateProvider) {
       url: "/account",
       views: {
         'content@': {
-          template: '<section ng-bind-html="ctrl.content"></section>',
+          template: '<section ng-if="!!ctrl.$ok" ng-bind-html="ctrl.content"></section>',
           controller: "accountController",
           controllerAs: "ctrl",
           resolve: {

@@ -148,7 +148,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
-      console.info(state);
+      // console.info(state);
       // console.info("go for otherwise");
       authenticationService.getIdentity().then(function() {
         state.go('index.home');
@@ -178,28 +178,28 @@ function withRoles(PermRoleStore, authenticationService, aclService, $q) {
   PermRoleStore
     .defineRole('ANONYMOUS', function (stateParams, roleName) {
       var result = authenticationService.isAnonymous();
-      console.info('check ANONYMOUS is ' + result);
+//      console.info('check ANONYMOUS is ' + result);
       return result;
     });
 
   PermRoleStore
     .defineRole('AUTHORIZED', function (stateParams, roleName) {
       var result = authenticationService.isAuthenticated();
-      console.info('check AUTHORIZED is '+ result);
+//      console.info('check AUTHORIZED is '+ result);
       return result;
     });
 
   PermRoleStore
     .defineRole('ROLE_USER', function(roleName, transitionProperties) {
       var result = aclService.isInRole(roleName);
-      console.info('check ROLE_USER is '+ result);
+//      console.info('check ROLE_USER is '+ result);
       return result;
     });
 
   PermRoleStore
     .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
       var result = aclService.isInRole(roleName);
-      console.info('check ROLE_TEACHER is '+ result);
+//      console.info('check ROLE_TEACHER is '+ result);
       return result;
     });
 }

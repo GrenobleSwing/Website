@@ -5,7 +5,9 @@ function RegistrationsRouterConfig($stateProvider) {
       url: "/registrations",
       views: {
         'content@': {
-          templateUrl: "components/member/registrations/list/registrations.list.html",
+          templateUrl: "components/member/registration/list/registrations.list.html",
+          controller: "registrationsListController",
+          controllerAs: "ctrl",
           resolve: {
             userDetails : ['authenticationService', function(authService) {
               return authService.getCurrentAccount().then(function(response) {
