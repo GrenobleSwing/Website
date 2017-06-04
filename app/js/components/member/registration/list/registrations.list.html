@@ -1,4 +1,4 @@
-<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.list | orderBy : 'id'" class="col-md-12">
+<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : 'topic.id'" class="col-md-12">
     <span class="col-md-12">
       <div class="row">
         <span class="col-md-6">
@@ -11,6 +11,13 @@
           <span gs-registration-update data-registration="registration"></span>
           <span gs-registration-cancel data-registration="registration"></span>
         </span>
+      </div>
+      <div class="row">
+        <p>{{registration.description}}</p>
+      </div>
+      <div ng-if="registration.topic.type == 'couple'" class="row">
+        <p>Rôle : {{registration.role}}</p>
+        <p>Partenaire : {{registration.partner}}</p>
       </div>
     </span>
     <hr />

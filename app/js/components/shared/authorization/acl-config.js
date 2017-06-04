@@ -1,4 +1,4 @@
-angular.module('app.acl', ['app.users'])
+angular.module('app.acl', [])
     .constant("roleMap", {
       'ROLE_USER' : {
           'role': 'ROLE_USER',

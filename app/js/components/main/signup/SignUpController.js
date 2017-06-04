@@ -1,6 +1,7 @@
-function SignUpController($state, userService) {
+function SignUpController($state, $http, config) {
   this.state = $state;
-  this.userService = userService;
+  this.http = $http;
+  this.config = config;
 
   this.login = "";
   this.password = "";
@@ -15,7 +16,7 @@ SignUpController.prototype = {
     },
 
     signUp : function signUp() {
-        this.userService.create({login: this.login, password: this.password}).then(this.handleResponse_);
+        this.http.post(this.config.apiUrl + '/user', {login: this.login, password: this.password}).then(this.handleResponse_);
     },
 
     handleResponse_ : function handleResponse_(response) {

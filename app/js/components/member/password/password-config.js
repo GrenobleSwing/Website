@@ -1,4 +1,4 @@
-angular.module('app.password', ['app.config', 'app.users', 'ui.router', 'ngMessages'])
+angular.module('app.password', ['app.config', 'ui.router', 'ngMessages'])
   .config(['$stateProvider', PasswordRouterConfig])
   .service('passwordResource', ['$http', 'config', PasswordResource])
   .service('passwordService', ['passwordResource', PasswordService])

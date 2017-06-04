@@ -3,19 +3,11 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ngMessages',
         'app.account',
         'app.acl',
-//        'app.admin',
-//        'app.admin.nav',
-//        'app.admin.secretariat',
-//        'app.admin.treasury',
         'app.auth',
-//        'app.classes.common',
-//        'app.classes.list',
-//        'app.cnil',
         'app.common',
         'app.config',
         'app.home',
         'app.http',
-//        'app.invoice.request',
         'app.login',
         'app.logout',
         'app.main.nav',
@@ -26,33 +18,10 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'app.password.reset',
         'app.signup',
         'app.registrations.list',
-//        'app.students.common',
-//        'app.students.duet',
-//        'app.students.solo',
-//        'app.subscriptions.amount',
-//        'app.subscriptions.actions.add',
-//        'app.subscriptions.actions.update',
-//        'app.subscriptions.actions.cancel',
-//        'app.subscriptions.common',
-//        'app.subscriptions.list',
-//        'app.subscriptions.description.duet',
-//        'app.subscriptions.description.solo',
-//        'app.subscriptions.duet.dialog',
-//        'app.summary',
-//        'app.topic.common',
-//        'app.topic.edit',
-//        'app.topic.list',
-        'app.users',
         'app.year',
         'pascalprecht.translate'
-//        'rorymadden.date-dropdowns',
-//        'sdt.models'
     ])
     .config(['$stateProvider', '$urlRouterProvider', DefaultRouteConfig])
-    // .config(function($interpolateProvider) {
-    //     $interpolateProvider.startSymbol('||');
-    //     $interpolateProvider.endSymbol('||');
-    // })
     .config(['$translateProvider', TranslateConfiguration]);
 
 function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
