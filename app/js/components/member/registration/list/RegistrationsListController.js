@@ -22,6 +22,7 @@ function RegistrationsListController($q, $http, config, userDetails, year) {
          "description": resp[i].description,
         };
         data.accountId = this.accountId;
+        data._links = resp[i]._links;
         array.push(data);
       }
       return array;

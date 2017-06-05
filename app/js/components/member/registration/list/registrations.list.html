@@ -7,13 +7,14 @@
             ng-class="{'text-primary' : registration.state == 'PAID', 'text-warning' : registration.state == 'SUBMITTED'}">{{registration.state | translate}}</span>
         </span>
         <span class="col-md-6">
-          <span gs-registration-add    data-registration="registration"></span>
-          <span gs-registration-update data-registration="registration"></span>
-          <span gs-registration-cancel data-registration="registration"></span>
+          <span ng-if="!!registration._links.add" gs-registration-add data-registration="registration"></span>
+          <span ng-if="!!registration._links.update" gs-registration-update data-registration="registration"></span>
+          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>
+          <span ng-if="!!registration._links.validate" gs-registration-validate data-registration="registration"></span>
         </span>
       </div>
       <div class="row">
-        <p>{{registration.description}}</p>
+        <p>{{registration.topic.description}}</p>
       </div>
       <div ng-if="registration.topic.type == 'couple'" class="row">
         <p>Rôle : {{registration.role}}</p>
