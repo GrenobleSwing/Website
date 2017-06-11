@@ -8,14 +8,12 @@ function PaymentController($http, authService, config, $scope) {
     this.payment = function() {
       return paypal.request.post(config.apiUrl + '/paypal/create-payment?accountId='+account.id);
     };
-
-    this.onAuthorize = function(data, actions) {
-      console.log('The payment was authorized !');
-      console.info(data);
-      return actions.payment.execute();
-    }
 }
 
 PaymentController.prototype = {
-
+  onAuthorize : function onAuthorize(data, actions) {
+    console.log('The payment was authorized !');
+    console.info(data);
+    return actions.payment.execute();
+  }
 };

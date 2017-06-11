@@ -2,15 +2,15 @@
   <div class="col-md-12">
     <div class="row">
       <h2>Liste des inscriptions</h2>
-      <div ng-repeat="(key, elem) in ctrl.list | orderBy : 'id'">
-        <h4>{{key}}</h4>
+      <div ng-repeat="elem in ctrl.list | orderBy : 'id'">
+        <h4>{{elem.name}}</h4>
         <table class="table table-striped">
           <tr>
             <th>intitulé</th>
             <th>tarif</th>
             <th>somme dûe</th>
           </tr>
-          <tr ng-repeat="registration in elem | orderBy : 'id'">
+          <tr ng-repeat="registration in elem.data | orderBy : 'registrationId'">
             <td>{{registration.name}}</td>
             <td>{{registration.price}}</td>
             <td>{{registration.alreadyPaid}}</td>
@@ -20,5 +20,19 @@
     </div>
   </div>
   <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}€</h4></div>
-  <div class="col-md-12" gs-payment></div>
+  <div class="col-md-12">{{ctrl.payment | json}}</div>
+  <div class="col-md-12">{{ctrl.onAuthorize | json}}</div>
+  <div class="col-md-12">
+    <div class="row">
+        <paypal-button
+          env="opts.env"
+          client="opts.client"
+          payment="opts.payment"
+          commit="opts.commit"
+          on-authorize="opts.onAuthorize"
+          on-cancel="opts.onCancel"
+          style="opts.style"
+        </paypal-button>
+    </div>
+  </div>
 </div>

@@ -1,3 +1,3 @@
-angular.module('app.summary', ['ui.router', 'app.auth', 'app.config', 'app.payment'])
+angular.module('app.summary', ['paypal-button', 'ui.router', 'app.auth', 'app.config'])
     .config(['$stateProvider', SummaryRouterConfig])
-    .controller('summaryController', ['$http', 'userDetails', 'config', SummaryController]);
+    .controller('summaryController', ['$scope', '$http', 'userDetails', 'config', SummaryController]);
