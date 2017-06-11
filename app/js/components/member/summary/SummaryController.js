@@ -19,23 +19,6 @@ function SummaryController($scope, $http, userDetails, config) {
     this.totalAmount = response.data.totalBalance;
   }.bind(this));
 
-  /*
-  this.client = {
-    sandbox : "0",
-    production: "0"
-  };
-
-  this.payment = function() {
-    return paypal.request.post(config.apiUrl + '/paypal/create-payment?accountId='+userDetails.id);
-  };
-
-  this.onAuthorize = function(data, actions) {
-    console.log('The payment was authorized !');
-    console.info(data);
-    return actions.payment.execute();
-  };
-  */
-
   $scope.opts = {
     // Pass the client ids to use to create your transaction on sandbox and production environments
     client: {
@@ -48,8 +31,8 @@ function SummaryController($scope, $http, userDetails, config) {
     env: 'sandbox',
     payment: function() {
         console.log('payment');
-        //console.log(this.props.env);
-        //console.log(this.props.client);
+        console.log(this.props.env);
+        console.log(this.props.client);
 
         return paypal.request.post(config.apiUrl + '/paypal/create-payment?accountId='+userDetails.id);
         /*return paypal.rest.payment.create(this.props.env, this.props.client, {
@@ -63,8 +46,10 @@ function SummaryController($scope, $http, userDetails, config) {
             ]
         });*/
     },
+    
     // Display a "Pay Now" button rather than a "Continue" button
     commit: true,
+
     // Pass a function to be called when the customer completes the payment
     onAuthorize: function(data, actions) {
         console.log('authorize');
