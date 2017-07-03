@@ -2,23 +2,31 @@
     <h2>{{ 'SIGNUP.TITLE' | translate}}</h2>
     <form name="form" ng-submit="ctrl.signUp()" role="form">
         <div class="form-group" ng-class="{ 'has-error': form.login.$dirty && form.login.$invalid }">
-            <label for="login" class="control-label">{{ 'ACCOUNT.EMAIL' | translate}}</label>
+            <label for="login" class="control-label">{{ 'ACCOUNT.EMAIL' | translate}}*</label>
             <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required />
             <span ng-if="form.login.$dirty && form.login.$invalid" class="help-block">{{ 'ACCOUNT.EMAIL_REQUIRED' | translate}}</span>
         </div>
         <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
-            <label for="password" class="control-label">{{ 'ACCOUNT.PASSWORD' | translate}}</label>
-            <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required
+            <label for="password" class="control-label">{{ 'ACCOUNT.PASSWORD' | translate}}*</label>
+            <input type="password"
+                   name="password" id="password" class="form-control"
+                   ng-model="ctrl.password"
+                   required
                    ng-pattern="/^[a-zA-Z0-9!@#$%^&*]{6,16}$/"
                    gs-strength/>
-            <div ng-messages="form.password.$error" ng-messages-multiple>
+            <div ng-if="form.password.$dirty" ng-messages="form.password.$error" ng-messages-multiple>
               <div ng-messages-include="components/main/password/password.message.html"></div>
             </div>
         </div>
         <div class="form-group" ng-class="{ 'has-error': form.passwordConfirm.$dirty && form.passwordConfirm.$error.required }">
-            <label for="passwordConfirm" class="control-label">{{ 'ACCOUNT.PASSWORD_CONFIRM' | translate}}</label>
-            <input type="password" name="passwordConfirm" id="passwordConfirm"  ng-model="ctrl.passwordConfirmation" class="form-control" required gs-compare-to="ctrl.password" />
-            <div ng-messages="form.passwordConfirm.$error" ng-messages-multiple>
+            <label for="passwordConfirm" class="control-label">{{ 'ACCOUNT.PASSWORD_CONFIRM' | translate}}*</label>
+            <input type="password"
+                   name="passwordConfirm" id="passwordConfirm"
+                   ng-model="ctrl.passwordConfirmation"
+                   class="form-control"
+                   required
+                   gs-compare-to="ctrl.password" />
+            <div ng-if="form.passwordConfirm.$dirty" ng-messages="form.passwordConfirm.$error" ng-messages-multiple>
               <div ng-messages-include="components/main/password/password.message.html"></div>
             </div>
         </div>

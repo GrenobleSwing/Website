@@ -3,7 +3,7 @@
       <div class="row">
         <span class="col-md-6">
           <h3 class="text-primary">{{registration.topic.title}}</h3>
-          <span ng-if="registration.state == 'PAID' || registration.state == 'SUBMITTED'"
+          <span ng-if="registration.state == 'VALIDATED' || registration.state == 'WAITING'  || registration.state == 'PAID' || registration.state == 'SUBMITTED'"
             ng-class="{'text-primary' : registration.state == 'PAID', 'text-warning' : registration.state == 'SUBMITTED'}">{{registration.state | translate}}</span>
         </span>
         <span class="col-md-6">
@@ -17,8 +17,8 @@
         <p>{{registration.topic.description}}</p>
       </div>
       <div ng-if="registration.topic.type == 'couple'" class="row">
-        <p>Rôle : {{registration.role}}</p>
-        <p>Partenaire : {{registration.partner}}</p>
+        <p>Rôle : {{registration.role | translate}}</p>
+        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>
       </div>
     </span>
     <hr />

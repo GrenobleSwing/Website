@@ -10,9 +10,9 @@ function LoginRouterConfig($stateProvider) {
         }
       },
       data: {
-          permissions: {
-            only: ['ANONYMOUS']
-          }
+        permissions: {
+          only: ['ANONYMOUS']
+        }
       }
     });
 }

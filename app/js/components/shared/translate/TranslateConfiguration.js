@@ -45,11 +45,12 @@ function TranslateConfiguration($translateProvider) {
     },
     'PASSWORD' : {
       'TITLE': 'Mot de passe',
-      'PWD_TOO_SHORT': 'Trop court !',
-      'PWD_TOO_LONG': 'Trop long!',
-      'PWD_NEEDS_LETTERS': 'Password needs letters!',
-      'PWD_NEEDS_NUMBERS': 'Password needs numbers!',
-      'PWD_CONFIRM_FAILED': 'Confirmation fails !'
+      'PWD_REQUIRED': 'Ce champ est requis.',
+      'PWD_TOO_SHORT': 'doit comporter 6 caractères minimum.',
+      'PWD_TOO_LONG': 'doit comporter 16 caractères maximum.',
+      'PWD_NEEDS_LETTERS': 'doit comporter au moins 1 lettre.',
+      'PWD_NEEDS_NUMBERS': 'doit comporter au moins 1 chiffre.',
+      'PWD_CONFIRM_FAILED': 'doit être identique au mot de passe.'
     },
     'TOPICS' : {
       'TITLE': 'Thèmes',
@@ -63,11 +64,14 @@ function TranslateConfiguration($translateProvider) {
       'FORGOT_PASSWORD' : 'Mot de passe oublié ?',
       'RESET_PASSWORD' : 'Réinitialiser mon mot de passe'
     },
-    'SUBMITTED' : 'Demande transmise',
-    'WAITING' : 'En attente de validation',
-    'PAID' : 'Payé',
+    'SUBMITTED' : 'Demande transmise.',
+    'WAITING' : 'En attente de validation.',
+    'VALIDATED' : 'Validé. En attente de paiement.',
+    'PAID' : 'Payé.',
     'UNPICKED' : '',
-    'OK' : 'OK'
+    'OK' : 'OK',
+    'leader' : 'Leader',
+    'follower' : 'Follower'
   });
   $translateProvider.useSanitizeValueStrategy(null);
   $translateProvider.preferredLanguage('fr');

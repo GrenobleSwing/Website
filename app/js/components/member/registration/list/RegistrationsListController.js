@@ -15,6 +15,7 @@ function RegistrationsListController($q, $http, config, userDetails, year) {
         data.state = "UNCHECKED";
         data.amountPaid = 0;
         data.options = [];
+        data.withPartner = false;
         data.topic = {
          "id": resp[i].id,
          "title": resp[i].title,

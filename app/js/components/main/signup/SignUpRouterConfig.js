@@ -1,16 +1,18 @@
 function SignUpRouterConfig($stateProvider) {
   $stateProvider
-    .state('sign-up', {
+    .state('index.sign-up', {
       url: "/sign-up",
       views: {
-        content: {
+        'content@': {
           templateUrl: "components/main/signup/signup.html",
           controller: "signUpController",
           controllerAs: "ctrl"
         }
       },
       data: {
-        roles: []
-      },
+        permissions: {
+          only: ['ANONYMOUS']
+        }
+      }
     });
 }

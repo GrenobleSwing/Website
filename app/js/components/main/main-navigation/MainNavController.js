@@ -15,13 +15,13 @@ MainNavController.prototype = {
     this.authenticationService
       .getIdentity()
       .then(function(response) {
-        console.info(response);
+        // console.info(response);
         this.identity = response.data;
       }.bind(this));
   },
 
   logout: function logout() {
-    console.info("MainNavController#controller#logout");
+    // console.info("MainNavController#controller#logout");
     this.state.go('index.logout');
   }
 };
