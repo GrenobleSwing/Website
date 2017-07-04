@@ -71,7 +71,9 @@ function TranslateConfiguration($translateProvider) {
     'UNPICKED' : '',
     'OK' : 'OK',
     'leader' : 'Leader',
-    'follower' : 'Follower'
+    'follower' : 'Follower',
+    'open' : 'Ouvert',
+    'draft' : 'Brouillon'
   });
   $translateProvider.useSanitizeValueStrategy(null);
   $translateProvider.preferredLanguage('fr');

@@ -1,4 +1,7 @@
 <ul class="nav navbar-nav" permission permission-only="'AUTHORIZED'">
+  <li ng-class="ctrl.isActive('admin.activity')" permission permission-only="'ROLE_TOPIC_MANAGER'">
+    <a ui-sref="admin.activity">Evénements</a>
+  </li>
   <li ng-class="ctrl.isActive('admin.topics')" permission permission-only="'ROLE_TOPIC_MANAGER'">
     <a ui-sref="admin.topics">Evénements</a>
   </li>
