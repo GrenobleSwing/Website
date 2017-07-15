@@ -1,6 +1,6 @@
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui', 'ngSanitize',
-        'ngMessages', 'paypal-button',
+        'ngMessages',
         'app.account',
         'app.acl',
         'app.auth',
@@ -21,7 +21,8 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'app.signup',
         'app.registration',
         'app.year',
-        'pascalprecht.translate'
+        'pascalprecht.translate',
+        'angular-cookie-law'
     ])
     .config(['$stateProvider', '$urlRouterProvider', DefaultRouteConfig])
     .config(['$translateProvider', TranslateConfiguration]);

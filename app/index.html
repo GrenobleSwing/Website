@@ -22,12 +22,17 @@
       <div class="container">
           <!-- THIS IS WHERE WE WILL INJECT OUR CONTENT ============================== -->
           <div ui-view="content"></div>
+
+          <cookie-law-banner
+            policy-button="true"
+            policy-blank="true"
+            policy-url="https://www.twitch.tv/p/legal/cookie-policy/">
+          </cookie-law-banner>
       </div>
     </div>
 
     <!-- inject:js -->
     <!-- endinject -->
-    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 
   </body>
 </html>

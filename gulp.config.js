@@ -47,7 +47,7 @@ module.exports = {
       'bower_components/angular-bootstrap/ui-bootstrap.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'bower_components/angular-ui-router/release/angular-ui-router.js',
-      'bower_components/angular-paypal-button/dist/paypal-button.js',
+      'bower_components/angular-cookie-law/dist/angular-cookie-law.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/bootstrap/js/bootstrap.js',
     ],

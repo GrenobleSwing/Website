@@ -1,3 +1,3 @@
-angular.module('app.signup', ['app.config', 'ui.router'])
+angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', SignUpRouterConfig])
-  .controller('signUpController', ['$state', '$http', 'config', SignUpController]);
+  .controller('signUpController', ['$sce', 'content', SignUpController]);

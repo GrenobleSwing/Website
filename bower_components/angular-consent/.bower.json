@@ -1,0 +1,37 @@
+{
+  "name": "angular-consent",
+  "version": "2.1.1",
+  "authors": [
+    {
+      "name": "Jurgen Van de Moere",
+      "email": "jurgen.van.de.moere@gmail.com"
+    }
+  ],
+  "main": [
+    "dist/angular-consent.js"
+  ],
+  "ignore": [
+    "src",
+    "test",
+    "gulpfile.js",
+    "**/.*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "angular-mocks": ">=1.2.0",
+    "angular-scenario": ">=1.2.0",
+    "angular": ">=1.2.0",
+    "angular-cookies": ">=1.2.0"
+  },
+  "homepage": "https://github.com/jvandemo/angular-consent",
+  "_release": "2.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.1.1",
+    "commit": "8f2b7be08ee2dcd3b74b3631125baf9ff7bd066a"
+  },
+  "_source": "https://github.com/jvandemo/angular-consent.git",
+  "_target": "^2.1.1",
+  "_originalSource": "angular-consent",
+  "_direct": true
+}
