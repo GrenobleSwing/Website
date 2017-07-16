@@ -52,7 +52,7 @@ module.exports = {
       'bower_components/bootstrap/js/bootstrap.js',
     ],
     styles: [
-      // 'bower_components/bootstrap/dist/css/bootstrap.css',
+      'bower_components/angular-cookie-law/dist/angular-cookie-law.css',
     ],
     assets: [
       'bower_components/bootstrap/fonts/**'

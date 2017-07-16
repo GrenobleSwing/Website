@@ -2,3 +2,20 @@
     color: #d00;
     content: "*";
 }
+
+.cl-banner {
+  background: #d9edf7 !important;
+  top: auto !important;
+}
+
+.cl-banner p {
+  color: #333333 !important;
+}
+
+.cl-banner .cl-accept {
+  background: #5cb85c !important;
+}
+
+.cl-banner .cl-policy {
+  background: #5bc0de !important;
+}

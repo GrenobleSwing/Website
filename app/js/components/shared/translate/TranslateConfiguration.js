@@ -61,6 +61,7 @@ function TranslateConfiguration($translateProvider) {
       'SIGNUP' : 'Continuer',
       'CHANGE' : 'Modifier',
       'CANCEL' : 'Annuler',
+      'BACK_TO_LOGIN' : 'Retourner sur la page d\'authentification',
       'FORGOT_PASSWORD' : 'Mot de passe oublié ?',
       'RESET_PASSWORD' : 'Réinitialiser mon mot de passe'
     },
