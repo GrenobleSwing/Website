@@ -1,4 +1,4 @@
-function AccountRouterConfig($stateProvider) {
+function VenueRouterConfig($stateProvider) {
   $stateProvider.state('admin.activity', {
       parent: 'admin',
       url: "/activity",

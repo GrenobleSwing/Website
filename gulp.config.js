@@ -50,6 +50,7 @@ module.exports = {
       'bower_components/angular-cookie-law/dist/angular-cookie-law.js',
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/bootstrap/js/bootstrap.js',
+      'bower_components/jquery/dist/jquery.min.js',
     ],
     styles: [
       'bower_components/angular-cookie-law/dist/angular-cookie-law.css',

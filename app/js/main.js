@@ -1,12 +1,12 @@
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui', 'ngSanitize',
         'ngMessages',
-        'app.account',
         'app.acl',
         'app.auth',
         'app.common',
         'app.config',
         'app.home',
+        'app.account',
         'app.http',
         'app.login',
         'app.logout',
@@ -30,6 +30,7 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
 function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('index', {
+            abstract: true,
             url: '',
             views: {
               'nav@': {
@@ -41,6 +42,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             }
         })
         .state('member', {
+            abstract: true,
             url: '/member',
             views: {
                 'nav@': {
@@ -59,6 +61,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
             }
         })
         .state('admin', {
+            abstract: true,
             url : '/admin',
             views: {
                 'nav@': {
@@ -120,8 +123,6 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
-      // console.info(state);
-      // console.info("go for otherwise");
       authenticationService.getIdentity().then(function() {
         state.go('index.home');
       }, function() {

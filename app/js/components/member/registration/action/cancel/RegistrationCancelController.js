@@ -1,32 +1,18 @@
-function RegistrationCancelController($scope, $modal) {
+function RegistrationCancelController($scope, $http, $state, config) {
   this.registration = $scope.registration;
-  this.modal = $modal;
+  this.$state = $state;
+  this.$http = $http;
+  this.config = config;
 }
 
 RegistrationCancelController.prototype = {
 
   showForm : function showForm() {
     var uri = this.registration._links.cancel.href;
-    var modalInstance = this.modal.open({
-        animation: true,
-        template: '<section ng-bind-html="ctrl.content"></section>',
-        controller: 'registrationDialogController',
-        controllerAs: 'ctrl',
-        resolve: {
-          content: ['$http', '$sce', 'config', function ($http, $sce, config) {
-            return $http
-              .get(config.apiUrl + uri)
-              .then(function(response) {
-                return $sce.trustAsHtml(response.data);
-              });
-          }]
-        }
-      });
-
-      modalInstance.result.then(function (value) {
-
-      }.bind(this), function () {
-
-      });
+    this.$http
+      .get(this.config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
+      .then(function(response) {
+        return this.$state.reload();
+      }.bind(this))
     }
 };

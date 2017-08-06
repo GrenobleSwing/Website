@@ -1,10 +1,12 @@
 function AccountRouterConfig($stateProvider) {
-  $stateProvider.state('member.account', {
+  $stateProvider
+    .state('member.account', {
       parent: 'member',
-      url: "/account",
+      url: '/account',
       views: {
         'content@': {
-          template: '<section ng-if="!!ctrl.$ok" ng-bind-html="ctrl.content"></section>',
+          templateUrl: "components/member/account/account.html",
+          // template: '<section ng-if="!!ctrl.$ok" ng-bind-html="ctrl.content"></section>',
           controller: "accountController",
           controllerAs: "ctrl",
           resolve: {

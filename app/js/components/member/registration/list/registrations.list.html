@@ -1,22 +1,23 @@
 <div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : 'topic.id'" class="col-md-12">
     <span class="col-md-12">
       <div class="row">
-        <span class="col-md-6">
+        <span class="col-md-12">
           <h3 class="text-primary">{{registration.topic.title}}</h3>
           <span ng-if="registration.state == 'VALIDATED' || registration.state == 'WAITING'  || registration.state == 'PAID' || registration.state == 'SUBMITTED'"
             ng-class="{'text-primary' : registration.state == 'PAID', 'text-warning' : registration.state == 'SUBMITTED'}">{{registration.state | translate}}</span>
         </span>
-        <span class="col-md-6">
-          <span ng-if="!!registration._links.add" gs-registration-add data-registration="registration"></span>
-          <span ng-if="!!registration._links.update" gs-registration-update data-registration="registration"></span>
-          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>
-          <span ng-if="!!registration._links.validate" gs-registration-validate data-registration="registration"></span>
-        </span>
       </div>
       <div class="row">
-        <p>{{registration.topic.description}}</p>
+        <span class="col-md-6">
+          <p>{{registration.topic.description}}</p>
+        </span>
+        <span class="col-md-6">
+          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>
+          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>
+          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>
+        </span>
       </div>
-      <div ng-if="registration.topic.type == 'couple'" class="row">
+      <div ng-if="registration.topic.type == 'couple' && registration.state != 'UNCHECKED'" class="row">
         <p>Rôle : {{registration.role | translate}}</p>
         <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>
       </div>

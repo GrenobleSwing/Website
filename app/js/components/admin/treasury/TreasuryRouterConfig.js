@@ -3,7 +3,6 @@ function TreasuryRouterConfig($stateProvider) {
       parent: 'admin',
       url: "/treasury",
       data: {
-        // roles: ['TREASURER'],
         permissions: {
           only: ['ROLE_TREASURER']
         }

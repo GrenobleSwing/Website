@@ -64,7 +64,7 @@ AuthenticationService.prototype = {
      * @private
      */
     handleLoginSuccess_ : function handleLoginSuccess_(response) {
-      console.info(response);
+      // console.info(response);
       var user = response.data;
       this.rootScope.globals = {
         currentUser: {

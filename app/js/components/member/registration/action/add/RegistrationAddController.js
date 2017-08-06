@@ -1,6 +1,7 @@
-function RegistrationAddController($scope, $modal) {
+function RegistrationAddController($scope, $modal, $state) {
   this.registration = $scope.registration;
   this.modal = $modal;
+  this.$state = $state;
 }
 
 RegistrationAddController.prototype = {
@@ -9,22 +10,22 @@ RegistrationAddController.prototype = {
     var uri = this.registration._links.new_registration.href;
     var modalInstance = this.modal.open({
         animation: true,
-        template: '<section ng-bind-html="ctrl.content"></section>',
+        template: '<div gs-dynamic="trustedHtml"></div>',
         controller: 'registrationDialogController',
         controllerAs: 'ctrl',
         resolve: {
-          content: ['$http', '$sce', 'config', function ($http, $sce, config) {
+          content: ['$http', 'config', function ($http, config) {
             return $http
-              .get(config.apiUrl + uri)
+              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
               .then(function(response) {
-                return $sce.trustAsHtml(response.data);
+                return response;
               });
           }]
         }
       });
 
     modalInstance.result.then(function (value) {
-
+      this.$state.reload();
     }.bind(this), function () {
 
     });

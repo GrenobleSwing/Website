@@ -4,8 +4,8 @@ function SignUpRouterConfig($stateProvider) {
       url: "/sign-up",
       views: {
         'content@': {
-          // templateUrl: "components/main/signup/signup.html",
-          template: '<section ng-bind-html="ctrl.content"></section><section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>',
+          templateUrl: "components/main/signup/signup.html",
+          // template: '<section gs-dynamic="trustedHtml"></section><section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>',
           controller: "signUpController",
           controllerAs: "ctrl",
           resolve: {

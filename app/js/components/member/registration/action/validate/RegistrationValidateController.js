@@ -15,7 +15,7 @@ RegistrationValidateController.prototype = {
         resolve: {
           content: ['$http', '$sce', 'config', function ($http, $sce, config) {
             return $http
-              .get(config.apiUrl + uri)
+              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
               .then(function(response) {
                 return $sce.trustAsHtml(response.data);
               });
