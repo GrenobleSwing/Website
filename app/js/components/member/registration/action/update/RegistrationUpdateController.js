@@ -12,7 +12,7 @@ RegistrationUpdateController.prototype = {
     var modalInstance = this.modal.open({
         animation: true,
         template: '<div gs-dynamic="trustedHtml"></div>',
-        controller: 'registrationDialogController',
+        controller: 'registrationEditDialogController',
         controllerAs: 'ctrl',
         resolve: {
           content: ['$http', '$sce', 'config', function ($http, $sce, config) {
@@ -26,7 +26,7 @@ RegistrationUpdateController.prototype = {
       });
 
     modalInstance.result.then(function (value) {
-      this.$state.go('member.registrations', {}, {reload: true});
+      return this.$state.reload();
     }.bind(this), function () {
 
     });

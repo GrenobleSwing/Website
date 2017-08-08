@@ -25,7 +25,7 @@ RegistrationAddController.prototype = {
       });
 
     modalInstance.result.then(function (value) {
-      this.$state.reload();
+      return this.$state.reload();
     }.bind(this), function () {
 
     });

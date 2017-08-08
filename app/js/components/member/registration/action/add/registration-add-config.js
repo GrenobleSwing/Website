@@ -1,3 +1,3 @@
-angular.module('app.registration.actions.add', ['ui.bootstrap'])
-    .controller('registrationAddController', ['$scope', '$uibModal', RegistrationAddController])
+angular.module('app.registration.actions.add', ['ui.bootstrap', 'ui.router'])
+    .controller('registrationAddController', ['$scope', '$uibModal', '$state', RegistrationAddController])
     .directive('gsRegistrationAdd', RegistrationAddDirective);
