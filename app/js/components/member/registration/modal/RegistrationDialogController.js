@@ -6,6 +6,10 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.formData.registration__token = $("input#registration__token", content.data).val();
   $scope.formData.topic = $("input#registration_topic", content.data).val();
 
+  $scope.cancelForm = function() {
+    $modalInstance.dismiss('cancel');
+  }
+
   $scope.processForm = function($event, method, action) {
 
     $event.preventDefault();

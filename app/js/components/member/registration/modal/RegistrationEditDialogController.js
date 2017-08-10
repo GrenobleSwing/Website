@@ -16,6 +16,10 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
 
+  $scope.cancelForm = function() {
+    $modalInstance.dismiss('cancel');
+  }
+  
   $scope.processForm = function($event, method, action) {
 
     $event.preventDefault();

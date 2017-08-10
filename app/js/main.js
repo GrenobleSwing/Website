@@ -60,30 +60,30 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 }
             }
         })
-        .state('admin', {
-            abstract: true,
-            url : '/admin',
-            views: {
-                'nav@': {
-                    templateUrl: 'components/admin/admin-navigation/navbar.html',
-                    controller: 'adminNavController',
-                    controllerAs: 'ctrl'
-                },
-                'header@' : {
-                  template : ''
-                }
-            },
-            data: {
-                permissions: {
-                  only: ['ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER']
-                },
-                redirectTo: {
-                  'canViewTopics' : 'admin.topics',
-                  'canViewClasses': 'admin.classes'
-                }
-
-            }
-        })
+        // .state('admin', {
+        //     abstract: true,
+        //     url : '/admin',
+        //     views: {
+        //         'nav@': {
+        //             templateUrl: 'components/admin/admin-navigation/navbar.html',
+        //             controller: 'adminNavController',
+        //             controllerAs: 'ctrl'
+        //         },
+        //         'header@' : {
+        //           template : ''
+        //         }
+        //     },
+        //     data: {
+        //         permissions: {
+        //           only: ['ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER']
+        //         },
+        //         redirectTo: {
+        //           'canViewTopics' : 'admin.topics',
+        //           'canViewClasses': 'admin.classes'
+        //         }
+        //
+        //     }
+        // })
         .state('access-denied', {
             url: '/denied',
             views: {

@@ -1,7 +1,0 @@
-function StudentsListController() {
-
-}
-
-StudentsListController.prototype = {
-
-};
