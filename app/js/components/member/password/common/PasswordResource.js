@@ -10,7 +10,7 @@ PasswordResource.prototype = {
 
     },
 
-    change: function change(account, data) {
-        return this.http.put(this.config.apiUrl + '/password/' + account.id, data).$promise;
+    change: function change(data) {
+        return this.http.put(this.config.apiUrl + '/password', data).$promise;
     }
 };

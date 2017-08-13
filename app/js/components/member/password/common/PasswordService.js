@@ -10,8 +10,8 @@ PasswordService.prototype = {
         this.handleError_ = this.handleError_.bind(this);
     },
 
-    updatePassword: function updatePassword(account, oldPassword, newPassword, passwordConfirmation) {
-        return this.passwordResource.change({userId: account.userId, old: oldPassword, new: newPassword, confirm: passwordConfirmation})
+    updatePassword: function updatePassword(accountId, oldPassword, newPassword, passwordConfirmation) {
+        return this.passwordResource.change({accountId: accountId, old: oldPassword, new: newPassword, confirm: passwordConfirmation})
           .then(this.handleSuccess_, this.handleError_('Error updating password'));
     },
 

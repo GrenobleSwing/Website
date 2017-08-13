@@ -7,10 +7,17 @@ function PasswordRouterConfig($stateProvider) {
       },
       views: {
         'content@': {
-          templateUrl: 'components/member/password/password.edit.html',
+          templateUrl: 'components/member/password/edit/password.edit.html',
           controller: "passwordEditController",
           controllerAs: "ctrl"
         }
+      },
+      resolve: {
+        userDetails : ['authenticationService', function(authService) {
+          return authService.getCurrentAccount().then(function(response) {
+            return response.data;
+          });
+        }]
       }
     });
 }

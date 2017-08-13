@@ -1,5 +1,4 @@
-angular.module('app.password', ['app.config', 'ui.router', 'ngMessages'])
-  .config(['$stateProvider', PasswordRouterConfig])
-  .service('passwordResource', ['$http', 'config', PasswordResource])
-  .service('passwordService', ['passwordResource', PasswordService])
-  .controller('passwordEditController', ['passwordService', PasswordEditController]);
+angular.module('app.password', ['app.password.common',
+'app.password.edit',
+'app.password.forgot',
+'app.password.reset']);
