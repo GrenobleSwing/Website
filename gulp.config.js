@@ -14,6 +14,7 @@ module.exports = {
       js: 'dist/js',
       css: 'dist/css',
       tpl: 'dist/js',
+      fonts: 'dist/assets'
   },
   app_files: {
     js: [
@@ -56,7 +57,8 @@ module.exports = {
       'bower_components/angular-cookie-law/dist/angular-cookie-law.css',
     ],
     assets: [
-      'bower_components/bootstrap/fonts/**'
+      'bower_components/bootstrap/fonts/**',
+      'app/resources/fonts/**'
     ]
   }
 };

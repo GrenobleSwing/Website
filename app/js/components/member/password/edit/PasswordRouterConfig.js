@@ -17,6 +17,11 @@ function PasswordRouterConfig($stateProvider) {
           return authService.getCurrentAccount().then(function(response) {
             return response.data;
           });
+        }],
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/user/change-password').then(function(response) {
+            return response.data;
+          });
         }]
       }
     });

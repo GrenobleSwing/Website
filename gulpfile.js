@@ -90,7 +90,7 @@ gulp.task('dist', ['clean:dist'], function() {
     .pipe(gulp.dest(config.dist_dir.css));
 
   var assetsStream = gulp.src(config.lib_files.assets)
-    .pipe(gulp.dest(config.build_dir.fonts));
+    .pipe(gulp.dest(config.dist_dir.fonts));
 
   // Concatenate vendor scripts
   var vendorStream = gulp.src(config.lib_files.js)
@@ -102,21 +102,19 @@ gulp.task('dist', ['clean:dist'], function() {
   var configStream = gulp.src(config.app_files.configjs);
   var mainStream = gulp.src('app/js/main.js');
 
-  var sourceStream = series(appStream, configStream, mainStream)
+  // Concatenate HTML templates
+  var templates = gulp.src(config.app_files.tpl)
+    .pipe(templateCache('templates.js', {
+      module: 'app'
+    }));
+    // .pipe(gulp.dest(config.dist_dir.tpl));
+
+  var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
     .pipe(uglify())
     .pipe(gulp.dest(config.dist_dir.js));
-
-
-  // Concatenate HTML templates
-  var templates = gulp.src(config.app_files.tpl)
-    .pipe(templateCache('templates.js', {
-      module: 'app'
-    }))
-    .pipe(gulp.dest(config.dist_dir.tpl));
-
 
   // Populate index.html with JS
   var htmlStream = gulp.src('app/index.html')
