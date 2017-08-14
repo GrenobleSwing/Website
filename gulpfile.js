@@ -126,8 +126,139 @@ gulp.task('dist', ['clean:dist'], function() {
     .pipe(gulp.dest(config.dist_dir.root));
 });
 
+// Concatenate and minify JS
+gulp.task('dist-local', ['clean:dist'], function() {
+  // Concatenate styles
+  var styleStream = series(gulp.src(config.app_files.styles), gulp.src(config.lib_files.styles))
+    .pipe(gulp.dest(config.dist_dir.css));
 
-gulp.task('connect:dist', ['dist'], function() {
+  var assetsStream = gulp.src(config.lib_files.assets)
+    .pipe(gulp.dest(config.dist_dir.fonts));
+
+  // Concatenate vendor scripts
+  var vendorStream = gulp.src(config.lib_files.js)
+    .pipe(concat('vendors.js'))
+    .pipe(gulp.dest(config.dist_dir.js));
+
+  // Concatenate App JS
+  var appStream = gulp.src(config.app_files.js);
+  var configStream = gulp.src(config.app_files.configjs);
+  var mainStream = gulp.src('app/js/main.js');
+
+  // Concatenate HTML templates
+  var templates = gulp.src(config.app_files.tpl)
+    .pipe(templateCache('templates.js', {
+      module: 'app'
+    }));
+    // .pipe(gulp.dest(config.dist_dir.tpl));
+
+  var sourceStream = series(appStream, configStream, mainStream, templates)
+    .pipe(concat('gs.js'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://localhost/api'))
+    .pipe(gulp.dest(config.dist_dir.js))
+    .pipe(rename('gs.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(config.dist_dir.js));
+
+  // Populate index.html with JS
+  var htmlStream = gulp.src('app/index.html')
+    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
+      ignorePath: 'dist',
+      addRootSlash: false,
+      addPrefix : 'gs'
+    }))
+    .pipe(gulp.dest(config.dist_dir.root));
+});
+
+// Concatenate and minify JS
+gulp.task('dist-test', ['clean:dist'], function() {
+  // Concatenate styles
+  var styleStream = series(gulp.src(config.app_files.styles), gulp.src(config.lib_files.styles))
+    .pipe(gulp.dest(config.dist_dir.css));
+
+  var assetsStream = gulp.src(config.lib_files.assets)
+    .pipe(gulp.dest(config.dist_dir.fonts));
+
+  // Concatenate vendor scripts
+  var vendorStream = gulp.src(config.lib_files.js)
+    .pipe(concat('vendors.js'))
+    .pipe(gulp.dest(config.dist_dir.js));
+
+  // Concatenate App JS
+  var appStream = gulp.src(config.app_files.js);
+  var configStream = gulp.src(config.app_files.configjs);
+  var mainStream = gulp.src('app/js/main.js');
+
+  // Concatenate HTML templates
+  var templates = gulp.src(config.app_files.tpl)
+    .pipe(templateCache('templates.js', {
+      module: 'app'
+    }));
+    // .pipe(gulp.dest(config.dist_dir.tpl));
+
+  var sourceStream = series(appStream, configStream, mainStream, templates)
+    .pipe(concat('gs.js'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://localhost/api'))
+    .pipe(gulp.dest(config.dist_dir.js))
+    .pipe(rename('gs.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(config.dist_dir.js));
+
+  // Populate index.html with JS
+  var htmlStream = gulp.src('app/index.html')
+    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
+      ignorePath: 'dist',
+      addRootSlash: false,
+      addPrefix : 'gs'
+    }))
+    .pipe(gulp.dest(config.dist_dir.root));
+});
+
+// Concatenate and minify JS
+gulp.task('dist-prod', ['clean:dist'], function() {
+  // Concatenate styles
+  var styleStream = series(gulp.src(config.app_files.styles), gulp.src(config.lib_files.styles))
+    .pipe(gulp.dest(config.dist_dir.css));
+
+  var assetsStream = gulp.src(config.lib_files.assets)
+    .pipe(gulp.dest(config.dist_dir.fonts));
+
+  // Concatenate vendor scripts
+  var vendorStream = gulp.src(config.lib_files.js)
+    .pipe(concat('vendors.js'))
+    .pipe(gulp.dest(config.dist_dir.js));
+
+  // Concatenate App JS
+  var appStream = gulp.src(config.app_files.js);
+  var configStream = gulp.src(config.app_files.configjs);
+  var mainStream = gulp.src('app/js/main.js');
+
+  // Concatenate HTML templates
+  var templates = gulp.src(config.app_files.tpl)
+    .pipe(templateCache('templates.js', {
+      module: 'app'
+    }));
+    // .pipe(gulp.dest(config.dist_dir.tpl));
+
+  var sourceStream = series(appStream, configStream, mainStream, templates)
+    .pipe(concat('gs.js'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://localhost/api'))
+    .pipe(gulp.dest(config.dist_dir.js))
+    .pipe(rename('gs.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(config.dist_dir.js));
+
+  // Populate index.html with JS
+  var htmlStream = gulp.src('app/index.html')
+    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
+      ignorePath: 'dist',
+      addRootSlash: false,
+      addPrefix : 'gs'
+    }))
+    .pipe(gulp.dest(config.dist_dir.root));
+});
+
+gulp.task('connect:dist', ['dist-local'], function() {
   connect.server({
     root: config.dist_dir.root,
     port: 8001,
