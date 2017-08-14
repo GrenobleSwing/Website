@@ -127,7 +127,7 @@ gulp.task('dist', ['clean:dist'], function() {
 });
 
 // Concatenate and minify JS
-gulp.task('dist-local', ['clean:dist'], function() {
+gulp.task('dist', ['clean:dist'], function() {
   // Concatenate styles
   var styleStream = series(gulp.src(config.app_files.styles), gulp.src(config.lib_files.styles))
     .pipe(gulp.dest(config.dist_dir.css));
@@ -258,7 +258,7 @@ gulp.task('dist-prod', ['clean:dist'], function() {
     .pipe(gulp.dest(config.dist_dir.root));
 });
 
-gulp.task('connect:dist', ['dist-local'], function() {
+gulp.task('connect:dist', ['dist'], function() {
   connect.server({
     root: config.dist_dir.root,
     port: 8001,

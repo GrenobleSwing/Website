@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr" ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <title>Grenoble Swing</title>
+
+    <!-- inject:css -->
+    <link rel="stylesheet" href="gs/css/bootstrap.css">
+    <link rel="stylesheet" href="gs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="gs/css/main.css">
+    <link rel="stylesheet" href="gs/css/angular-cookie-law.css">
+    <!-- endinject -->
+
+  </head>
+  <body>
+
+    <!-- MAIN NAVIGATION -->
+    <header>
+      <div class="navbar-collapse collapse" id="top-navbar">
+        <div ui-view="nav"></div>
+        <div ui-view="header"></div>
+      </div>
+    </header>
+    <div class="row">
+      <!-- MAIN CONTENT -->
+      <div class="container">
+          <!-- THIS IS WHERE WE WILL INJECT OUR CONTENT ============================== -->
+          <div ui-view="content"></div>
+
+          <cookie-law-banner
+            policy-button="true"
+            policy-blank="true"
+            accept-text="Je comprends"
+            policy-text="Politique de confidentialité"
+            policy-url="https://www.cnil.fr/fr/exemple-de-bandeau-cookie">
+          </cookie-law-banner>
+      </div>
+    </div>
+
+    <!-- inject:js -->
+    <script src="gs/js/vendors.js"></script>
+    <script src="gs/js/gs.min.js"></script>
+    <script src="gs/app/js/templates.js"></script>
+    <!-- endinject -->
+
+  </body>
+</html>
