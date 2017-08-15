@@ -167,12 +167,12 @@ function withRoles(PermRoleStore, authenticationService, aclService, $q) {
       return result;
     });
 
-  PermRoleStore
-    .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
-      var result = aclService.isInRole(roleName);
-//      console.info('check ROLE_TEACHER is '+ result);
-      return result;
-    });
+//   PermRoleStore
+//     .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
+//       var result = aclService.isInRole(roleName);
+// //      console.info('check ROLE_TEACHER is '+ result);
+//       return result;
+//     });
 }
 
 angular

@@ -11,6 +11,7 @@ var jshint = require('gulp-jshint'),
   series = require('stream-series'),
   del = require('del'),
   connect = require('gulp-connect'),
+  replace = require('gulp-string-replace'),
   templateCache = require('gulp-angular-templatecache');
 
 // Lint Task

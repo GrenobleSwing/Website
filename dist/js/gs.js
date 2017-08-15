@@ -166,6 +166,97 @@ function MainNavRouterConfig($stateProvider) {
   });
 }
 
+function PasswordResetController($http, config, $scope, $sce, content, $compile, userDetails) {
+
+  $scope.registerDone = false;
+  $scope.registerSuccessful = false;
+  $scope.formData = {};
+  $scope.formData.user__token = content.match('value="(.*)" ')[1];
+
+  $scope.trustedHtml = $sce.trustAsHtml(content
+     .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
+
+  // process the form
+  $scope.processForm = function($event, method, action) {
+
+    $event.preventDefault();
+
+    $http({
+      method  : method,
+      url     : config.apiUrl + action,
+      // data : $.param($scope.formData),
+      data    : {
+        "username" :	$scope.formData.username
+      },
+      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+      transformRequest : function transformRequest( data, getHeaders ) {
+					var headers = getHeaders();
+          if ( ! angular.isObject( data ) ) {
+						return( ( data == null ) ? "" : data.toString() );
+					}
+					var buffer = [];
+					// Serialize each key in the object.
+					for ( var name in data ) {
+						if ( ! data.hasOwnProperty( name ) ) {
+							continue;
+						}
+						var value = data[ name ];
+						buffer.push(
+							encodeURIComponent( name ) +
+							"=" +
+							encodeURIComponent( ( value == null ) ? "" : value )
+						);
+					}
+					// Serialize the buffer and clean it up for transportation.
+					var source = buffer
+						.join( "&" )
+						.replace( /%20/g, "+" )
+					;
+					return( source );
+				}
+     })
+    .then(function(data) {
+      console.log(data);
+      $scope.registerDone = true;
+      if (data.status != 302) {
+        $scope.registerSuccessful = false;
+      } else {
+        // if successful, bind success message to message
+        $scope.registerSuccessful = true;
+      }
+    }, function(error) {
+      console.log(error);
+
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+        .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
+    });
+  }
+}
+
+function PasswordResetRouterConfig($stateProvider) {
+  $stateProvider.state('index.reset', {
+      parent: 'index',
+      url: "/reset",
+      data: {
+        roles: []
+      },
+      views: {
+        'content@': {
+          templateUrl: 'components/main/reset/password.reset.html',
+          controller: "passwordResetController",
+          controllerAs: "ctrl",
+          resolve: {
+            content : ['$http', 'config', function($http, config) {
+              return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
+                return response.data;
+              });
+            }]
+          }
+        }
+      }
+    });
+}
+
 function SignUpController($http, config, $scope, $sce, content, $compile) {
 
   $scope.registerDone = false;
@@ -1163,74 +1254,92 @@ YearService.prototype = {
   }
 };
 
-function PasswordResource($http, config) {
-  this.http = $http;
-  this.config = config;
+function PasswordEditController($http, config, $scope, $sce, content, $compile, userDetails) {
 
-  this.init_();
-}
+    $scope.saveDone = false;
+    $scope.saveSuccessful = false;
+    $scope.formData = {};
+    $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
+    $scope.trustedHtml = $sce.trustAsHtml(content
+       .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
+       .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
+       .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+       .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
+       .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
+       .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
 
-PasswordResource.prototype = {
-    init_ : function init_() {
+    // process the form
+    $scope.processForm = function($event, method, action) {
+      console.info($event);
+      $event.preventDefault();
 
-    },
+      $http({
+        method  : method,
+        url     : config.apiUrl + action,
+        // data : $.param($scope.formData),
+        data    : {
+          "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
+          "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
+          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second,
+          "fos_user_change_password_form[register]" :	"",
+          "fos_user_change_password_form[_token]" :	$scope.formData.user__token
+        },
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+        transformRequest : function transformRequest( data, getHeaders ) {
+  					var headers = getHeaders();
+            if ( ! angular.isObject( data ) ) {
+  						return( ( data == null ) ? "" : data.toString() );
+  					}
+  					var buffer = [];
+  					// Serialize each key in the object.
+  					for ( var name in data ) {
+  						if ( ! data.hasOwnProperty( name ) ) {
+  							continue;
+  						}
+  						var value = data[ name ];
+  						buffer.push(
+  							encodeURIComponent( name ) +
+  							"=" +
+  							encodeURIComponent( ( value == null ) ? "" : value )
+  						);
+  					}
+  					// Serialize the buffer and clean it up for transportation.
+  					var source = buffer
+  						.join( "&" )
+  						.replace( /%20/g, "+" )
+  					;
+  					return( source );
+  				}
+       })
+      .then(function(data) {
+        console.log(data);
+        // $scope.saveDone = true;
+        if (data.status != 200) {
+          $scope.saveSuccessful = false;
+        } else {
+          // if successful, bind success message to message
+          $scope.saveSuccessful = true;
 
-    change: function change(data) {
-        return this.http.put(this.config.apiUrl + '/password', data).$promise;
+          $scope.trustedHtml = $sce.trustAsHtml(data.data
+            .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
+            .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
+            .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+            .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
+            .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
+            .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
+        }
+      }, function(error) {
+        console.log(error);
+
+        $scope.trustedHtml = $sce.trustAsHtml(error.data
+          .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
+          .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
+          .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+          .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
+          .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
+          .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
+      });
     }
-};
-
-function PasswordService(passwordResource) {
-  this.passwordResource = passwordResource;
-
-  this.init_();
-}
-
-PasswordService.prototype = {
-    init_ : function init_() {
-        this.handleSuccess_ = this.handleSuccess_.bind(this);
-        this.handleError_ = this.handleError_.bind(this);
-    },
-
-    updatePassword: function updatePassword(accountId, oldPassword, newPassword, passwordConfirmation) {
-        return this.passwordResource.change({accountId: accountId, old: oldPassword, new: newPassword, confirm: passwordConfirmation})
-          .then(this.handleSuccess_, this.handleError_('Error updating password'));
-    },
-
-
-    resetPassword : function resetPassword(token, newPassword) {
-      return this.passwordResource.change({new: newPassword, token: token})
-        .then(this.handleSuccess_, this.handleError_('Error updating password'));
-    },
-
-    // private functions
-    handleSuccess_ : function handleSuccess_(res) {
-        res.$ok = true;
-        return res;
-    },
-
-    handleError_: function handleError_(error) {
-        return function () {
-            return { $ok: false, message: error };
-        };
-    }
-};
-
-function PasswordEditController(passwordService, userDetails) {
-  this.userDetails = userDetails;
-
-  this.oldPassword = "";
-  this.newPassword = "";
-  this.newPasswordConfirm = "";
-
-  this.passwordService = passwordService;
-}
-
-PasswordEditController.prototype = {
-
-  save: function save() {
-    return this.passwordService.updatePassword(this.userDetails.id, this.oldPassword, this.newPassword, this.newPasswordConfirm);
-  }
 };
 
 function PasswordRouterConfig($stateProvider) {
@@ -1252,80 +1361,12 @@ function PasswordRouterConfig($stateProvider) {
           return authService.getCurrentAccount().then(function(response) {
             return response.data;
           });
+        }],
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/user/change-password').then(function(response) {
+            return response.data;
+          });
         }]
-      }
-    });
-}
-
-function PasswordForgotController($http, $state) {
-  this.state = $state;
-  this.http = $http;
-  this.email = "";
-}
-
-PasswordForgotController.prototype = {
-
-  reset: function reset() {
-    return  this.http.put(this.config.apiUrl + '/forgot', {email: this.email}).$promise.then(function() {
-      this.state.go('index.password.sent');
-    }.bind(this));
-  }
-};
-
-function PasswordForgotRouterConfig($stateProvider) {
-  $stateProvider
-       .state('index.password', {
-           url: '/password',
-           data: {
-             roles: []
-           },
-           views: {
-             'content@': {
-               templateUrl: 'components/member/password/forgot/password.html',
-               controller: "passwordForgotController",
-               controllerAs: "ctrl"
-             }
-           }
-       })
-
-       .state('index.password.forgot', {
-           url: '/forgot',
-           templateUrl: 'components/member/password/forgot/password.forgot.html',
-       })
-
-       .state('index.password.sent', {
-           url: '/sent',
-           templateUrl: 'components/member/password/forgot/password.sent.html',
-       });
-}
-
-function PasswordResetController($stateParams, passwordService) {
-
-  this.newPassword = "";
-  this.token = $stateParams.token;
-  this.passwordService = passwordService;
-}
-
-PasswordResetController.prototype = {
-
-  reset: function reset() {
-    return this.passwordService.resetPassword(this.token, this.newPassword);
-  }
-};
-
-function PasswordResetRouterConfig($stateProvider) {
-  $stateProvider.state('index.password.reset', {
-      parent: 'index',
-      url: "/reset/:token",
-      data: {
-        roles: []
-      },
-      views: {
-        'content@': {
-          templateUrl: 'components/member/password/reset/password.reset.html',
-          controller: "passwordResetController",
-          controllerAs: "ctrl"
-        }
       }
     });
 }
@@ -1769,6 +1810,10 @@ angular.module('app.main.nav', ['app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
   .controller('mainNavController', ['$state', 'authenticationService', MainNavController]);
 
+  angular.module('app.reset', ['app.config', 'ui.router', 'ngSanitize'])
+    .config(['$stateProvider', PasswordResetRouterConfig])
+    .controller('passwordResetController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', PasswordResetController]);
+
 angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', SignUpRouterConfig])
   .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', SignUpController]);
@@ -1779,11 +1824,6 @@ angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
 
 angular.module('app.member.nav', ['ui.router'])
   .controller('memberNavController', ['$state', MemberNavController]);
-
-angular.module('app.password', ['app.password.common',
-'app.password.edit',
-'app.password.forgot',
-'app.password.reset']);
 
 angular.module('app.payment', ['app.config', 'app.auth'])
   .directive('gsPayment', PaymentDirective)
@@ -1806,27 +1846,27 @@ angular.module('app.acl', [])
           'role': 'ROLE_USER',
           'permissions' : ['canViewProfile', 'canViewSubscriptions'],
           'defaultState' : 'member.account'
-      },
-      'ROLE_TEACHER' : {
-          'role': 'ROLE_TEACHER',
-          'permissions' : ['canViewTopics', 'canViewClasses'],
-          'defaultState' : 'admin.admin'
-      },
-      'ROLE_SECRETARY' : {
-        'role': 'ROLE_SECRETARY',
-        'permissions' : [],
-        'defaultState' : 'admin.secretariat'
-      },
-      'ROLE_TREASURER' : {
-          'role': 'ROLE_TREASURER',
-          'permissions' : [],
-          'defaultState' : 'admin.treasury'
-      },
-      'ROLE_ADMIN': {
-        'role': 'ROLE_ADMIN',
-        'permissions' : [],
-        'defaultState' : 'index.home'
       }
+      // 'ROLE_TEACHER' : {
+      //     'role': 'ROLE_TEACHER',
+      //     'permissions' : ['canViewTopics', 'canViewClasses'],
+      //     'defaultState' : 'admin.admin'
+      // },
+      // 'ROLE_SECRETARY' : {
+      //   'role': 'ROLE_SECRETARY',
+      //   'permissions' : [],
+      //   'defaultState' : 'admin.secretariat'
+      // },
+      // 'ROLE_TREASURER' : {
+      //     'role': 'ROLE_TREASURER',
+      //     'permissions' : [],
+      //     'defaultState' : 'admin.treasury'
+      // },
+      // 'ROLE_ADMIN': {
+      //   'role': 'ROLE_ADMIN',
+      //   'permissions' : [],
+      //   'defaultState' : 'index.home'
+      // }
     })
     .service('aclService', ['$q', 'roleMap', 'authenticationService', AclService]);
 
@@ -1838,6 +1878,7 @@ angular.module('app.common', [])
 angular
   .module('app.config', [])
   .constant('config', {
+    // apiUrl: 'http://localhost/api',
     apiUrl: 'http://localhost/api',
     baseUrl: '/',
     enableDebug: true
@@ -1847,21 +1888,9 @@ angular.module('app.year', ['app.config'])
     .service('yearFormResource', ['$http', 'config', YearFormResource])
     .service('yearService', ['$http', 'config', YearService]);
 
-angular.module('app.password.common', ['app.config'])
-  .service('passwordResource', ['$http', 'config', PasswordResource])
-  .service('passwordService', ['passwordResource', PasswordService]);
-
-angular.module('app.password.edit', ['app.config', 'ui.router', 'ngMessages', 'app.password.common'])
+angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', PasswordRouterConfig])
-  .controller('passwordEditController', ['passwordService', 'userDetails', PasswordEditController]);
-
-  angular.module('app.password.forgot', ['app.config', 'ui.router', 'ngMessages', 'app.password.common'])
-    .config(['$stateProvider', PasswordForgotRouterConfig])
-    .controller('passwordForgotController', ['passwordService', PasswordForgotController]);
-
-  angular.module('app.password.reset', ['app.config', 'ui.router', 'ngMessages', 'app.password.common'])
-    .config(['$stateProvider', PasswordResetRouterConfig])
-    .controller('passwordResetController', ['passwordService', PasswordResetController]);
+  .controller('passwordEditController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', 'userDetails', PasswordEditController]);
 
 angular.module('app.registration.actions',
   ['app.registration.actions.add',
@@ -1913,10 +1942,11 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'app.main.nav',
         'app.member.nav',
         'app.summary',
-        'app.password',
+        'app.password.edit',
         'app.payment',
         'app.signup',
         'app.registration',
+        'app.reset',
         'app.year',
         'pascalprecht.translate',
         'angular-cookie-law'
@@ -2066,12 +2096,12 @@ function withRoles(PermRoleStore, authenticationService, aclService, $q) {
       return result;
     });
 
-  PermRoleStore
-    .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
-      var result = aclService.isInRole(roleName);
-//      console.info('check ROLE_TEACHER is '+ result);
-      return result;
-    });
+//   PermRoleStore
+//     .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
+//       var result = aclService.isInRole(roleName);
+// //      console.info('check ROLE_TEACHER is '+ result);
+//       return result;
+//     });
 }
 
 angular
@@ -2081,20 +2111,16 @@ angular
   .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);
 
 angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
-$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.forgot" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
+$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
 $templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_TEACHER\'">\n          <a ui-sref="admin.topics"><i class="glyphicon glyphicon-sunglasses"></i> Gestion des cours</a>\n        </li>\n        <li role="menuitem" permission permission-only="\'ROLE_SECRETARY\'">\n          <a ui-sref="admin.secretariat"><i class="glyphicon glyphicon-tag"></i> Secr\xE9tariat</a>\n        </li>\n        <li role="menuitem" permission permission-only="\'ROLE_TREASURER\'">\n          <a ui-sref="admin.treasury"><i class="glyphicon glyphicon-tag"></i> Tr\xE9sorerie</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
 $templateCache.put('components/main/password/password.message.html','\n<div ng-message="required" class="text-danger">\n  <i class="glyphicon glyphicon-remove" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_REQUIRED\' | translate}}\n</div>\n<div ng-message="minLength" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_TOO_SHORT\' | translate}}\n</div>\n<div ng-message="maxLength" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_TOO_LONG\' | translate}}\n</div>\n<div ng-message="letter" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_NEEDS_LETTERS\' | translate}}\n</div>\n<div ng-message="number" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_NEEDS_NUMBERS\' | translate}}\n</div>\n<div ng-message="compareTo" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_CONFIRM_FAILED\' | translate}}\n</div>\n');
-$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/member/account/account.html','<div ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
+$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
+$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
+$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
 $templateCache.put('components/member/payment/cart.html','<div class="row">\n    <p>Buy <strong>Full Body Lobster Onesie - $24.99</strong> now!</p>\n\n    <paypal-button\n        env="sandbox"\n        client="ctrl.client"\n        payment="ctrl.payment"\n        commit="true"\n        onAuthorize="ctrl.onAuthorize">\n    </paypal-button>\n</div>\n');
 $templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list | orderBy : \'id\'">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>somme d\xFBe</th>\n          </tr>\n          <tr ng-repeat="registration in elem.data | orderBy : \'registrationId\'">\n            <td>{{registration.name}}</td>\n            <td>{{registration.price}}</td>\n            <td>{{registration.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n  <div class="col-md-12">\n    <div class="row">\n        <paypal-button\n          env="opts.env"\n          client="opts.client"\n          payment="opts.payment"\n          commit="opts.commit"\n          on-authorize="opts.onAuthorize"\n          on-cancel="opts.onCancel"\n          style="opts.style"\n        </paypal-button>\n    </div>\n  </div>\n</div>\n');
-$templateCache.put('components/member/password/edit/password.edit.html','<form name="pwdForm" novalidate ng-submit="ctrl.save()">\n  <div class="form-group row" ng-class="{ \'has-error\': pwdForm.oldPassword.$dirty && pwdForm.oldPassword.$error.required }">\n      <span class="col-md-6 col-md-offset-3">\n        <label for="oldPassword" class="control-label">{{ \'ACCOUNT.PASSWORD_OLD\' | translate}}</label>\n      </span>\n      <span class="col-md-6 col-md-offset-3">\n        <input type="password" name="oldPassword" id="oldPassword" class="form-control" ng-model="ctrl.oldPassword" required/>\n        <div ng-messages="pwdForm.oldPassword.$dirty && pwdForm.oldPassword.$error" ng-messages-multiple>\n          <div ng-messages-include="components/member/password/edit/password.message.html"></div>\n        </div>\n      </span>\n  </div>\n  <div class="form-group row" ng-class="{ \'has-error\': pwdForm.newPassword.$dirty && pwdForm.newPassword.$error.required }">\n      <span class="col-md-6 col-md-offset-3">\n        <label for="newPassword" class="control-label">{{ \'ACCOUNT.PASSWORD_NEW\' | translate}}</label>\n      </span>\n      <span class="col-md-6 col-md-offset-3">\n        <input type="password" name="newPassword" id="newPassword" class="form-control" ng-model="ctrl.newPassword" required\n          ng-pattern="/^[a-zA-Z0-9!@#$%^&*]{6,16}$/"\n          gs-strength/>\n        <div ng-messages="pwdForm.newPassword.$dirty && pwdForm.newPassword.$error" ng-messages-multiple>\n          <div ng-messages-include="components/member/password/edit/password.message.html"></div>\n        </div>\n      </span>\n  </div>\n  <div class="form-group row" ng-class="{ \'has-error\': pwdForm.newPasswordConfirm.$dirty && pwdForm.newPasswordConfirm.$error.required }">\n      <span class="col-md-6 col-md-offset-3">\n        <label for="newPasswordConfirm" class="control-label">{{ \'ACCOUNT.PASSWORD_CONFIRM\' | translate}}</label>\n      </span>\n      <span class="col-md-6 col-md-offset-3">\n        <input type="password" name="newPasswordConfirm" id="newPasswordConfirm"  ng-model="ctrl.newPasswordConfirm" class="form-control" required\n          gs-compare-to="ctrl.newPassword" />\n        <div ng-messages="pwdForm.newPasswordConfirm.$dirty && pwdForm.newPasswordConfirm.$error" ng-messages-multiple>\n          <div ng-messages-include="components/member/password/edit/password.message.html"></div>\n        </div>\n      </span>\n  </div>\n  <div class="form-actions row">\n    <span class="col-md-6 col-md-offset-3">\n      <button type="submit" ng-disabled="pwdForm.$invalid" class="btn btn-primary">{{ \'ACTION.CHANGE\' | translate}}</button>\n    </span>\n  </div>\n</form>\n');
-$templateCache.put('components/member/password/edit/password.message.html','\n<div ng-message="required" class="text-danger">\n  <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>\n  {{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}\n</div>\n<div ng-message="minLength" class="text-danger">\n  <span class="glyphicon glyphicon-remove has-error" aria-hidden="true"></span>\n  {{ \'PASSWORD.PWD_TOO_SHORT\' | translate}}\n</div>\n<div ng-message="maxLength" class="text-danger">\n  <span class="glyphicon glyphicon-remove has-error" aria-hidden="true"></span>\n  {{ \'PASSWORD.PWD_TOO_LONG\' | translate}}\n</div>\n<div ng-message="letter" class="text-danger">\n  <span class="glyphicon glyphicon-remove has-error" aria-hidden="true"></span>\n  {{ \'PASSWORD.PWD_NEEDS_LETTERS\' | translate}}\n</div>\n<div ng-message="number" class="text-danger">\n  <span class="glyphicon glyphicon-remove has-error" aria-hidden="true"></span>\n  {{ \'PASSWORD.PWD_NEEDS_NUMBERS\' | translate}}\n</div>\n<div ng-message="compareTo" class="text-danger">\n  <span class="glyphicon glyphicon-remove has-error" aria-hidden="true"></span>\n  {{ \'PASSWORD.PWD_CONFIRM_FAILED\' | translate}}\n</div>\n');
-$templateCache.put('components/member/password/forgot/password.forgot.html','<form name="forgotForm" novalidate>\n  <div class="form-group row" ng-class="{ \'has-error\': forgotForm.email.$dirty && forgotForm.email.$error.required }">\n    <span class="col-md-6 col-md-offset-3">\n      <h2>{{ \'ACCOUNT.RECOVERY\' | translate}}</h2>\n    </span>\n      <span class="col-md-6 col-md-offset-3">\n        <label for="email" class="control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n      </span>\n      <span class="col-md-6 col-md-offset-3">\n        <input type="email" name="email" id="email" class="form-control" ng-model="ctrl.email" required />\n      </span>\n  </div>\n  <div class="form-actions row">\n    <span class="col-md-6 col-md-offset-3">\n      <a ng-click="ctrl.reset()" ng-disabled="forgotForm.$invalid" class="btn btn-primary">{{ \'ACTION.RESET_PASSWORD\' | translate}}</button>\n    </span>\n  </div>\n</form>\n');
-$templateCache.put('components/member/password/forgot/password.html','<!-- form.html -->\n<div class="row">\n  <div class="col-sm-8 col-sm-offset-2">\n    <div id="form-container">\n      <!-- our nested state views will be injected here -->\n      <div id="form-views" ui-view></div>\n    </div>\n  </div>\n</div>\n');
-$templateCache.put('components/member/password/forgot/password.sent.html','<p>Votre demande de mot de passe a bien \xE9t\xE9 prise en compte.</p>\n<p>Un email a \xE9t\xE9 envoy\xE9e \xE0 l\'adresse <strong>{{ctr.email}}</strong>.</p>\n');
-$templateCache.put('components/member/password/reset/password.reset.html','<form name="pwdForm" novalidate>\n  <div class="form-group row" ng-class="{ \'has-error\': pwdForm.newPassword.$dirty && pwdForm.newPassword.$error.required }">\n      <span class="col-md-6 col-md-offset-3">\n        <label for="newPassword" class="control-label">{{ \'ACCOUNT.PASSWORD_NEW\' | translate}}</label>\n      </span>\n      <span class="col-md-6 col-md-offset-3">\n        <input type="newPassword" name="newPassword" id="newPassword" class="form-control" ng-model="ctrl.newPassword" required\n          ng-pattern="/^[a-zA-Z0-9!@#$%^&*]{6,16}$/"\n          gs-strength/>\n        <div ng-messages="pwdForm.newPassword.$error" ng-messages-multiple>\n          <div ng-messages-include="components/member/password/password.message.html"></div>\n        </div>\n      </span>\n  </div>\n  <div class="form-group row" ng-class="{ \'has-error\': pwdForm.newPasswordConfirm.$dirty && pwdForm.newPasswordConfirm.$error.required }">\n      <span class="col-md-6 col-md-offset-3">\n        <label for="newPasswordConfirm" class="control-label">{{ \'ACCOUNT.PASSWORD_CONFIRM\' | translate}}</label>\n      </span>\n      <span class="col-md-6 col-md-offset-3">\n        <input type="newPassword" name="newPasswordConfirm" id="newPasswordConfirm"  ng-model="ctrl.newPasswordConfirm" class="form-control" required gs-compare-to="ctrl.newPassword" />\n        <div ng-messages="pwdForm.newPasswordConfirm.$error" ng-messages-multiple>\n          <div ng-messages-include="components/member/password/password.message.html"></div>\n        </div>\n      </span>\n  </div>\n  <div class="form-actions row">\n    <span class="col-md-6 col-md-offset-3">\n      <button type="submit" ng-disabled="pwdForm.$invalid" class="btn btn-primary">{{ \'ACTION.CHANGE\' | translate}}</button>\n    </span>\n  </div>\n</form>\n');
+$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n');
 $templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
 $templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\n  <a class="btn btn-warning" role="button"\n      ng-click="ctrl.showForm(subscription)">\n    <h5>Supprimer <i class="glyphicon glyphicon-trash"></i></h5>\n  </a>\n</span>\n');
