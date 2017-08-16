@@ -109,7 +109,6 @@ gulp.task('dist', ['clean:dist'], function() {
     .pipe(templateCache('templates.js', {
       module: 'app'
     }));
-    // .pipe(gulp.dest(config.dist_dir.tpl));
 
   var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
@@ -121,7 +120,7 @@ gulp.task('dist', ['clean:dist'], function() {
 
   // Populate index.html with JS
   var htmlStream = gulp.src('app/index.html')
-    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
+    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
       ignorePath: 'dist',
       addRootSlash: false,
       addPrefix : 'gs'
@@ -165,10 +164,10 @@ gulp.task('dist-test', ['clean:dist'], function() {
 
   // Populate index.html with JS
   var htmlStream = gulp.src('app/index.html')
-    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
+    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
       ignorePath: 'dist',
       addRootSlash: false,
-      addPrefix : 'gs'
+      // addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.dist_dir.root));
 });
@@ -209,10 +208,10 @@ gulp.task('dist-prod', ['clean:dist'], function() {
 
   // Populate index.html with JS
   var htmlStream = gulp.src('app/index.html')
-    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
+    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
       ignorePath: 'dist',
       addRootSlash: false,
-      addPrefix : 'gs'
+      // addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.dist_dir.root));
 });

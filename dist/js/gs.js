@@ -63,7 +63,7 @@ LoginController.prototype = {
       this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
       return this.aclService
-        .isInAnyRole(['ROLE_USER', 'ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER'])
+        .isInAnyRole(['ROLE_USER'])
         .then(function(response) {
 //          console.info(response);
 //          console.info(response.defaultState.role + " go for state " + response.defaultState);
@@ -257,7 +257,7 @@ function PasswordResetRouterConfig($stateProvider) {
     });
 }
 
-function SignUpController($http, config, $scope, $sce, content, $compile) {
+function SignUpController($http, config, $scope, $sce, content, $compile, $state) {
 
   $scope.registerDone = false;
   $scope.registerSuccessful = false;
@@ -273,9 +273,13 @@ function SignUpController($http, config, $scope, $sce, content, $compile) {
      .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
      .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
 
+   $scope.cancelForm = function() {
+     $state.go('index.login');
+   }
+
   // process the form
   $scope.processForm = function($event, method, action) {
-    console.info($event);
+    // console.info($event);
     $event.preventDefault();
 
     $http({
@@ -1816,7 +1820,7 @@ angular.module('app.main.nav', ['app.auth', 'ui.router'])
 
 angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', SignUpRouterConfig])
-  .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', SignUpController]);
+  .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', '$state', SignUpController]);
 
 angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', AccountRouterConfig])
@@ -1929,7 +1933,6 @@ angular.module('app.registration.actions.validate', [])
 
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui', 'ngSanitize',
-        'ngMessages',
         'app.acl',
         'app.auth',
         'app.common',
@@ -2112,7 +2115,7 @@ angular
 
 angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
 $templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
-$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_TEACHER\'">\n          <a ui-sref="admin.topics"><i class="glyphicon glyphicon-sunglasses"></i> Gestion des cours</a>\n        </li>\n        <li role="menuitem" permission permission-only="\'ROLE_SECRETARY\'">\n          <a ui-sref="admin.secretariat"><i class="glyphicon glyphicon-tag"></i> Secr\xE9tariat</a>\n        </li>\n        <li role="menuitem" permission permission-only="\'ROLE_TREASURER\'">\n          <a ui-sref="admin.treasury"><i class="glyphicon glyphicon-tag"></i> Tr\xE9sorerie</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
+$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
 $templateCache.put('components/main/password/password.message.html','\n<div ng-message="required" class="text-danger">\n  <i class="glyphicon glyphicon-remove" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_REQUIRED\' | translate}}\n</div>\n<div ng-message="minLength" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_TOO_SHORT\' | translate}}\n</div>\n<div ng-message="maxLength" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_TOO_LONG\' | translate}}\n</div>\n<div ng-message="letter" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_NEEDS_LETTERS\' | translate}}\n</div>\n<div ng-message="number" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_NEEDS_NUMBERS\' | translate}}\n</div>\n<div ng-message="compareTo" class="text-danger">\n  <i class="glyphicon glyphicon-remove has-error" aria-hidden="true"></i>\n  {{ \'PASSWORD.PWD_CONFIRM_FAILED\' | translate}}\n</div>\n');
 $templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
 $templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
