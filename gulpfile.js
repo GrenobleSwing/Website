@@ -157,7 +157,7 @@ gulp.task('dist-test', ['clean:dist'], function() {
 
   var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
-    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://localhost/api'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://test.api.grenobleswing.com/api'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
     .pipe(uglify())
@@ -201,7 +201,7 @@ gulp.task('dist-prod', ['clean:dist'], function() {
 
   var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
-    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://localhost/api'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://inscriptions.api.grenobleswing.com/api'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
     .pipe(uglify())
