@@ -2,6 +2,7 @@
   "name": "angular-ui-grid",
   "description": "A data grid for Angular",
   "main": [
+    "3.2.11",
     "less",
     "ui-grid.css",
     "ui-grid.eot",
@@ -37,15 +38,14 @@
     "data grid"
   ],
   "license": "MIT",
-  "version": "3.2.9",
-  "_release": "3.2.9",
+  "version": "3.2.11",
+  "_release": "3.2.11",
   "_resolution": {
     "type": "version",
-    "tag": "v3.2.9",
-    "commit": "a091aadc72ca5a8623bbf86813f2575d06e52de9"
+    "tag": "v3.2.11",
+    "commit": "d5eac7e49b936be6622c71c1333f07a523c796df"
   },
   "_source": "https://github.com/angular-ui/bower-ui-grid.git",
   "_target": "^3.2.9",
-  "_originalSource": "angular-ui-grid",
-  "_direct": true
+  "_originalSource": "angular-ui-grid"
 }

@@ -34,7 +34,7 @@ LoginController.prototype = {
       this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
       return this.aclService
-        .isInAnyRole(['ROLE_USER', 'ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER'])
+        .isInAnyRole(['ROLE_USER'])
         .then(function(response) {
 //          console.info(response);
 //          console.info(response.defaultState.role + " go for state " + response.defaultState);

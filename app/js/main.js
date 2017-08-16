@@ -1,6 +1,5 @@
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui', 'ngSanitize',
-        'ngMessages',
         'app.acl',
         'app.auth',
         'app.common',

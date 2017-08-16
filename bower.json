@@ -17,17 +17,14 @@
   ],
   "devDependencies": {
     "angular-permission": "^5.2.3",
-    "angular": "^1.6.4",
-    "angular-cookies": "^1.6.4",
+    "angular": "1.6.4",
+    "angular-cookies": "1.6.4",
     "angular-bootstrap": "^2.5.0",
-    "angular-messages": "^1.6.4",
-    "angular-resource": "^1.6.4",
+    "angular-resource": "1.6.4",
     "angular-ui-router": "^0.3.2"
   },
   "dependencies": {
-    "angular-sanitize": "^1.6.4",
-    "angular-cookie-law": "^0.2.4",
-    "angular-consent": "^2.1.1",
-    "angular-stripe-checkout": "^5.1.0"
+    "angular-sanitize": "1.6.4",
+    "angular-cookie-law": "^0.2.4"
   }
 }
