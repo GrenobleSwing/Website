@@ -104,11 +104,13 @@ function LogoutRouterConfig($stateProvider) {
 		views: {
       'content@': {
         template : "<div />",
-        controller: function ($rootScope, $cookies, $state, $http) {
-          $rootScope.globals = {};
-          $cookies.remove('globals');
-          $http.defaults.headers.common.Authorization = 'Bearer';
-          $state.go('index.login');
+        controller: function ($rootScope, $cookies, $state, $http, config) {
+          $http.get(config.apiUrl + 'disconnect').finally(function() {
+            $rootScope.globals = {};
+            $cookies.remove('globals');
+            $http.defaults.headers.common.Authorization = 'Bearer';
+            return $state.go('index.login');
+          });
         }
       }
     },

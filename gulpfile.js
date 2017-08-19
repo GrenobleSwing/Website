@@ -70,7 +70,7 @@ gulp.task('build', ['clean:build'], function() {
     .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
       ignorePath: ['build', 'app'],
       addRootSlash: false,
-      // addPrefix : 'gs'
+      addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.build_dir.root));
 
