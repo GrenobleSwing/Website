@@ -19,14 +19,15 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
   }
-  
+
   $scope.processForm = function($event, method, action) {
 
     $event.preventDefault();
 
+    var url = config.apiUrl + action;
     $http({
       method  : method,
-      url     : config.apiUrl + action,
+      url     : url.replace('/api/api', '/api'),
       data    : {
         "registration[_token]" :	$scope.formData.registration__token,
         "registration[role]" : $scope.formData.registration_role,
