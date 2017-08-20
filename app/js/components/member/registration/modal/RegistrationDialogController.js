@@ -14,9 +14,11 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
 
     $event.preventDefault();
 
+    var url = config.apiUrl + action;
+
     $http({
       method  : method,
-      url     : config.apiUrl + action,
+      url     : url.replace('/api/api', '/api'),
       data    : {
         "registration[_token]" :	$scope.formData.registration__token,
         "registration[topic]" : $scope.formData.topic
