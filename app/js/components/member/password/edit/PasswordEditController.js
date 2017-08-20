@@ -7,7 +7,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
     $scope.trustedHtml = $sce.trustAsHtml(content
        .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
        .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
-       .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+       .replace(' name="fos_user_change_password_formser[plainPassword][second]" ', '  ')
        .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
        .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
        .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
@@ -25,7 +25,6 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
           "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
           "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
           "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second,
-          "fos_user_change_password_form[register]" :	"",
           "fos_user_change_password_form[_token]" :	$scope.formData.user__token
         },
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
