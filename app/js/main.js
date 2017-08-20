@@ -123,7 +123,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       authenticationService.getIdentity().then(function() {
         state.go('index.home');
       }, function() {
-        state.go('index.logout');
+        // state.go('index.logout');
       });
     });
 }
