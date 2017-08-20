@@ -1,10 +1,17 @@
-function MainNavController($state, authenticationService) {
+function MainNavController($state, authenticationService, config, $http, $rootScope, $cookies) {
   this.state = $state;
+  this.config = config;
 
   this.authenticationService = authenticationService;
 
-  this.isOpen = false;
-  this.identity = {$ok: false};
+  this.logout = function() {
+    return $http.get(config.apiUrl + '/disconnect').finally(function() {
+      $rootScope.globals = {};
+      $cookies.remove('globals');
+      $http.defaults.headers.common.Authorization = 'Bearer';
+      return $state.go('index.login');
+    });
+  }
 
   this.init_();
 }
@@ -12,16 +19,12 @@ function MainNavController($state, authenticationService) {
 MainNavController.prototype = {
 
   init_: function init_() {
-    this.authenticationService
+    return this.authenticationService
       .getIdentity()
       .then(function(response) {
         // console.info(response);
         this.identity = response.data;
+        return response;
       }.bind(this));
-  },
-
-  logout: function logout() {
-    // console.info("MainNavController#controller#logout");
-    this.state.go('index.logout');
   }
 };

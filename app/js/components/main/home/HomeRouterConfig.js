@@ -1,8 +1,7 @@
 function HomeRouterConfig($stateProvider) {
   $stateProvider
     .state('index.home', {
-      parent: 'index',
-      url: '',
+      url: '/home',
       views: {
         'content@': {
           templateUrl: "components/main/home/home.html",

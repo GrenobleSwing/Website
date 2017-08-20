@@ -1,5 +1,5 @@
 function PasswordResetRouterConfig($stateProvider) {
-  $stateProvider.state('index.reset', {
+  $stateProvider.state('reset', {
       parent: 'index',
       url: "/reset",
       data: {

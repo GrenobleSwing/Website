@@ -9,36 +9,28 @@ function LoginController($scope, $state, authService, aclService) {
   this.authService = authService;
   this.aclService = aclService;
 
-  this.init_();
+  this.handleSuccess_ = this.handleSuccess_.bind(this);
+  this.handleError_ = this.handleError_.bind(this);
 }
 
 LoginController.prototype = {
-  init_ : function init_() {
-    this.handleSuccess_ = this.handleSuccess_.bind(this);
-    this.handleError_ = this.handleError_.bind(this);
-  },
 
   connect : function connect() {
-//    console.info("LoginController#connect");
     this.authFailed = false;
-    this.authService
+    return this.authService
       .login(this.login, this.password)
       .then(this.handleSuccess_, this.handleError_);
   },
 
   handleSuccess_ : function handleSuccess_(identity) {
-//    console.info("LoginController#connect#handleSuccess_");
     if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
       this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
-//      console.info("returnToState: " + this.scope.returnToState.name);
-      this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
+      return this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
       return this.aclService
         .isInAnyRole(['ROLE_USER'])
         .then(function(response) {
-//          console.info(response);
-//          console.info(response.defaultState.role + " go for state " + response.defaultState);
-          this.state.go('index.home');
+          return this.state.go('index.home');
         }.bind(this), this.handleError_);
     }
   },

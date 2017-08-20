@@ -57,30 +57,6 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 }
             }
         })
-        // .state('admin', {
-        //     abstract: true,
-        //     url : '/admin',
-        //     views: {
-        //         'nav@': {
-        //             templateUrl: 'components/admin/admin-navigation/navbar.html',
-        //             controller: 'adminNavController',
-        //             controllerAs: 'ctrl'
-        //         },
-        //         'header@' : {
-        //           template : ''
-        //         }
-        //     },
-        //     data: {
-        //         permissions: {
-        //           only: ['ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER']
-        //         },
-        //         redirectTo: {
-        //           'canViewTopics' : 'admin.topics',
-        //           'canViewClasses': 'admin.classes'
-        //         }
-        //
-        //     }
-        // })
         .state('access-denied', {
             url: '/denied',
             views: {
@@ -120,15 +96,14 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
-      authenticationService.getIdentity().then(function() {
-        state.go('index.home');
-      }, function() {
-        // state.go('index.logout');
+      return authenticationService.getIdentity().then(function() {
+        return state.go('index.home');
       });
     });
 }
 
-function run($rootScope, $state, $stateParams, yearService, authenticationService, $cookies) {
+function run($rootScope, $state) {
+    $state.defaultErrorHandler();
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         $rootScope.toState = toState;
@@ -147,35 +122,22 @@ function withPermissions(PermPermissionStore, aclService) {
 function withRoles(PermRoleStore, authenticationService, aclService, $q) {
   PermRoleStore
     .defineRole('ANONYMOUS', function (stateParams, roleName) {
-      var result = authenticationService.isAnonymous();
-//      console.info('check ANONYMOUS is ' + result);
-      return result;
+      return authenticationService.isAnonymous();
     });
 
   PermRoleStore
     .defineRole('AUTHORIZED', function (stateParams, roleName) {
-      var result = authenticationService.isAuthenticated();
-//      console.info('check AUTHORIZED is '+ result);
-      return result;
+      return authenticationService.isAuthenticated();
     });
 
   PermRoleStore
     .defineRole('ROLE_USER', function(roleName, transitionProperties) {
-      var result = aclService.isInRole(roleName);
-//      console.info('check ROLE_USER is '+ result);
-      return result;
+      return aclService.isInRole(roleName);
     });
-
-//   PermRoleStore
-//     .defineRole('ROLE_TEACHER', function(roleName, transitionProperties) {
-//       var result = aclService.isInRole(roleName);
-// //      console.info('check ROLE_TEACHER is '+ result);
-//       return result;
-//     });
 }
 
 angular
   .module('app')
-  .run(['$rootScope', '$state', '$stateParams', 'yearService', 'authenticationService', run])
+  .run(['$rootScope', '$state', run])
   .run(['PermPermissionStore', 'authenticationService', withPermissions])
   .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);

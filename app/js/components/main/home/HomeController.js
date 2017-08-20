@@ -5,6 +5,6 @@ function HomeController() {
 HomeController.prototype = {
 
   init_: function init_() {
-    
+
   }
 };

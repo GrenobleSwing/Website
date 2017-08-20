@@ -50,7 +50,7 @@ LoginController.prototype = {
   connect : function connect() {
 //    console.info("LoginController#connect");
     this.authFailed = false;
-    this.authService
+    return this.authService
       .login(this.login, this.password)
       .then(this.handleSuccess_, this.handleError_);
   },
@@ -60,14 +60,14 @@ LoginController.prototype = {
     if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
       this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
 //      console.info("returnToState: " + this.scope.returnToState.name);
-      this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
+      return this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
       return this.aclService
         .isInAnyRole(['ROLE_USER'])
         .then(function(response) {
 //          console.info(response);
 //          console.info(response.defaultState.role + " go for state " + response.defaultState);
-          this.state.go('index.home');
+          return this.state.go('index.home');
         }.bind(this), this.handleError_);
     }
   },
@@ -98,38 +98,22 @@ function LoginRouterConfig($stateProvider) {
     });
 }
 
-function LogoutRouterConfig($stateProvider) {
-  $stateProvider.state('index.logout', {
-		url: '/logout',
-		views: {
-      'content@': {
-        template : "<div />",
-        controller: function ($rootScope, $cookies, $state, $http, config) {
-          $http.get(config.apiUrl + '/disconnect').finally(function() {
-            $rootScope.globals = {};
-            $cookies.remove('globals');
-            $http.defaults.headers.common.Authorization = 'Bearer';
-            return $state.go('index.login');
-          });
-        }
-      }
-    },
-    data: {
-        permissions: {
-          except: ['ANONYMOUS'],
-          redirectTo: 'index.login'
-        }
-    }
-  });
-}
-
-function MainNavController($state, authenticationService) {
+function MainNavController($state, authenticationService, config, $http, $rootScope, $cookies) {
   this.state = $state;
+  this.config = config;
 
   this.authenticationService = authenticationService;
 
-  this.isOpen = false;
-  this.identity = {$ok: false};
+  this.logout = function() {
+    console.info("MainNavController#controller#logout");
+    // this.state.go('index.logout');
+    return $http.get(config.apiUrl + '/disconnect').finally(function() {
+      $rootScope.globals = {};
+      $cookies.remove('globals');
+      $http.defaults.headers.common.Authorization = 'Bearer';
+      return $state.go('index.login');
+    });
+  }
 
   this.init_();
 }
@@ -143,11 +127,6 @@ MainNavController.prototype = {
         // console.info(response);
         this.identity = response.data;
       }.bind(this));
-  },
-
-  logout: function logout() {
-    // console.info("MainNavController#controller#logout");
-    this.state.go('index.logout');
   }
 };
 
@@ -1269,7 +1248,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
     $scope.trustedHtml = $sce.trustAsHtml(content
        .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
        .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
-       .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+       .replace(' name="fos_user_change_password_formser[plainPassword][second]" ', '  ')
        .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
        .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
        .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
@@ -1287,7 +1266,6 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
           "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
           "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
           "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second,
-          "fos_user_change_password_form[register]" :	"",
           "fos_user_change_password_form[_token]" :	$scope.formData.user__token
         },
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
@@ -1476,9 +1454,11 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
 
     $event.preventDefault();
 
+    var url = config.apiUrl + action;
+
     $http({
       method  : method,
-      url     : config.apiUrl + action,
+      url     : url.replace('/api/api', '/api'),
       data    : {
         "registration[_token]" :	$scope.formData.registration__token,
         "registration[topic]" : $scope.formData.topic
@@ -1543,14 +1523,15 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
   }
-  
+
   $scope.processForm = function($event, method, action) {
 
     $event.preventDefault();
 
+    var url = config.apiUrl + action;
     $http({
       method  : method,
-      url     : config.apiUrl + action,
+      url     : url.replace('/api/api', '/api'),
       data    : {
         "registration[_token]" :	$scope.formData.registration__token,
         "registration[role]" : $scope.formData.registration_role,
@@ -1622,7 +1603,7 @@ RegistrationAddController.prototype = {
         resolve: {
           content: ['$http', 'config', function ($http, config) {
             return $http
-              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
+              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", "").replace('/api/api', '/api'))
               .then(function(response) {
                 return response;
               });
@@ -1662,7 +1643,7 @@ RegistrationCancelController.prototype = {
   showForm : function showForm() {
     var uri = this.registration._links.cancel.href;
     this.$http
-      .get(this.config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
+      .get(this.config.apiUrl + uri.replace("/web/app_dev.php/api", "").replace('/api/api', '/api'))
       .then(function(response) {
         return this.$state.reload();
       }.bind(this))
@@ -1727,7 +1708,7 @@ RegistrationUpdateController.prototype = {
         resolve: {
           content: ['$http', '$sce', 'config', function ($http, $sce, config) {
             return $http
-              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
+              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", "").replace('/api/api', '/api'))
               .then(function(response) {
                 return response;
               });
@@ -1772,7 +1753,7 @@ RegistrationValidateController.prototype = {
         resolve: {
           content: ['$http', '$sce', 'config', function ($http, $sce, config) {
             return $http
-              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", ""))
+              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", "").replace('/api/api', '/api'))
               .then(function(response) {
                 return $sce.trustAsHtml(response.data);
               });
@@ -1808,13 +1789,9 @@ angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
 .config(['$stateProvider', LoginRouterConfig])
 .controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
 
-angular
-    .module('app.logout', ['ui.router'])
-    .config(['$stateProvider', LogoutRouterConfig]);
-
 angular.module('app.main.nav', ['app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
-  .controller('mainNavController', ['$state', 'authenticationService', MainNavController]);
+  .controller('mainNavController', ['$state', 'authenticationService', 'config', '$http', '$rootScope', '$cookies', MainNavController]);
 
   angular.module('app.reset', ['app.config', 'ui.router', 'ngSanitize'])
     .config(['$stateProvider', PasswordResetRouterConfig])
@@ -1943,7 +1920,7 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'app.account',
         'app.http',
         'app.login',
-        'app.logout',
+        // 'app.logout',
         'app.main.nav',
         'app.member.nav',
         'app.summary',
@@ -1992,30 +1969,6 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                 }
             }
         })
-        // .state('admin', {
-        //     abstract: true,
-        //     url : '/admin',
-        //     views: {
-        //         'nav@': {
-        //             templateUrl: 'components/admin/admin-navigation/navbar.html',
-        //             controller: 'adminNavController',
-        //             controllerAs: 'ctrl'
-        //         },
-        //         'header@' : {
-        //           template : ''
-        //         }
-        //     },
-        //     data: {
-        //         permissions: {
-        //           only: ['ROLE_TEACHER', 'ROLE_SECRETARY', 'ROLE_TREASURER']
-        //         },
-        //         redirectTo: {
-        //           'canViewTopics' : 'admin.topics',
-        //           'canViewClasses': 'admin.classes'
-        //         }
-        //
-        //     }
-        // })
         .state('access-denied', {
             url: '/denied',
             views: {
@@ -2058,7 +2011,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       authenticationService.getIdentity().then(function() {
         state.go('index.home');
       }, function() {
-        state.go('index.logout');
+        // do nothing yet when identity check fails
       });
     });
 }

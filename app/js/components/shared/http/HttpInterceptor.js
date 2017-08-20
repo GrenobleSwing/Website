@@ -10,8 +10,8 @@ function HttpInterceptor($q, $injector, $cookies) {
     'response': function(response) {
 
         if (response.status === 401) {
-            $injector.get('$state').go('index.logout');
-            return $q.reject(response);
+          $injector.get('$state').go('index.logout');
+          return $q.reject(response);
         }
         return response || $q.when(response);
     },
@@ -19,8 +19,8 @@ function HttpInterceptor($q, $injector, $cookies) {
     'responseError': function(rejection) {
 
         if (rejection.status === 401) {
-            $injector.get('$state').go('index.logout');
-            return $q.reject(rejection);
+          $injector.get('$state').go('index.logout');
+          return $q.reject(rejection);
         }
         return $q.reject(rejection);
     }
