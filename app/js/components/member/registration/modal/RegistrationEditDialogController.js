@@ -9,7 +9,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   );
 
   $scope.formData = {};
-  $scope.formData.registration__token = $("input#registration__token", content.data).val();
+  $scope.formData.registration_topic = $("input#registration_topic", content.data).val();
   $scope.formData.registration_role = $("select#registration_role", content.data).val();
   $scope.formData.registration_withPartner = $("input#registration_withPartner", content.data).val();
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
@@ -29,7 +29,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       method  : method,
       url     : url.replace('/api/api', '/api'),
       data    : {
-        "registration[_token]" :	$scope.formData.registration__token,
+        "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
         "registration[partnerFirstName]" : $scope.formData.registration_partnerFirstName,

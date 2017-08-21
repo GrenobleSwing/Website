@@ -10,7 +10,7 @@ RegistrationCancelController.prototype = {
   showForm : function showForm() {
     var uri = this.registration._links.cancel.href;
     this.$http
-      .get(this.config.apiUrl + uri.replace("/web/app_dev.php/api", "").replace('/api/api', '/api'))
+      .get(this.config.apiUrl + uri.replace("/web/app_dev.php", "").replace('/api', ''))
       .then(function(response) {
         return this.$state.reload();
       }.bind(this))

@@ -16,7 +16,7 @@ RegistrationAddController.prototype = {
         resolve: {
           content: ['$http', 'config', function ($http, config) {
             return $http
-              .get(config.apiUrl + uri.replace("/web/app_dev.php/api", "").replace('/api/api', '/api'))
+              .get(config.apiUrl + uri.replace("/web/app_dev.php", "").replace('/api', ''))
               .then(function(response) {
                 return response;
               });
