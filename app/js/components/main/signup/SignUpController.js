@@ -3,13 +3,13 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
   $scope.registerDone = false;
   $scope.registerSuccessful = false;
   $scope.formData = {};
-  $scope.formData.user__token = content.match('value="(.*)" ')[1];
+  // $scope.formData.user__token = content.match('value="(.*)" ')[1];
 
   $scope.trustedHtml = $sce.trustAsHtml(content
      .replace("$element.action, $element.method", "$event, '/user', 'POST'")
-     .replace(' name="user[email]" ', '  ')
-     .replace(' name="user[plainPassword][first]" ', '  ')
-     .replace(' name="user[plainPassword][second]" ', '  ')
+    //  .replace(' name="user[email]" ', '  ')
+    //  .replace(' name="user[plainPassword][first]" ', '  ')
+    //  .replace(' name="user[plainPassword][second]" ', '  ')
      .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
      .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
      .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
@@ -31,8 +31,8 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
         "user[email]" :	$scope.formData.user_email,
         "user[plainPassword][first]" :	$scope.formData.user_plainPassword_first,
         "user[plainPassword][second]" :	$scope.formData.user_plainPassword_second,
-        "user[register]" :	"",
-        "user[_token]" :	$scope.formData.user__token
+        "user[register]" :	""
+        // ,"user[_token]" :	$scope.formData.user__token
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
@@ -75,7 +75,6 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
 
       $scope.trustedHtml = $sce.trustAsHtml(error.data
         .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")
-        .replace("Repeat Password", "Repouet Password")
         .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
         .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
         .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
