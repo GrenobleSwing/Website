@@ -259,13 +259,10 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
   $scope.registerDone = false;
   $scope.registerSuccessful = false;
   $scope.formData = {};
-  $scope.formData.user__token = content.match('value="(.*)" ')[1];
+  // $scope.formData.user__token = content.match('value="(.*)" ')[1];
 
   $scope.trustedHtml = $sce.trustAsHtml(content
      .replace("$element.action, $element.method", "$event, '/user', 'POST'")
-     .replace(' name="user[email]" ', '  ')
-     .replace(' name="user[plainPassword][first]" ', '  ')
-     .replace(' name="user[plainPassword][second]" ', '  ')
      .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
      .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
      .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
@@ -287,8 +284,8 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
         "user[email]" :	$scope.formData.user_email,
         "user[plainPassword][first]" :	$scope.formData.user_plainPassword_first,
         "user[plainPassword][second]" :	$scope.formData.user_plainPassword_second,
-        "user[register]" :	"",
-        "user[_token]" :	$scope.formData.user__token
+        "user[register]" :	""
+        // ,"user[_token]" :	$scope.formData.user__token
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
@@ -331,7 +328,6 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
 
       $scope.trustedHtml = $sce.trustAsHtml(error.data
         .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")
-        .replace("Repeat Password", "Repouet Password")
         .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
         .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
         .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
@@ -559,16 +555,8 @@ function SummaryController($scope, $http, userDetails, config) {
   this.$ok = false;
   this.totalAmount = 0;
   this.list = $http.get(config.apiUrl + '/account/'+userDetails.id+'/balance').then(function(response) {
-    var data = response.data.details;
-    this.list = [];
-    for (var k in data) {
-      if (data.hasOwnProperty(k)) {
-        this.list.push({
-          "name" : k,
-          "data": data[k]["Cours"]
-        });
-      }
-    }
+
+    this.list = response.data.details;
     this.$ok = true;
     this.totalAmount = response.data.totalBalance;
   }.bind(this));
@@ -1450,7 +1438,13 @@ function RegistrationsRouterConfig($stateProvider) {
 
 function RegistrationDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
-  $scope.trustedHtml = $sce.trustAsHtml(content.data);
+  $scope.trustedHtml = $sce.trustAsHtml(content.data
+     .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+     .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
+     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
+     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
+     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+  );
 
   $scope.formData = {};
   $scope.formData.registration_topic = $("input#registration_topic", content.data).val();
@@ -1515,7 +1509,13 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
         // this.modalInstance.dismiss('cancel');
       }
     }.bind(this), function(error) {
-      $scope.trustedHtml = $sce.trustAsHtml(error.data);
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+         .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+         .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
+         .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
+         .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
+         .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+      );
     });
   }
 }
@@ -2084,7 +2084,7 @@ $templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDo
 $templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
 $templateCache.put('components/member/payment/cart.html','<div class="row">\n    <p>Buy <strong>Full Body Lobster Onesie - $24.99</strong> now!</p>\n\n    <paypal-button\n        env="sandbox"\n        client="ctrl.client"\n        payment="ctrl.payment"\n        commit="true"\n        onAuthorize="ctrl.onAuthorize">\n    </paypal-button>\n</div>\n');
-$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list | orderBy : \'id\'">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>somme d\xFBe</th>\n          </tr>\n          <tr ng-repeat="registration in elem.data | orderBy : \'registrationId\'">\n            <td>{{registration.name}}</td>\n            <td>{{registration.price}}</td>\n            <td>{{registration.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n  <div class="col-md-12">\n    <div class="row">\n        <paypal-button\n          env="opts.env"\n          client="opts.client"\n          payment="opts.payment"\n          commit="opts.commit"\n          on-authorize="opts.onAuthorize"\n          on-cancel="opts.onCancel"\n          style="opts.style"\n        </paypal-button>\n    </div>\n  </div>\n</div>\n');
+$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list | orderBy : \'id\'">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="registration in elem.data | orderBy : \'registrationId\'">\n            <td>{{registration.title}}</td>\n            <td>{{registration.price}}</td>\n            <td>{{registration.discount}}</td>\n            <td>{{registration.alreadyPaid}}</td>\n            <td>{{registration.balance}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n</div>\n');
 $templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n');
 $templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
