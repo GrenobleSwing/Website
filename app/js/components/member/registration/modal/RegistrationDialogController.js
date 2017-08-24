@@ -1,6 +1,12 @@
 function RegistrationDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
-  $scope.trustedHtml = $sce.trustAsHtml(content.data);
+  $scope.trustedHtml = $sce.trustAsHtml(content.data
+     .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+     .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
+     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
+     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
+     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+  );
 
   $scope.formData = {};
   $scope.formData.registration_topic = $("input#registration_topic", content.data).val();
@@ -65,7 +71,13 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
         // this.modalInstance.dismiss('cancel');
       }
     }.bind(this), function(error) {
-      $scope.trustedHtml = $sce.trustAsHtml(error.data);
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+         .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+         .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
+         .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
+         .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
+         .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+      );
     });
   }
 }

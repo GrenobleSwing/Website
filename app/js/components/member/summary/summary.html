@@ -8,29 +8,20 @@
           <tr>
             <th>intitulé</th>
             <th>tarif</th>
+            <th>remise</th>
             <th>somme dûe</th>
+            <th>somme payée</th>
           </tr>
           <tr ng-repeat="registration in elem.data | orderBy : 'registrationId'">
-            <td>{{registration.name}}</td>
+            <td>{{registration.title}}</td>
             <td>{{registration.price}}</td>
+            <td>{{registration.discount}}</td>
             <td>{{registration.alreadyPaid}}</td>
+            <td>{{registration.balance}}</td>
           </tr>
         </table>
       </div>
     </div>
   </div>
   <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}€</h4></div>
-  <div class="col-md-12">
-    <div class="row">
-        <paypal-button
-          env="opts.env"
-          client="opts.client"
-          payment="opts.payment"
-          commit="opts.commit"
-          on-authorize="opts.onAuthorize"
-          on-cancel="opts.onCancel"
-          style="opts.style"
-        </paypal-button>
-    </div>
-  </div>
 </div>

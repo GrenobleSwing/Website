@@ -7,9 +7,6 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
 
   $scope.trustedHtml = $sce.trustAsHtml(content
      .replace("$element.action, $element.method", "$event, '/user', 'POST'")
-    //  .replace(' name="user[email]" ', '  ')
-    //  .replace(' name="user[plainPassword][first]" ', '  ')
-    //  .replace(' name="user[plainPassword][second]" ', '  ')
      .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
      .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
      .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
