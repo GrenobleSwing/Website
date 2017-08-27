@@ -6,12 +6,13 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
      .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
      .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+    //  .replace('</form>', '</form><pre>{{formData.registration_withPartner}}</pre>')
   );
 
   $scope.formData = {};
   $scope.formData.registration_topic = $("input#registration_topic", content.data).val();
   $scope.formData.registration_role = $("select#registration_role", content.data).val();
-  $scope.formData.registration_withPartner = $("input#registration_withPartner", content.data).val();
+  $scope.formData.registration_withPartner = false;
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();

@@ -12,12 +12,12 @@
             <th>somme dûe</th>
             <th>somme payée</th>
           </tr>
-          <tr ng-repeat="registration in elem.data | orderBy : 'registrationId'">
-            <td>{{registration.title}}</td>
-            <td>{{registration.price}}</td>
-            <td>{{registration.discount}}</td>
-            <td>{{registration.alreadyPaid}}</td>
-            <td>{{registration.balance}}</td>
+          <tr ng-repeat="elem in ctrl.list">
+            <td>{{elem.title}}</td>
+            <td>{{elem.price}}</td>
+            <td>{{elem.discount}}</td>
+            <td>{{elem.balance}}</td>
+            <td>{{elem.alreadyPaid}}</td>
           </tr>
         </table>
       </div>
