@@ -1,367 +1,3 @@
-function HomeController() {
-  this.init_();
-}
-
-HomeController.prototype = {
-
-  init_: function init_() {
-
-  }
-};
-
-function HomeRouterConfig($stateProvider) {
-  $stateProvider
-    .state('index.home', {
-      url: '/home',
-      views: {
-        'content@': {
-          templateUrl: "components/main/home/home.html",
-          controller: "homeController",
-          controllerAs: "ctrl"
-        },
-        'header@' : {
-          template : '<gs-main-nav></gs-main-nav>'
-        }
-      }
-  });
-}
-
-function LoginController($scope, $state, authService, aclService) {
-  this.scope = $scope;
-  this.state = $state;
-
-  this.login = "";
-  this.password = "";
-  this.authFailed = false;
-
-  this.authService = authService;
-  this.aclService = aclService;
-
-  this.handleSuccess_ = this.handleSuccess_.bind(this);
-  this.handleError_ = this.handleError_.bind(this);
-}
-
-LoginController.prototype = {
-
-  connect : function connect() {
-    this.authFailed = false;
-    return this.authService
-      .login(this.login, this.password)
-      .then(this.handleSuccess_, this.handleError_);
-  },
-
-  handleSuccess_ : function handleSuccess_(identity) {
-    if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
-      this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
-      return this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
-    } else {
-      return this.aclService
-        .isInAnyRole(['ROLE_USER'])
-        .then(function(response) {
-          return this.state.go('index.home');
-        }.bind(this), this.handleError_);
-    }
-  },
-
-  handleError_ : function handleError_(error)  {
-    console.error(error);
-    this.authFailed = true;
-    return error;
-  }
-};
-
-function LoginRouterConfig($stateProvider) {
-  $stateProvider
-    .state('index.login', {
-      url: '/login',
-      views: {
-        'content@': {
-          templateUrl: 'components/main/login/login.html',
-          controller: "loginController",
-          controllerAs: "ctrl"
-        }
-      },
-      data: {
-        permissions: {
-          only: ['ANONYMOUS']
-        }
-      }
-    });
-}
-
-function LogoutRouterConfig($stateProvider) {
-  $stateProvider.state('index.logout', {
-		url: '/logout',
-    views: {
-      'content@': {
-        template : "<div />",
-        controller: function ($rootScope, $cookies, $state, $http, config) {
-          console.info("LogoutRouterConfig#controller");
-          return $http.get(config.apiUrl + '/disconnect').finally(function() {
-            $rootScope.globals = {};
-            $cookies.remove('globals');
-            $http.defaults.headers.common.Authorization = 'Bearer';
-            return $state.go('index.login');
-          });
-        }
-      }
-    },
-    data: {
-        permissions: {
-          except: ['ANONYMOUS'],
-          redirectTo: 'index.login'
-        }
-    }
-  });
-}
-
-function MainNavController($state, authenticationService, config, $http, $rootScope, $cookies) {
-  this.state = $state;
-  this.config = config;
-
-  this.authenticationService = authenticationService;
-
-  this.logout = function() {
-    return $http.get(config.apiUrl + '/disconnect').finally(function() {
-      $rootScope.globals = {};
-      $cookies.remove('globals');
-      $http.defaults.headers.common.Authorization = 'Bearer';
-      return $state.go('index.login');
-    });
-  }
-
-  this.init_();
-}
-
-MainNavController.prototype = {
-
-  init_: function init_() {
-    return this.authenticationService
-      .getIdentity()
-      .then(function(response) {
-        // console.info(response);
-        this.identity = response.data;
-        return response;
-      }.bind(this));
-  }
-};
-
-function MainNavDirective() {
-  return {
-    templateUrl: 'components/main/main-navigation/navbar.html',
-    controller: 'mainNavController',
-    controllerAs: 'ctrl'
-  };
-}
-
-function MainNavRouterConfig($stateProvider) {
-  $stateProvider
-    .state('main.nav', {
-      templateUrl: 'components/main/main-navigation/navbar.html',
-      controller: 'mainNavController',
-      controllerAs: 'ctrl'
-  });
-}
-
-function PasswordResetController($http, config, $scope, $sce, content, $compile, userDetails) {
-
-  $scope.registerDone = false;
-  $scope.registerSuccessful = false;
-  $scope.formData = {};
-  $scope.formData.user__token = content.match('value="(.*)" ')[1];
-
-  $scope.trustedHtml = $sce.trustAsHtml(content
-     .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
-
-  // process the form
-  $scope.processForm = function($event, method, action) {
-
-    $event.preventDefault();
-
-    $http({
-      method  : method,
-      url     : config.apiUrl + action,
-      // data : $.param($scope.formData),
-      data    : {
-        "username" :	$scope.formData.username
-      },
-      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
-      transformRequest : function transformRequest( data, getHeaders ) {
-					var headers = getHeaders();
-          if ( ! angular.isObject( data ) ) {
-						return( ( data == null ) ? "" : data.toString() );
-					}
-					var buffer = [];
-					// Serialize each key in the object.
-					for ( var name in data ) {
-						if ( ! data.hasOwnProperty( name ) ) {
-							continue;
-						}
-						var value = data[ name ];
-						buffer.push(
-							encodeURIComponent( name ) +
-							"=" +
-							encodeURIComponent( ( value == null ) ? "" : value )
-						);
-					}
-					// Serialize the buffer and clean it up for transportation.
-					var source = buffer
-						.join( "&" )
-						.replace( /%20/g, "+" )
-					;
-					return( source );
-				}
-     })
-    .then(function(data) {
-      console.log(data);
-      $scope.registerDone = true;
-      if (data.status != 302) {
-        $scope.registerSuccessful = false;
-      } else {
-        // if successful, bind success message to message
-        $scope.registerSuccessful = true;
-      }
-    }, function(error) {
-      console.log(error);
-
-      $scope.trustedHtml = $sce.trustAsHtml(error.data
-        .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
-    });
-  }
-}
-
-function PasswordResetRouterConfig($stateProvider) {
-  $stateProvider.state('reset', {
-      parent: 'index',
-      url: "/reset",
-      data: {
-        roles: []
-      },
-      views: {
-        'content@': {
-          templateUrl: 'components/main/reset/password.reset.html',
-          controller: "passwordResetController",
-          controllerAs: "ctrl",
-          resolve: {
-            content : ['$http', 'config', function($http, config) {
-              return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
-                return response.data;
-              });
-            }]
-          }
-        }
-      }
-    });
-}
-
-function SignUpController($http, config, $scope, $sce, content, $compile, $state) {
-
-  $scope.registerDone = false;
-  $scope.registerSuccessful = false;
-  $scope.formData = {};
-  // $scope.formData.user__token = content.match('value="(.*)" ')[1];
-
-  $scope.trustedHtml = $sce.trustAsHtml(content
-     .replace("$element.action, $element.method", "$event, '/user', 'POST'")
-     .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
-     .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
-     .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
-
-   $scope.cancelForm = function() {
-     $state.go('index.login');
-   }
-
-  // process the form
-  $scope.processForm = function($event, method, action) {
-    // console.info($event);
-    $event.preventDefault();
-
-    $http({
-      method  : method,
-      url     : config.apiUrl + action,
-      // data : $.param($scope.formData),
-      data    : {
-        "user[email]" :	$scope.formData.user_email,
-        "user[plainPassword][first]" :	$scope.formData.user_plainPassword_first,
-        "user[plainPassword][second]" :	$scope.formData.user_plainPassword_second,
-        "user[register]" :	""
-        // ,"user[_token]" :	$scope.formData.user__token
-      },
-      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
-      transformRequest : function transformRequest( data, getHeaders ) {
-					var headers = getHeaders();
-          if ( ! angular.isObject( data ) ) {
-						return( ( data == null ) ? "" : data.toString() );
-					}
-					var buffer = [];
-					// Serialize each key in the object.
-					for ( var name in data ) {
-						if ( ! data.hasOwnProperty( name ) ) {
-							continue;
-						}
-						var value = data[ name ];
-						buffer.push(
-							encodeURIComponent( name ) +
-							"=" +
-							encodeURIComponent( ( value == null ) ? "" : value )
-						);
-					}
-					// Serialize the buffer and clean it up for transportation.
-					var source = buffer
-						.join( "&" )
-						.replace( /%20/g, "+" )
-					;
-					return( source );
-				}
-     })
-    .then(function(data) {
-      console.log(data);
-      $scope.registerDone = true;
-      if (data.status != 201) {
-        $scope.registerSuccessful = false;
-      } else {
-        // if successful, bind success message to message
-        $scope.registerSuccessful = true;
-      }
-    }, function(error) {
-      console.log(error);
-
-      $scope.trustedHtml = $sce.trustAsHtml(error.data
-        .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")
-        .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
-        .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
-        .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
-    });
-  }
-}
-
-function SignUpRouterConfig($stateProvider) {
-  $stateProvider
-    .state('index.sign-up', {
-      url: "/sign-up",
-      views: {
-        'content@': {
-          templateUrl: "components/main/signup/signup.html",
-          // template: '<section gs-dynamic="trustedHtml"></section><section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>',
-          controller: "signUpController",
-          controllerAs: "ctrl"
-        }
-      },
-      resolve: {
-        content : ['$http', 'config', function($http, config) {
-          return $http.get(config.apiUrl + '/user/new').then(function(response) {
-            return response.data;
-          });
-        }]
-      },
-      data: {
-        permissions: {
-          only: ['ANONYMOUS']
-        }
-      }
-    });
-}
-
 function AccountController($http, config, userDetails, $sce, $scope) {
   $scope.saveDone = false;
   $scope.saveSuccessful = false;
@@ -1354,6 +990,370 @@ function PasswordRouterConfig($stateProvider) {
     });
 }
 
+function HomeController() {
+  this.init_();
+}
+
+HomeController.prototype = {
+
+  init_: function init_() {
+
+  }
+};
+
+function HomeRouterConfig($stateProvider) {
+  $stateProvider
+    .state('index.home', {
+      url: '/home',
+      views: {
+        'content@': {
+          templateUrl: "components/main/home/home.html",
+          controller: "homeController",
+          controllerAs: "ctrl"
+        },
+        'header@' : {
+          template : '<gs-main-nav></gs-main-nav>'
+        }
+      }
+  });
+}
+
+function LoginController($scope, $state, authService, aclService) {
+  this.scope = $scope;
+  this.state = $state;
+
+  this.login = "";
+  this.password = "";
+  this.authFailed = false;
+
+  this.authService = authService;
+  this.aclService = aclService;
+
+  this.handleSuccess_ = this.handleSuccess_.bind(this);
+  this.handleError_ = this.handleError_.bind(this);
+}
+
+LoginController.prototype = {
+
+  connect : function connect() {
+    this.authFailed = false;
+    return this.authService
+      .login(this.login, this.password)
+      .then(this.handleSuccess_, this.handleError_);
+  },
+
+  handleSuccess_ : function handleSuccess_(identity) {
+    if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
+      this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
+      return this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
+    } else {
+      return this.aclService
+        .isInAnyRole(['ROLE_USER'])
+        .then(function(response) {
+          return this.state.go('index.home');
+        }.bind(this), this.handleError_);
+    }
+  },
+
+  handleError_ : function handleError_(error)  {
+    console.error(error);
+    this.authFailed = true;
+    return error;
+  }
+};
+
+function LoginRouterConfig($stateProvider) {
+  $stateProvider
+    .state('index.login', {
+      url: '/login',
+      views: {
+        'content@': {
+          templateUrl: 'components/main/login/login.html',
+          controller: "loginController",
+          controllerAs: "ctrl"
+        }
+      },
+      data: {
+        permissions: {
+          only: ['ANONYMOUS']
+        }
+      }
+    });
+}
+
+function LogoutRouterConfig($stateProvider) {
+  $stateProvider.state('index.logout', {
+		url: '/logout',
+    views: {
+      'content@': {
+        template : "<div />",
+        controller: function ($rootScope, $cookies, $state, $http, config) {
+          console.info("LogoutRouterConfig#controller");
+          return $http.get(config.apiUrl + '/disconnect').finally(function() {
+            $rootScope.globals = {};
+            $cookies.remove('globals');
+            $http.defaults.headers.common.Authorization = 'Bearer';
+            return $state.go('index.login');
+          });
+        }
+      }
+    },
+    data: {
+        permissions: {
+          except: ['ANONYMOUS'],
+          redirectTo: 'index.login'
+        }
+    }
+  });
+}
+
+function MainNavController($state, authenticationService, config, $http, $rootScope, $cookies) {
+  this.state = $state;
+  this.config = config;
+
+  this.authenticationService = authenticationService;
+
+  this.logout = function() {
+    return $http.get(config.apiUrl + '/disconnect').finally(function() {
+      $rootScope.globals = {};
+      $cookies.remove('globals');
+      $http.defaults.headers.common.Authorization = 'Bearer';
+      return $state.go('index.login');
+    });
+  }
+
+  this.init_();
+}
+
+MainNavController.prototype = {
+
+  init_: function init_() {
+    return this.authenticationService
+      .getIdentity()
+      .then(function(response) {
+        // console.info(response);
+        this.identity = response.data;
+        return response;
+      }.bind(this));
+  }
+};
+
+function MainNavDirective() {
+  return {
+    templateUrl: 'components/main/main-navigation/navbar.html',
+    controller: 'mainNavController',
+    controllerAs: 'ctrl'
+  };
+}
+
+function MainNavRouterConfig($stateProvider) {
+  $stateProvider
+    .state('main.nav', {
+      templateUrl: 'components/main/main-navigation/navbar.html',
+      controller: 'mainNavController',
+      controllerAs: 'ctrl'
+  });
+}
+
+function PasswordResetController($http, config, $scope, $sce, content, $compile, userDetails) {
+
+  $scope.registerDone = false;
+  $scope.registerSuccessful = false;
+  $scope.formData = {};
+  $scope.formData.user__token = content.match('value="(.*)" ')[1];
+
+  $scope.trustedHtml = $sce.trustAsHtml(content
+     .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
+
+  // process the form
+  $scope.processForm = function($event, method, action) {
+
+    $event.preventDefault();
+
+    $http({
+      method  : method,
+      url     : config.apiUrl + action,
+      // data : $.param($scope.formData),
+      data    : {
+        "username" :	$scope.formData.username
+      },
+      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+      transformRequest : function transformRequest( data, getHeaders ) {
+					var headers = getHeaders();
+          if ( ! angular.isObject( data ) ) {
+						return( ( data == null ) ? "" : data.toString() );
+					}
+					var buffer = [];
+					// Serialize each key in the object.
+					for ( var name in data ) {
+						if ( ! data.hasOwnProperty( name ) ) {
+							continue;
+						}
+						var value = data[ name ];
+						buffer.push(
+							encodeURIComponent( name ) +
+							"=" +
+							encodeURIComponent( ( value == null ) ? "" : value )
+						);
+					}
+					// Serialize the buffer and clean it up for transportation.
+					var source = buffer
+						.join( "&" )
+						.replace( /%20/g, "+" )
+					;
+					return( source );
+				}
+     })
+    .then(function(data) {
+      console.log(data);
+      $scope.registerDone = true;
+      if (data.status != 302) {
+        $scope.registerSuccessful = false;
+      } else {
+        // if successful, bind success message to message
+        $scope.registerSuccessful = true;
+      }
+    }, function(error) {
+      console.log(error);
+
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+        .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
+    });
+  }
+}
+
+function PasswordResetRouterConfig($stateProvider) {
+  $stateProvider.state('reset', {
+      parent: 'index',
+      url: "/reset",
+      data: {
+        roles: []
+      },
+      views: {
+        'content@': {
+          templateUrl: 'components/main/reset/password.reset.html',
+          controller: "passwordResetController",
+          controllerAs: "ctrl",
+          resolve: {
+            content : ['$http', 'config', function($http, config) {
+              return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
+                return response.data;
+              });
+            }]
+          }
+        }
+      }
+    });
+}
+
+function SignUpController($http, config, $scope, $sce, content, $compile, $state) {
+
+  $scope.registerDone = false;
+  $scope.registerSuccessful = false;
+  $scope.formData = {};
+  // $scope.formData.user__token = content.match('value="(.*)" ')[1];
+
+  $scope.trustedHtml = $sce.trustAsHtml(content
+     .replace("$element.action, $element.method", "$event, '/user', 'POST'")
+     .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
+     .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
+     .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
+
+   $scope.cancelForm = function() {
+     $state.go('index.login');
+   }
+
+  // process the form
+  $scope.processForm = function($event, method, action) {
+    // console.info($event);
+    $event.preventDefault();
+
+    $http({
+      method  : method,
+      url     : config.apiUrl + action,
+      // data : $.param($scope.formData),
+      data    : {
+        "user[email]" :	$scope.formData.user_email,
+        "user[plainPassword][first]" :	$scope.formData.user_plainPassword_first,
+        "user[plainPassword][second]" :	$scope.formData.user_plainPassword_second,
+        "user[register]" :	""
+        // ,"user[_token]" :	$scope.formData.user__token
+      },
+      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+      transformRequest : function transformRequest( data, getHeaders ) {
+					var headers = getHeaders();
+          if ( ! angular.isObject( data ) ) {
+						return( ( data == null ) ? "" : data.toString() );
+					}
+					var buffer = [];
+					// Serialize each key in the object.
+					for ( var name in data ) {
+						if ( ! data.hasOwnProperty( name ) ) {
+							continue;
+						}
+						var value = data[ name ];
+						buffer.push(
+							encodeURIComponent( name ) +
+							"=" +
+							encodeURIComponent( ( value == null ) ? "" : value )
+						);
+					}
+					// Serialize the buffer and clean it up for transportation.
+					var source = buffer
+						.join( "&" )
+						.replace( /%20/g, "+" )
+					;
+					return( source );
+				}
+     })
+    .then(function(data) {
+      console.log(data);
+      $scope.registerDone = true;
+      if (data.status != 201) {
+        $scope.registerSuccessful = false;
+      } else {
+        // if successful, bind success message to message
+        $scope.registerSuccessful = true;
+      }
+    }, function(error) {
+      console.log(error);
+
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+        .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")
+        .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
+        .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
+        .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
+    });
+  }
+}
+
+function SignUpRouterConfig($stateProvider) {
+  $stateProvider
+    .state('index.sign-up', {
+      url: "/sign-up",
+      views: {
+        'content@': {
+          templateUrl: "components/main/signup/signup.html",
+          // template: '<section gs-dynamic="trustedHtml"></section><section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>',
+          controller: "signUpController",
+          controllerAs: "ctrl"
+        }
+      },
+      resolve: {
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/user/new').then(function(response) {
+            return response.data;
+          });
+        }]
+      },
+      data: {
+        permissions: {
+          only: ['ANONYMOUS']
+        }
+      }
+    });
+}
+
 function RegistrationsListController($q, $http, config, userDetails, year) {
 
   this.$ok = false;
@@ -1441,9 +1441,9 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.trustedHtml = $sce.trustAsHtml(content.data
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
-     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
-     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
-     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner"')
     //  .replace('</form>', '</form><pre>{{formData.registration_withPartner}}</pre>')
   );
 
@@ -1472,9 +1472,9 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
-        "registration[partnerFirstName]" : $scope.formData.registration_partnerFirstName,
-        "registration[partnerLastName]" : $scope.formData.registration_partnerLastName,
-        "registration[partnerEmail]" : $scope.formData.registration_partnerEmail
+        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
+        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
+        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
@@ -1525,10 +1525,10 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
-     .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
-     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
-     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
-     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+     .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner"')
+     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner"')
     //  .replace('</form>', '</form><pre>{{formData.registration_withPartner}}</pre>')
   );
 
@@ -1556,9 +1556,9 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
-        "registration[partnerFirstName]" : $scope.formData.registration_partnerFirstName,
-        "registration[partnerLastName]" : $scope.formData.registration_partnerLastName,
-        "registration[partnerEmail]" : $scope.formData.registration_partnerEmail
+        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
+        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
+        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
@@ -1801,30 +1801,6 @@ function RegistrationValidateDirective() {
   };
 }
 
-angular.module('app.home', ['ui.router'])
-  .config(['$stateProvider', HomeRouterConfig])
-  .controller('homeController', [HomeController]);
-
-angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
-.config(['$stateProvider', LoginRouterConfig])
-.controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
-
-angular
-    .module('app.logout', ['ui.router'])
-    .config(['$stateProvider', LogoutRouterConfig]);
-
-angular.module('app.main.nav', ['app.auth', 'ui.router'])
-  .directive('gsMainNav', MainNavDirective)
-  .controller('mainNavController', ['$state', 'authenticationService', 'config', '$http', '$rootScope', '$cookies', MainNavController]);
-
-  angular.module('app.reset', ['app.config', 'ui.router', 'ngSanitize'])
-    .config(['$stateProvider', PasswordResetRouterConfig])
-    .controller('passwordResetController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', PasswordResetController]);
-
-angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
-  .config(['$stateProvider', SignUpRouterConfig])
-  .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', '$state', SignUpController]);
-
 angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', AccountRouterConfig])
   .controller('accountController', ['$http', 'config', 'userDetails', '$sce', '$scope', AccountController]);
@@ -1898,6 +1874,30 @@ angular.module('app.year', ['app.config'])
 angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', PasswordRouterConfig])
   .controller('passwordEditController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', 'userDetails', PasswordEditController]);
+
+angular.module('app.home', ['ui.router'])
+  .config(['$stateProvider', HomeRouterConfig])
+  .controller('homeController', [HomeController]);
+
+angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
+.config(['$stateProvider', LoginRouterConfig])
+.controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
+
+angular
+    .module('app.logout', ['ui.router'])
+    .config(['$stateProvider', LogoutRouterConfig]);
+
+angular.module('app.main.nav', ['app.auth', 'ui.router'])
+  .directive('gsMainNav', MainNavDirective)
+  .controller('mainNavController', ['$state', 'authenticationService', 'config', '$http', '$rootScope', '$cookies', MainNavController]);
+
+  angular.module('app.reset', ['app.config', 'ui.router', 'ngSanitize'])
+    .config(['$stateProvider', PasswordResetRouterConfig])
+    .controller('passwordResetController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', PasswordResetController]);
+
+angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
+  .config(['$stateProvider', SignUpRouterConfig])
+  .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', '$state', SignUpController]);
 
 angular.module('app.registration.actions',
   ['app.registration.actions.add',
@@ -2078,16 +2078,16 @@ angular
   .run(['PermPermissionStore', 'authenticationService', withPermissions])
   .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);
 
-angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
-$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
-$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
-$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
+angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
 $templateCache.put('components/member/payment/cart.html','<div class="row">\n    <p>Buy <strong>Full Body Lobster Onesie - $24.99</strong> now!</p>\n\n    <paypal-button\n        env="sandbox"\n        client="ctrl.client"\n        payment="ctrl.payment"\n        commit="true"\n        onAuthorize="ctrl.onAuthorize">\n    </paypal-button>\n</div>\n');
 $templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list | orderBy : \'id\'">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="elem in ctrl.list">\n            <td>{{elem.title}}</td>\n            <td>{{elem.price}}</td>\n            <td>{{elem.discount}}</td>\n            <td>{{elem.balance}}</td>\n            <td>{{elem.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n</div>\n');
 $templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
+$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
+$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
+$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
+$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
+$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
 $templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n');
 $templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
 $templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\n  <a class="btn btn-warning" role="button"\n      ng-click="ctrl.showForm(subscription)">\n    <h5>Supprimer <i class="glyphicon glyphicon-trash"></i></h5>\n  </a>\n</span>\n');
