@@ -3,9 +3,9 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.trustedHtml = $sce.trustAsHtml(content.data
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
-     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
-     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
-     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner"')
     //  .replace('</form>', '</form><pre>{{formData.registration_withPartner}}</pre>')
   );
 
@@ -34,9 +34,9 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
-        "registration[partnerFirstName]" : $scope.formData.registration_partnerFirstName,
-        "registration[partnerLastName]" : $scope.formData.registration_partnerLastName,
-        "registration[partnerEmail]" : $scope.formData.registration_partnerEmail
+        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
+        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
+        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
