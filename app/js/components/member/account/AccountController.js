@@ -20,18 +20,15 @@ function AccountController($http, config, userDetails, $sce, $scope) {
 
      var date = userDetails.birthDate.match(/(\d{4})-(\d{2})-(\d{2})/);
 
-     $scope.formData.account_firstName = userDetails.firstName;
-     $scope.formData.account_lastName = userDetails.lastName;
-     $scope.formData.account_phoneNumber = userDetails.phoneNumber;
-     $scope.formData.account_birthDate_month = date[2].replace("0", "");
-     $scope.formData.account_birthDate_day = date[3].replace("0", "");
-     $scope.formData.account_birthDate_year = date[1];
-     $scope.formData.account_birthDate = date[0];
-     $scope.formData.account_address_street = userDetails.address.street;
-     $scope.formData.account_address_city = userDetails.address.city;
-     $scope.formData.account_address_zipCode = userDetails.address.zipCode;
-     $scope.formData.account_address_state = userDetails.address.state;
-     $scope.formData.account_address_country = userDetails.address.country;
+     $scope.formData.account_firstName = $('#account_firstName', response.data).val();
+     $scope.formData.account_lastName = $('#account_lastName', response.data).val();
+     $scope.formData.account_phoneNumber = $('#account_phoneNumber', response.data).val();
+     $scope.formData.account_birthDate = $('#account_birthDate', response.data).val();
+     $scope.formData.account_address_street = $('#account_address_street', response.data).val();
+     $scope.formData.account_address_city = $('#account_address_city', response.data).val();
+     $scope.formData.account_address_zipCode = $('#account_address_zipCode', response.data).val();
+     $scope.formData.account_address_state = $('#account_address_state', response.data).val();
+     $scope.formData.account_address_country = $('#account_address_country', response.data).val();
   }.bind(this));
 
   $scope.processForm = function($event, method, action) {
