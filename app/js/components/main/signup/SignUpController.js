@@ -59,7 +59,7 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
 				}
      })
     .then(function(data) {
-      console.log(data);
+      // console.log(data);
       $scope.registerDone = true;
       if (data.status != 201) {
         $scope.registerSuccessful = false;
@@ -68,7 +68,7 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
         $scope.registerSuccessful = true;
       }
     }, function(error) {
-      console.log(error);
+      // console.log(error);
 
       $scope.trustedHtml = $sce.trustAsHtml(error.data
         .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")

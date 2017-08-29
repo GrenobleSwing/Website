@@ -22,6 +22,9 @@ angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'angular-cookie-law'
     ])
     .config(['$stateProvider', '$urlRouterProvider', DefaultRouteConfig])
+    .config(['$qProvider', function ($qProvider) {
+        $qProvider.errorOnUnhandledRejections(false);
+    }])
     .config(['$translateProvider', TranslateConfiguration]);
 
 function DefaultRouteConfig($stateProvider, $urlRouterProvider) {

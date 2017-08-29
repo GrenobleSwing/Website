@@ -10,9 +10,7 @@ function AccountController($http, config, userDetails, $sce, $scope) {
        .replace(' name="account[firstName]" ', ' name="account[firstName]" ng-model="formData.account_firstName" ')
        .replace(' name="account[lastName]" ', ' name="account[lastName]" ng-model="formData.account_lastName" ')
        .replace(' name="account[phoneNumber]" ', ' name="account[lastName]" ng-model="formData.account_phoneNumber" ')
-       .replace(' name="account[birthDate][month]" ', ' name="account[birthDate][month]" ng-model="formData.account_birthDate_month" ')
-       .replace(' name="account[birthDate][day]" ', ' name="account[birthDate][day]" ng-model="formData.account_birthDate_day" ')
-       .replace(' name="account[birthDate][year]" ', ' name="account[birthDate][year]" ng-model="formData.account_birthDate_year" ')
+       .replace(' name="account[birthDate]" ', ' name="account[birthDate]" ng-model="formData.account_birthDate" gs-datepicker ')
        .replace(' name="account[address][street]" ', ' name="account[address][street]" ng-model="formData.account_address_street" ')
        .replace(' name="account[address][city]" ', ' name="account[address][city]" ng-model="formData.account_address_city" ')
        .replace(' name="account[address][zipCode]" ', ' name="account[address][zipCode]" ng-model="formData.account_address_zipCode" ')
@@ -28,6 +26,7 @@ function AccountController($http, config, userDetails, $sce, $scope) {
      $scope.formData.account_birthDate_month = date[2].replace("0", "");
      $scope.formData.account_birthDate_day = date[3].replace("0", "");
      $scope.formData.account_birthDate_year = date[1];
+     $scope.formData.account_birthDate = date[0];
      $scope.formData.account_address_street = userDetails.address.street;
      $scope.formData.account_address_city = userDetails.address.city;
      $scope.formData.account_address_zipCode = userDetails.address.zipCode;
@@ -42,20 +41,16 @@ function AccountController($http, config, userDetails, $sce, $scope) {
     $http({
       method  : method,
       url     : config.apiUrl + action,
-      // data : $.param($scope.formData),
       data    : {
         "account[firstName]" :	$scope.formData.account_firstName,
         "account[lastName]" :	$scope.formData.account_lastName,
         "account[phoneNumber]" :	$scope.formData.account_phoneNumber,
-        "account[birthDate][month]" :	$scope.formData.account_birthDate_month,
-        "account[birthDate][day]" : $scope.formData.account_birthDate_day,
-        "account[birthDate][year]" : $scope.formData.account_birthDate_year,
+        "account[birthDate]" :	$scope.formData.account_birthDate,
         "account[address][street]" : $scope.formData.account_address_street,
         "account[address][city]" : $scope.formData.account_address_city,
         "account[address][zipCode]" : $scope.formData.account_address_zipCode,
         "account[address][state]" : $scope.formData.account_address_state,
-        "account[address][country]" : $scope.formData.account_address_country,
-        "account[_token]" :	$scope.formData.account__token
+        "account[address][country]" : $scope.formData.account_address_country
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {

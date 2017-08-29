@@ -5,7 +5,6 @@ function LogoutRouterConfig($stateProvider) {
       'content@': {
         template : "<div />",
         controller: function ($rootScope, $cookies, $state, $http, config) {
-          console.info("LogoutRouterConfig#controller");
           return $http.get(config.apiUrl + '/disconnect').finally(function() {
             $rootScope.globals = {};
             $cookies.remove('globals');
