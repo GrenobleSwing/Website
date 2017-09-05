@@ -1,4 +1,4 @@
-function AccountController($http, config, userDetails, $sce, $scope) {
+function AccountController($http, config, userDetails, $sce, $scope, $compile) {
   $scope.saveDone = false;
   $scope.saveSuccessful = false;
   $scope.formData = {};
@@ -10,7 +10,7 @@ function AccountController($http, config, userDetails, $sce, $scope) {
        .replace(' name="account[firstName]" ', ' name="account[firstName]" ng-model="formData.account_firstName" ')
        .replace(' name="account[lastName]" ', ' name="account[lastName]" ng-model="formData.account_lastName" ')
        .replace(' name="account[phoneNumber]" ', ' name="account[lastName]" ng-model="formData.account_phoneNumber" ')
-       .replace(' name="account[birthDate]" ', ' name="account[birthDate]" ng-model="formData.account_birthDate" gs-datepicker ')
+       .replace(' name="account[birthDate]" ', ' name="account[birthDate]" ng-model="formData.account_birthDate" ')
        .replace(' name="account[address][street]" ', ' name="account[address][street]" ng-model="formData.account_address_street" ')
        .replace(' name="account[address][city]" ', ' name="account[address][city]" ng-model="formData.account_address_city" ')
        .replace(' name="account[address][zipCode]" ', ' name="account[address][zipCode]" ng-model="formData.account_address_zipCode" ')
@@ -32,7 +32,7 @@ function AccountController($http, config, userDetails, $sce, $scope) {
   }.bind(this));
 
   $scope.processForm = function($event, method, action) {
-    console.info($event);
+    // console.info($event);
     $event.preventDefault();
 
     $http({
