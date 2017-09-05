@@ -361,7 +361,7 @@ function SignUpRouterConfig($stateProvider) {
     });
 }
 
-function AccountController($http, config, userDetails, $sce, $scope) {
+function AccountController($http, config, userDetails, $sce, $scope, $compile) {
   $scope.saveDone = false;
   $scope.saveSuccessful = false;
   $scope.formData = {};
@@ -373,7 +373,7 @@ function AccountController($http, config, userDetails, $sce, $scope) {
        .replace(' name="account[firstName]" ', ' name="account[firstName]" ng-model="formData.account_firstName" ')
        .replace(' name="account[lastName]" ', ' name="account[lastName]" ng-model="formData.account_lastName" ')
        .replace(' name="account[phoneNumber]" ', ' name="account[lastName]" ng-model="formData.account_phoneNumber" ')
-       .replace(' name="account[birthDate]" ', ' name="account[birthDate]" ng-model="formData.account_birthDate" gs-datepicker ')
+       .replace(' name="account[birthDate]" ', ' name="account[birthDate]" ng-model="formData.account_birthDate" ')
        .replace(' name="account[address][street]" ', ' name="account[address][street]" ng-model="formData.account_address_street" ')
        .replace(' name="account[address][city]" ', ' name="account[address][city]" ng-model="formData.account_address_city" ')
        .replace(' name="account[address][zipCode]" ', ' name="account[address][zipCode]" ng-model="formData.account_address_zipCode" ')
@@ -395,7 +395,7 @@ function AccountController($http, config, userDetails, $sce, $scope) {
   }.bind(this));
 
   $scope.processForm = function($event, method, action) {
-    console.info($event);
+    // console.info($event);
     $event.preventDefault();
 
     $http({
@@ -522,6 +522,35 @@ function MemberNavRouterConfig($stateProvider) {
       controller: 'memberNavController',
       controllerAs: 'ctrl'
   });
+}
+
+function PaymentController($http, authService, config, $scope) {
+    this.client = {
+      sandbox : "0",
+      production: "0"
+    };
+
+    var account = authService.getCurrentAccount();
+    this.payment = function() {
+      return paypal.request.post(config.apiUrl + '/paypal/create-payment?accountId='+account.id);
+    };
+}
+
+PaymentController.prototype = {
+  onAuthorize : function onAuthorize(data, actions) {
+    console.log('The payment was authorized !');
+    console.info(data);
+    return actions.payment.execute();
+  }
+};
+
+function PaymentDirective() {
+  return {
+    restrict: 'AE',
+    templateUrl: 'components/member/payment/cart.html',
+    controller: 'paymentController',
+    controllerAs: 'ctrl'
+  };
 }
 
 function SummaryController($scope, $http, userDetails, config) {
@@ -977,35 +1006,6 @@ YearService.prototype = {
     return this.http.get(this.config.apiUrl + '/year/current', {cache : true});
   }
 };
-
-function PaymentController($http, authService, config, $scope) {
-    this.client = {
-      sandbox : "0",
-      production: "0"
-    };
-
-    var account = authService.getCurrentAccount();
-    this.payment = function() {
-      return paypal.request.post(config.apiUrl + '/paypal/create-payment?accountId='+account.id);
-    };
-}
-
-PaymentController.prototype = {
-  onAuthorize : function onAuthorize(data, actions) {
-    console.log('The payment was authorized !');
-    console.info(data);
-    return actions.payment.execute();
-  }
-};
-
-function PaymentDirective() {
-  return {
-    restrict: 'AE',
-    templateUrl: 'components/member/payment/cart.html',
-    controller: 'paymentController',
-    controllerAs: 'ctrl'
-  };
-}
 
 function PasswordEditController($http, config, $scope, $sce, content, $compile, userDetails) {
 
@@ -1596,10 +1596,14 @@ angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
 angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', AccountRouterConfig])
   // .directive('gsDatepicker', AccountDatepickerDirective)
-  .controller('accountController', ['$http', 'config', 'userDetails', '$sce', '$scope', AccountController]);
+  .controller('accountController', ['$http', 'config', 'userDetails', '$sce', '$scope', '$compile', AccountController]);
 
 angular.module('app.member.nav', ['ui.router'])
   .controller('memberNavController', ['$state', MemberNavController]);
+
+angular.module('app.payment', ['app.config', 'app.auth'])
+  .directive('gsPayment', PaymentDirective)
+  .controller('paymentController', ['$http', 'authenticationService', 'config', '$scope', PaymentController]);
 
 angular.module('app.registration', ['app.registrations.list',
   'app.registration.dialog', 'app.registration.actions']);
@@ -1651,17 +1655,13 @@ angular
   .module('app.config', [])
   .constant('config', {
     // apiUrl: 'http://localhost/api',
-    apiUrl: 'http://test.api.grenobleswing.com/api',
+    apiUrl: 'http://localhost/api',
     baseUrl: '/',
     enableDebug: true
   });
 
 angular.module('app.year', ['app.config'])
     .service('yearService', ['$http', 'config', YearService]);
-
-angular.module('app.payment', ['app.config', 'app.auth'])
-  .directive('gsPayment', PaymentDirective)
-  .controller('paymentController', ['$http', 'authenticationService', 'config', '$scope', PaymentController]);
 
 angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', PasswordRouterConfig])
@@ -1856,8 +1856,8 @@ $templateCache.put('components/main/reset/password.reset.html','<div ng-if="!reg
 $templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
 $templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
-$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="elem in ctrl.list">\n            <td>{{elem.title}}</td>\n            <td>{{elem.price}}</td>\n            <td>{{elem.discount}}</td>\n            <td>{{elem.balance}}</td>\n            <td>{{elem.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n</div>\n');
 $templateCache.put('components/member/payment/cart.html','<div class="row">\n    <p>Buy <strong>Full Body Lobster Onesie - $24.99</strong> now!</p>\n\n    <paypal-button\n        env="sandbox"\n        client="ctrl.client"\n        payment="ctrl.payment"\n        commit="true"\n        onAuthorize="ctrl.onAuthorize">\n    </paypal-button>\n</div>\n');
+$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="elem in ctrl.list">\n            <td>{{elem.title}}</td>\n            <td>{{elem.price}}</td>\n            <td>{{elem.discount}}</td>\n            <td>{{elem.balance}}</td>\n            <td>{{elem.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n</div>\n');
 $templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
 $templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n');
 $templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
