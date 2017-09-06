@@ -392,6 +392,8 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
      $scope.formData.account_address_zipCode = $('#account_address_zipCode', response.data).val();
      $scope.formData.account_address_state = $('#account_address_state', response.data).val();
      $scope.formData.account_address_country = $('#account_address_country', response.data).val();
+
+     mySuperFunction();
   }.bind(this));
 
   $scope.processForm = function($event, method, action) {
@@ -466,6 +468,7 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
         .replace(' name="account[address][state]" ', ' name="account[address][state]" ng-model="formData.account_state" ')
         .replace(' name="account[address][country]" ', ' name="account[address][country]" ng-model="formData.account_country" ')
       );
+      mySuperFunction();
     });
   }
 }
