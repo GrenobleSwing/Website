@@ -1658,7 +1658,7 @@ angular
   .module('app.config', [])
   .constant('config', {
     // apiUrl: 'http://localhost/api',
-    apiUrl: 'http://localhost/api',
+    apiUrl: 'http://test.api.grenobleswing.com/api',
     baseUrl: '/',
     enableDebug: true
   });

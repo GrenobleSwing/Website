@@ -1,6 +1,7 @@
 function RegistrationEditDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
+     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner"')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ng-disabled="!formData.registration_withPartner"')
@@ -30,6 +31,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       method  : method,
       url     : url.replace('/api/api', '/api'),
       data    : {
+        "registration[acceptRules]" : $scope.formData.acceptRules,
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
@@ -72,6 +74,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       }
     }.bind(this), function(error) {
       $scope.trustedHtml = $sce.trustAsHtml(error.data
+         .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
          .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
          .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')

@@ -42,6 +42,7 @@ function TranslateConfiguration($translateProvider) {
     },
     'SUBSCRIPTIONS' : {
       'TITLE': 'Inscriptions',
+      'NO_TOPIC' : 'pas de cours/niveau ouvert pour le moment'
     },
     'BALANCE' : {
       'TITLE': 'Solde',

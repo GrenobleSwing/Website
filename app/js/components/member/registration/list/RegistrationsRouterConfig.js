@@ -17,7 +17,19 @@ function RegistrationsRouterConfig($stateProvider) {
         }],
         year : ['yearService', function(yearService) {
           return yearService.getCurrentYear().then(function(response) {
-            return response.data;
+            var data;
+            if ( response.data !== undefined) {
+              data = response.data;
+              data.$ok = true;
+            } else {
+              data.$ok = false;
+            }
+
+            return data;
+          }, function() {
+            var data = {};
+            data.$ok = false;
+            return data;
           });
         }]
       }
