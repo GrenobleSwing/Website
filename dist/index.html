@@ -5,10 +5,10 @@
     <title>Grenoble Swing</title>
 
     <!-- inject:css -->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/angular-cookie-law.css">
+    <link rel="stylesheet" href="gs/css/bootstrap.css">
+    <link rel="stylesheet" href="gs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="gs/css/main.css">
+    <link rel="stylesheet" href="gs/css/angular-cookie-law.css">
     <!-- endinject -->
 
   </head>
@@ -18,9 +18,11 @@
     <header>
       <div class="row">
         <div class="container">
-          <div class="navbar-collapse collapse" id="top-navbar">
-            <div ui-view="nav"></div>
-            <div ui-view="header"></div>
+          <div class="col-md-12">
+            <div class="navbar-collapse collapse" id="top-navbar">
+              <div ui-view="nav"></div>
+              <div ui-view="header"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -38,8 +40,8 @@
     </div>
 
     <!-- inject:js -->
-    <script src="js/vendors.js"></script>
-    <script src="js/gs.min.js"></script>
+    <script src="gs/js/vendors.js"></script>
+    <script src="gs/js/gs.min.js"></script>
     <!-- endinject -->
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>

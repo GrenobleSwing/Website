@@ -957,6 +957,7 @@ function TranslateConfiguration($translateProvider) {
     },
     'SUBSCRIPTIONS' : {
       'TITLE': 'Inscriptions',
+      'NO_TOPIC' : 'pas de cours/niveau ouvert pour le moment'
     },
     'BALANCE' : {
       'TITLE': 'Solde',
@@ -1130,55 +1131,57 @@ function RegistrationsListController($q, $http, config, userDetails, year) {
   this.$ok = false;
   this.registrations = [];
   this.accountId = userDetails.id;
-  var topicsPromise = $http
-    .get(config.apiUrl + '/topic?yearId='+ year.id, { transformResponse :function(response, headersGetter, status) {
-      var resp = JSON.parse(response);
-      var array = [];
-      var data;
-      for (var i = 0; i < resp.length; i++) {
-        data = {};
-        data.id = resp[i].id;
-        data.role="";
-        data.state = "UNCHECKED";
-        data.amountPaid = 0;
-        data.options = [];
-        data.withPartner = false;
-        data.topic = {
-         "id": resp[i].id,
-         "title": resp[i].title,
-         "type": resp[i].type,
-         "description": resp[i].description,
-        };
-        data.accountId = this.accountId;
-        data._links = resp[i]._links;
-        array.push(data);
-      }
-      return array;
-    }.bind(this)});
+  if (!!year.$ok) {
+    var topicsPromise = $http
+      .get(config.apiUrl + '/topic?yearId='+ year.id, { transformResponse :function(response, headersGetter, status) {
+        var resp = JSON.parse(response);
+        var array = [];
+        var data;
+        for (var i = 0; i < resp.length; i++) {
+          data = {};
+          data.id = resp[i].id;
+          data.role="";
+          data.state = "UNCHECKED";
+          data.amountPaid = 0;
+          data.options = [];
+          data.withPartner = false;
+          data.topic = {
+           "id": resp[i].id,
+           "title": resp[i].title,
+           "type": resp[i].type,
+           "description": resp[i].description,
+          };
+          data.accountId = this.accountId;
+          data._links = resp[i]._links;
+          array.push(data);
+        }
+        return array;
+      }.bind(this)});
 
-  var registrationsPromise = $http
-    .get(config.apiUrl + '/account/'+userDetails.id+'/registrations?yearId='+ year.id);
+    var registrationsPromise = $http
+      .get(config.apiUrl + '/account/'+userDetails.id+'/registrations?yearId='+ year.id);
 
-  $q.all({topics : topicsPromise, registrations : registrationsPromise}).then(function(response) {
-    var topics = angular.copy(response.topics.data);
-    this.registrations = angular.copy(response.registrations.data);
+    $q.all({topics : topicsPromise, registrations : registrationsPromise}).then(function(response) {
+      var topics = angular.copy(response.topics.data);
+      this.registrations = angular.copy(response.registrations.data);
 
-    var found;
-    var currentTopic;
-    for (var i = 0; i < topics.length; i++) {
-      currentTopic = topics[i];
-      found = false;
-      for (var j = 0; j < this.registrations.length; j++) {
-        if (this.registrations[j].topic.id == currentTopic.topic.id) {
-          found = true;
+      var found;
+      var currentTopic;
+      for (var i = 0; i < topics.length; i++) {
+        currentTopic = topics[i];
+        found = false;
+        for (var j = 0; j < this.registrations.length; j++) {
+          if (this.registrations[j].topic.id == currentTopic.topic.id) {
+            found = true;
+          }
+        }
+        if (!found) {
+          this.registrations.push(currentTopic);
         }
       }
-      if (!found) {
-        this.registrations.push(currentTopic);
-      }
-    }
-    this.$ok = true;
-  }.bind(this));
+      this.$ok = true;
+    }.bind(this));
+  }
 }
 
 function RegistrationsRouterConfig($stateProvider) {
@@ -1200,7 +1203,19 @@ function RegistrationsRouterConfig($stateProvider) {
         }],
         year : ['yearService', function(yearService) {
           return yearService.getCurrentYear().then(function(response) {
-            return response.data;
+            var data;
+            if ( response.data !== undefined) {
+              data = response.data;
+              data.$ok = true;
+            } else {
+              data.$ok = false;
+            }
+
+            return data;
+          }, function() {
+            var data = {};
+            data.$ok = false;
+            return data;
           });
         }]
       }
@@ -1210,12 +1225,13 @@ function RegistrationsRouterConfig($stateProvider) {
 function RegistrationDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
+     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
+     .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner"')
      .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner"')
      .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner"')
-    //  .replace('</form>', '</form><pre>{{formData.registration_withPartner}}</pre>')
   );
 
   $scope.formData = {};
@@ -1225,6 +1241,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
+  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -1240,6 +1257,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
       method  : method,
       url     : url.replace('/api/api', '/api'),
       data    : {
+        "registration[acceptRules]" : $scope.formData.acceptRules,
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
@@ -1282,11 +1300,13 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
       }
     }.bind(this), function(error) {
       $scope.trustedHtml = $sce.trustAsHtml(error.data
+         .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
          .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
          .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
          .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
          .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+         .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
       );
     });
   }
@@ -1295,6 +1315,8 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
 function RegistrationEditDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
+     .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
+     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner"')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ng-disabled="!formData.registration_withPartner"')
@@ -1310,6 +1332,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
+  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -1324,6 +1347,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       method  : method,
       url     : url.replace('/api/api', '/api'),
       data    : {
+        "registration[acceptRules]" : $scope.formData.registration_acceptRules,
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
@@ -1366,6 +1390,8 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       }
     }.bind(this), function(error) {
       $scope.trustedHtml = $sce.trustAsHtml(error.data
+         .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
+         .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
          .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
          .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
@@ -1658,7 +1684,7 @@ angular
   .module('app.config', [])
   .constant('config', {
     // apiUrl: 'http://localhost/api',
-    apiUrl: 'http://test.api.grenobleswing.com/api',
+    apiUrl: 'http://localhost/api',
     baseUrl: '/',
     enableDebug: true
   });
@@ -1862,7 +1888,7 @@ $templateCache.put('components/member/member-navigation/navbar.html','<ul class=
 $templateCache.put('components/member/payment/cart.html','<div class="row">\n    <p>Buy <strong>Full Body Lobster Onesie - $24.99</strong> now!</p>\n\n    <paypal-button\n        env="sandbox"\n        client="ctrl.client"\n        payment="ctrl.payment"\n        commit="true"\n        onAuthorize="ctrl.onAuthorize">\n    </paypal-button>\n</div>\n');
 $templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="elem in ctrl.list">\n            <td>{{elem.title}}</td>\n            <td>{{elem.price}}</td>\n            <td>{{elem.discount}}</td>\n            <td>{{elem.balance}}</td>\n            <td>{{elem.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n</div>\n');
 $templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
-$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n');
+$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n<div ng-if="!ctrl.$ok" class="col-md-12">\n    <span class="col-md-12">\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\n    </span>\n</div>\n');
 $templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
 $templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\n  <a class="btn btn-warning" role="button"\n      ng-click="ctrl.showForm(subscription)">\n    <h5>Supprimer <i class="glyphicon glyphicon-trash"></i></h5>\n  </a>\n</span>\n');
 $templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');
