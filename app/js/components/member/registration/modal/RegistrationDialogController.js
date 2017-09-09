@@ -2,12 +2,12 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
      .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
+     .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner"')
      .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner"')
      .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner"')
-    //  .replace('</form>', '</form><pre>{{formData.registration_withPartner}}</pre>')
   );
 
   $scope.formData = {};
@@ -17,7 +17,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
-  $scope.formData.withPartner = $("input#withPartner", content.data).val();
+  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -82,6 +82,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
          .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
          .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ')
+         .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
       );
     });
   }

@@ -1,7 +1,8 @@
 function RegistrationEditDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
-     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
+     .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
+     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner"')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ng-disabled="!formData.registration_withPartner"')
@@ -17,6 +18,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
+  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -31,7 +33,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       method  : method,
       url     : url.replace('/api/api', '/api'),
       data    : {
-        "registration[acceptRules]" : $scope.formData.acceptRules,
+        "registration[acceptRules]" : $scope.formData.registration_acceptRules,
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
         "registration[withPartner]" : $scope.formData.registration_withPartner,
@@ -74,7 +76,8 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
       }
     }.bind(this), function(error) {
       $scope.trustedHtml = $sce.trustAsHtml(error.data
-         .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
+         .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
+         .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
          .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
          .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
