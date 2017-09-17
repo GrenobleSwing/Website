@@ -177,7 +177,7 @@ gulp.task('dist-test', ['clean:dist'], function() {
       .pipe(gulp.dest(config.dist_dir.root));
 
       var htmlStream = gulp.src(config.app_files.html)
-          .pipe(gulp.dest(config.build_dir.root));
+          .pipe(gulp.dest(config.dist_dir.root));
 });
 
 // Concatenate and minify JS
