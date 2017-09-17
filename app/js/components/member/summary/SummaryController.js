@@ -1,4 +1,4 @@
-function SummaryController($scope, $http, userDetails, config) {
+function SummaryController($scope, $http, userDetails, config, $sce) {
   this.http = $http;
   this.userDetails = userDetails;
 
@@ -9,5 +9,6 @@ function SummaryController($scope, $http, userDetails, config) {
     this.list = response.data.details;
     this.$ok = true;
     this.totalAmount = response.data.totalBalance;
+    this.trustedHtml = $sce.trustAsHtml(response.data.buttons);
   }.bind(this));
 }

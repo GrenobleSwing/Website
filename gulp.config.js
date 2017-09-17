@@ -30,7 +30,10 @@ module.exports = {
       'app/js/**/*.html'
     ],
     html: [
-      'app/index.html'
+      'app/cancelled.html',
+      'app/refused.html',
+      'app/success.html',
+      'app/waiting.html'
     ],
     styles: [
       'app/styles/**.*'

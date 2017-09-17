@@ -66,14 +66,16 @@ gulp.task('build', ['clean:build'], function() {
     .pipe(gulp.dest(config.build_dir.tpl));
 
   // Populate index.html with JS
-  var htmlStream = gulp.src('app/index.html')
+  var indexStream = gulp.src('app/index.html')
     .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
       ignorePath: ['build', 'app'],
       addRootSlash: false,
-      addPrefix : 'gs'
+      // addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.build_dir.root));
 
+  var htmlStream = gulp.src(config.app_files.html)
+      .pipe(gulp.dest(config.build_dir.root));
 
 });
 
@@ -119,13 +121,16 @@ gulp.task('dist', ['clean:dist'], function() {
     .pipe(gulp.dest(config.dist_dir.js));
 
   // Populate index.html with JS
-  var htmlStream = gulp.src('app/index.html')
+  var indexStream = gulp.src('app/index.html')
     .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
       ignorePath: 'dist',
       addRootSlash: false,
-      addPrefix : 'gs'
+      // addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.dist_dir.root));
+
+    var htmlStream = gulp.src(config.app_files.html)
+        .pipe(gulp.dest(config.build_dir.root));
 });
 
 // Concatenate and minify JS
@@ -162,14 +167,17 @@ gulp.task('dist-test', ['clean:dist'], function() {
     // .pipe(uglify())
     .pipe(gulp.dest(config.dist_dir.js));
 
-  // Populate index.html with JS
-  var htmlStream = gulp.src('app/index.html')
-    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
-      ignorePath: 'dist',
-      addRootSlash: false,
-      // addPrefix : 'gs'
-    }))
-    .pipe(gulp.dest(config.dist_dir.root));
+    // Populate index.html with JS
+    var indexStream = gulp.src('app/index.html')
+      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
+        ignorePath: 'dist',
+        addRootSlash: false,
+        // addPrefix : 'gs'
+      }))
+      .pipe(gulp.dest(config.dist_dir.root));
+
+      var htmlStream = gulp.src(config.app_files.html)
+          .pipe(gulp.dest(config.build_dir.root));
 });
 
 // Concatenate and minify JS
@@ -206,14 +214,17 @@ gulp.task('dist-prod', ['clean:dist'], function() {
     .pipe(uglify())
     .pipe(gulp.dest(config.dist_dir.js));
 
-  // Populate index.html with JS
-  var htmlStream = gulp.src('app/index.html')
-    .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
-      ignorePath: 'dist',
-      addRootSlash: false,
-      // addPrefix : 'gs'
-    }))
-    .pipe(gulp.dest(config.dist_dir.root));
+    // Populate index.html with JS
+    var indexStream = gulp.src('app/index.html')
+      .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
+        ignorePath: 'dist',
+        addRootSlash: false,
+        // addPrefix : 'gs'
+      }))
+      .pipe(gulp.dest(config.dist_dir.root));
+
+      var htmlStream = gulp.src(config.app_files.html)
+          .pipe(gulp.dest(config.build_dir.root));
 });
 
 gulp.task('connect:dist', ['dist'], function() {
