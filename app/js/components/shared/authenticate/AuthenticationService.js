@@ -26,7 +26,7 @@ AuthenticationService.prototype = {
     },
 
     getIdentity: function getIdentity(force) {
-      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
+      return this.http.get(this.config.apiUrl + '/identity', { transformResponse: function(response, headersGetter, status) {
 //        console.info(response);
         var data = JSON.parse(response);
         data.login = data.email;
