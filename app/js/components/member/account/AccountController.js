@@ -11,8 +11,8 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
        .replace(' name="account[lastName]" ', ' name="account[lastName]" ng-model="formData.account_lastName" ')
        .replace(' name="account[phoneNumber]" ', ' name="account[lastName]" ng-model="formData.account_phoneNumber" ')
        .replace(' name="account[birthDate]" ', ' name="account[birthDate]" ng-model="formData.account_birthDate" ')
-       .replace(' name="account[unemployed]" ', ' name="account[unemployed]" ng-model="formData.account_unemployed" ')
-       .replace(' name="account[student]" ', ' name="account[student]" ng-model="formData.account_student" ')
+      //  .replace(' name="account[unemployed]" ', ' name="account[unemployed]" ng-model="formData.account_unemployed" ')
+      //  .replace(' name="account[student]" ', ' name="account[student]" ng-model="formData.account_student" ')
        .replace(' name="account[address][street]" ', ' name="account[address][street]" ng-model="formData.account_address_street" ')
        .replace(' name="account[address][city]" ', ' name="account[address][city]" ng-model="formData.account_address_city" ')
        .replace(' name="account[address][zipCode]" ', ' name="account[address][zipCode]" ng-model="formData.account_address_zipCode" ')
@@ -31,8 +31,8 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
      $scope.formData.account_address_zipCode = $('#account_address_zipCode', response.data).val();
      $scope.formData.account_address_state = $('#account_address_state', response.data).val();
      $scope.formData.account_address_country = $('#account_address_country', response.data).val();
-     $scope.formData.account_unemployed = $('#account_unemployed', response.data).val() === 1;
-     $scope.formData.account_student = $('#account_student', response.data).val() === 1;
+    //  $scope.formData.account_unemployed = $('#account_unemployed', response.data).val() === 1;
+    //  $scope.formData.account_student = $('#account_student', response.data).val() === 1;
 
      mySuperFunction();
   }.bind(this));
@@ -53,10 +53,9 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
         "account[address][city]" : $scope.formData.account_address_city,
         "account[address][zipCode]" : $scope.formData.account_address_zipCode,
         "account[address][state]" : $scope.formData.account_address_state,
-        "account[address][country]" : $scope.formData.account_address_country,
-        "account[unemployed]" : $scope.formData.account_unemployed,
-        "account[student]" : $scope.formData.account_student
-
+        // "account[unemployed]" : $scope.formData.account_unemployed,
+        // "account[student]" : $scope.formData.account_student,
+        "account[address][country]" : $scope.formData.account_address_country
       },
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
@@ -111,8 +110,8 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
         .replace(' name="account[address][zipCode]" ', ' name="account[address][city]" ng-model="formData.account_zipCode" ')
         .replace(' name="account[address][state]" ', ' name="account[address][state]" ng-model="formData.account_state" ')
         .replace(' name="account[address][country]" ', ' name="account[address][country]" ng-model="formData.account_country" ')
-        .replace(' name="account[unemployed]" ', ' name="account[unemployed]" ng-model="formData.account_unemployed" ')
-        .replace(' name="account[student]" ', ' name="account[student]" ng-model="formData.account_student" ')
+        // .replace(' name="account[unemployed]" ', ' name="account[unemployed]" ng-model="formData.account_unemployed" ')
+        // .replace(' name="account[student]" ', ' name="account[student]" ng-model="formData.account_student" ')
       );
       mySuperFunction();
     });
