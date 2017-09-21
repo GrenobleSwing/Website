@@ -164,7 +164,7 @@ gulp.task('dist-test', ['clean:dist'], function() {
     .pipe(replace(new RegExp('@API_URL@', 'g'), 'https://test.api.grenobleswing.com/api'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
-    // .pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest(config.dist_dir.js));
 
     // Populate index.html with JS
