@@ -1,13 +1,13 @@
 function RegistrationDialogController($http, $scope, $modalInstance, content, config, $sce) {
   this.modalInstance = $modalInstance;
   $scope.trustedHtml = $sce.trustAsHtml(content.data
-     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
+     .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
      .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
-     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner"')
-     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner"')
-     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner"')
+     .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner" ')
+     .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner" ')
+     .replace(' name="registration[partnerEmail]" ', ' name="registration[partnerEmail]" ng-model="formData.registration_partnerEmail" ng-disabled="!formData.registration_withPartner" ')
   );
 
   $scope.formData = {};
@@ -39,7 +39,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
 	if ($scope.formData.registration_withPartner) {
         resultData["registration[withPartner]"] = 1;
 	}
-	if ($scope.formData.acceptRules) {
+	if ($scope.formData.registration_acceptRules) {
 		 resultData["registration[acceptRules]"] = 1;
 	}
 

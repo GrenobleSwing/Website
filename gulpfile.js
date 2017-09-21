@@ -208,7 +208,7 @@ gulp.task('dist-prod', ['clean:dist'], function() {
 
   var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
-    .pipe(replace(new RegExp('@API_URL@', 'g'), 'https://inscriptions.api.grenobleswing.com/api'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'https://api.inscriptions.grenobleswing.com/api'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
     .pipe(uglify())
