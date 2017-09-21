@@ -18,7 +18,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
-  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
+  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val() === "1";
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -29,18 +29,25 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
     $event.preventDefault();
 
     var url = config.apiUrl + action;
-    $http({
-      method  : method,
-      url     : url.replace('/api/api', '/api'),
-      data    : {
-        "registration[acceptRules]" : $scope.formData.registration_acceptRules,
+
+	var resultData = {
         "registration[topic]" : $scope.formData.registration_topic,
         "registration[role]" : $scope.formData.registration_role,
-        "registration[withPartner]" : $scope.formData.registration_withPartner,
         "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
         "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
         "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""
-      },
+	};
+	if ($scope.formData.registration_withPartner) {
+        resultData["registration[withPartner]"] = 1;
+	}
+	if ($scope.formData.acceptRules) {
+		 resultData["registration[acceptRules]"] = 1;
+	}
+
+    $http({
+      method  : method,
+      url     : url.replace('/api/api', '/api'),
+      data    : resultData,
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
 					var headers = getHeaders();

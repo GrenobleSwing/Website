@@ -161,7 +161,7 @@ gulp.task('dist-test', ['clean:dist'], function() {
 
   var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
-    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://test.api.grenobleswing.com/api'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'https://test.api.grenobleswing.com/api'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
     // .pipe(uglify())
@@ -208,7 +208,7 @@ gulp.task('dist-prod', ['clean:dist'], function() {
 
   var sourceStream = series(appStream, configStream, mainStream, templates)
     .pipe(concat('gs.js'))
-    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://inscriptions.api.grenobleswing.com/api'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'https://inscriptions.api.grenobleswing.com/api'))
     .pipe(gulp.dest(config.dist_dir.js))
     .pipe(rename('gs.min.js'))
     .pipe(uglify())
@@ -224,7 +224,7 @@ gulp.task('dist-prod', ['clean:dist'], function() {
       .pipe(gulp.dest(config.dist_dir.root));
 
       var htmlStream = gulp.src(config.app_files.html)
-          .pipe(gulp.dest(config.build_dir.root));
+          .pipe(gulp.dest(config.dist_dir.root));
 });
 
 gulp.task('connect:dist', ['dist'], function() {

@@ -33,7 +33,8 @@ module.exports = {
       'app/cancelled.html',
       'app/refused.html',
       'app/success.html',
-      'app/waiting.html'
+      'app/waiting.html',
+      'app/.htaccess'
     ],
     styles: [
       'app/styles/**.*'

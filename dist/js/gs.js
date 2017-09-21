@@ -575,33 +575,6 @@ function SummaryRouterConfig($stateProvider) {
     });
 }
 
-function AuthResource($http, config) {
-  this.http = $http;
-  this.config = config;
-}
-
-AuthResource.prototype = {
-
-    authenticate: function authenticate(login, password) {
-        return this.http.post(this.config.apiUrl + '/auth', {"login": login, "password": password});
-    },
-
-    getCurrentUser: function getCurrentUser() {
-      // console.info("IdentityResource#getCurrentUser");
-      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
-        console.info(response);
-        var data = JSON.parse(response);
-        data.login = data.email;
-        console.info(data);
-        return data;
-      }});
-    },
-
-    terminate: function terminate(identity) {
-        return this.http.post(this.config.apiUrl + '/logout', {login: identity.login});
-    }
-};
-
 function AuthenticationService($rootScope, $cookies, $http, config) {
 
   this.rootScope = $rootScope;
@@ -685,6 +658,33 @@ AuthenticationService.prototype = {
 
       this.http.defaults.headers.common.Authorization = 'Bearer ' + user.token;
       return response;
+    }
+};
+
+function AuthResource($http, config) {
+  this.http = $http;
+  this.config = config;
+}
+
+AuthResource.prototype = {
+
+    authenticate: function authenticate(login, password) {
+        return this.http.post(this.config.apiUrl + '/auth', {"login": login, "password": password});
+    },
+
+    getCurrentUser: function getCurrentUser() {
+      // console.info("IdentityResource#getCurrentUser");
+      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
+        console.info(response);
+        var data = JSON.parse(response);
+        data.login = data.email;
+        console.info(data);
+        return data;
+      }});
+    },
+
+    terminate: function terminate(identity) {
+        return this.http.post(this.config.apiUrl + '/logout', {login: identity.login});
     }
 };
 
@@ -850,6 +850,12 @@ function StrengthDirective($parse) {
 	};
 }
 
+angular.module('app.http', [])
+  .factory('httpInterceptor', ['$q', '$injector', '$cookies', HttpInterceptor])
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push('httpInterceptor');
+  }]);
+
 function HttpInterceptor($q, $injector, $cookies) {
   return {
     'request': function (config) {
@@ -878,12 +884,6 @@ function HttpInterceptor($q, $injector, $cookies) {
     }
   };
 }
-
-angular.module('app.http', [])
-  .factory('httpInterceptor', ['$q', '$injector', '$cookies', HttpInterceptor])
-  .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push('httpInterceptor');
-  }]);
 
 function TranslateConfiguration($translateProvider) {
   $translateProvider.translations('fr', {
@@ -1213,7 +1213,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
-  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
+  $scope.formData.registration_acceptRules = false;
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -1225,18 +1225,24 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
 
     var url = config.apiUrl + action;
 
+	var resultData = {
+        "registration[topic]" : $scope.formData.registration_topic,
+        "registration[role]" : $scope.formData.registration_role,
+        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
+        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
+        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""		
+	};
+	if ($scope.formData.registration_withPartner) {
+        resultData["registration[withPartner]"] = 1;
+	}
+	if ($scope.formData.acceptRules) {
+		 resultData["registration[acceptRules]"] = 1;
+	}
+	
     $http({
       method  : method,
       url     : url.replace('/api/api', '/api'),
-      data    : {
-        "registration[acceptRules]" : $scope.formData.acceptRules,
-        "registration[topic]" : $scope.formData.registration_topic,
-        "registration[role]" : $scope.formData.registration_role,
-        "registration[withPartner]" : $scope.formData.registration_withPartner,
-        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
-        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
-        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""
-      },
+      data    : resultData,
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
 					var headers = getHeaders();
@@ -1304,7 +1310,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
   $scope.formData.registration_partnerEmail = $("input#registration_partnerEmail", content.data).val();
-  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val();
+  $scope.formData.registration_acceptRules = $("input#registration_acceptRules", content.data).val() === "1";
 
   $scope.cancelForm = function() {
     $modalInstance.dismiss('cancel');
@@ -1315,18 +1321,25 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
     $event.preventDefault();
 
     var url = config.apiUrl + action;
+	
+	var resultData = {
+        "registration[topic]" : $scope.formData.registration_topic,
+        "registration[role]" : $scope.formData.registration_role,
+        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
+        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
+        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""		
+	};
+	if ($scope.formData.registration_withPartner) {
+        resultData["registration[withPartner]"] = 1;
+	}
+	if ($scope.formData.acceptRules) {
+		 resultData["registration[acceptRules]"] = 1;
+	}
+	
     $http({
       method  : method,
       url     : url.replace('/api/api', '/api'),
-      data    : {
-        "registration[acceptRules]" : $scope.formData.registration_acceptRules,
-        "registration[topic]" : $scope.formData.registration_topic,
-        "registration[role]" : $scope.formData.registration_role,
-        "registration[withPartner]" : $scope.formData.registration_withPartner,
-        "registration[partnerFirstName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerFirstName : "",
-        "registration[partnerLastName]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerLastName : "",
-        "registration[partnerEmail]" : $scope.formData.registration_withPartner ? $scope.formData.registration_partnerEmail : ""
-      },
+      data    : resultData,
       headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
       transformRequest : function transformRequest( data, getHeaders ) {
 					var headers = getHeaders();
@@ -1374,6 +1387,37 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   }
 }
 
+function RegistrationCancelController($scope, $http, $state, config) {
+  this.registration = $scope.registration;
+  this.$state = $state;
+  this.$http = $http;
+  this.config = config;
+}
+
+RegistrationCancelController.prototype = {
+
+  showForm : function showForm() {
+    var uri = this.registration._links.cancel.href;
+    this.$http
+      .get(this.config.apiUrl + uri.replace("/web/app_dev.php", "").replace('/api', ''))
+      .then(function(response) {
+        return this.$state.reload();
+      }.bind(this))
+    }
+};
+
+function RegistrationCancelDirective() {
+  return {
+    restrict: 'AE',
+    templateUrl: 'components/member/registration/action/cancel/registration.cancel.html',
+    controller: 'registrationCancelController',
+    controllerAs: 'ctrl',
+    scope : {
+      registration : "="
+    }
+  };
+}
+
 function RegistrationAddController($scope, $modal, $state) {
   this.registration = $scope.registration;
   this.modal = $modal;
@@ -1416,37 +1460,6 @@ function RegistrationAddDirective() {
     controllerAs: 'ctrl',
     scope : {
       registration: "="
-    }
-  };
-}
-
-function RegistrationCancelController($scope, $http, $state, config) {
-  this.registration = $scope.registration;
-  this.$state = $state;
-  this.$http = $http;
-  this.config = config;
-}
-
-RegistrationCancelController.prototype = {
-
-  showForm : function showForm() {
-    var uri = this.registration._links.cancel.href;
-    this.$http
-      .get(this.config.apiUrl + uri.replace("/web/app_dev.php", "").replace('/api', ''))
-      .then(function(response) {
-        return this.$state.reload();
-      }.bind(this))
-    }
-};
-
-function RegistrationCancelDirective() {
-  return {
-    restrict: 'AE',
-    templateUrl: 'components/member/registration/action/cancel/registration.cancel.html',
-    controller: 'registrationCancelController',
-    controllerAs: 'ctrl',
-    scope : {
-      registration : "="
     }
   };
 }
@@ -1648,21 +1661,25 @@ angular.module('app.common', [])
   .directive('gsDynamic', ['$compile', DynamicDirective])
   .directive('gsStrength', StrengthDirective);
 
+angular.module('app.year', ['app.config'])
+    .service('yearService', ['$http', 'config', YearService]);
+
 angular
   .module('app.config', [])
   .constant('config', {
     // apiUrl: 'http://localhost/api',
-    apiUrl: 'http://test.api.grenobleswing.com/api',
+    apiUrl: 'https://inscriptions.api.grenobleswing.com/api',
     baseUrl: '/',
     enableDebug: true
   });
 
-angular.module('app.year', ['app.config'])
-    .service('yearService', ['$http', 'config', YearService]);
-
 angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', PasswordRouterConfig])
   .controller('passwordEditController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', 'userDetails', PasswordEditController]);
+
+angular.module('app.registrations.list', ['ui.router', 'app.config'])
+    .config(['$stateProvider', RegistrationsRouterConfig])
+    .controller('registrationsListController', ['$q', '$http', 'config', 'userDetails', 'year', RegistrationsListController]);
 
 angular.module('app.registration.actions',
   ['app.registration.actions.add',
@@ -1671,21 +1688,17 @@ angular.module('app.registration.actions',
     'app.registration.actions.update'
   ]);
 
-angular.module('app.registrations.list', ['ui.router', 'app.config'])
-    .config(['$stateProvider', RegistrationsRouterConfig])
-    .controller('registrationsListController', ['$q', '$http', 'config', 'userDetails', 'year', RegistrationsListController]);
-
 angular.module('app.registration.dialog', ['ui.bootstrap', 'app.config', 'ngSanitize'])
     .controller('registrationEditDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationEditDialogController])
     .controller('registrationDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationDialogController]);
 
-angular.module('app.registration.actions.add', ['ui.bootstrap', 'ui.router'])
-    .controller('registrationAddController', ['$scope', '$uibModal', '$state', RegistrationAddController])
-    .directive('gsRegistrationAdd', RegistrationAddDirective);
-
 angular.module('app.registration.actions.cancel', ['ui.bootstrap', 'ui.router', 'app.config'])
     .controller('registrationCancelController', ['$scope', '$http', '$state', 'config', RegistrationCancelController])
     .directive('gsRegistrationCancel', RegistrationCancelDirective);
+
+angular.module('app.registration.actions.add', ['ui.bootstrap', 'ui.router'])
+    .controller('registrationAddController', ['$scope', '$uibModal', '$state', RegistrationAddController])
+    .directive('gsRegistrationAdd', RegistrationAddDirective);
 
 angular.module('app.subscriptions.actions.pay', ['app.subscriptions.common'])
     .controller('subscriptionPayController', ['$scope', 'subscriptionCommandService', SubscriptionPayController])
@@ -1845,17 +1858,17 @@ angular
   .run(['PermPermissionStore', 'authenticationService', withPermissions])
   .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);
 
-angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
-$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
-$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
-$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
-$templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
-$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="elem in ctrl.list">\n            <td>{{elem.title}}</td>\n            <td>{{elem.price}}</td>\n            <td>{{elem.discount}}</td>\n            <td>{{elem.balance}}</td>\n            <td>{{elem.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n  <div gs-dynamic="ctrl.trustedHtml"></div>\n</div>\n');
-$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
-$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n<div ng-if="!ctrl.$ok" class="col-md-12">\n    <span class="col-md-12">\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\n    </span>\n</div>\n');
-$templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
-$templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\n  <a class="btn btn-warning" role="button"\n      ng-click="ctrl.showForm(subscription)">\n    <h5>Annuler <i class="glyphicon glyphicon-trash"></i></h5>\n  </a>\n</span>\n');
-$templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');
-$templateCache.put('components/member/registration/action/update/registration.update.html','<span>\n  <a class="btn btn-primary" role="button"\n    ng-click="ctrl.showForm(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');}]);
+angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\r\n<h2>Gestion de compte</h2>\r\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\r\n\r\n<h2>Actualit\xE9s</h2>\r\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\r\n');
+$templateCache.put('components/main/login/login.html','<div class="row">\r\n  <div class="col-md-4  col-md-offset-2 bg-info">\r\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\r\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\r\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\r\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\r\n              <div class="col-sm-8">\r\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\r\n                <small ng-if="form.login.$dirty && form.login.$invalid"\r\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\r\n              </div>\r\n          </div>\r\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\r\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\r\n              <div class="col-sm-8">\r\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\r\n                <small ng-if="form.password.$dirty && form.password.$error.required"\r\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\r\n                <small ng-if="ctrl.authFailed"\r\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\r\n              </div>\r\n          </div>\r\n          <div class="form-actions row">\r\n            <div class="col-md-offset-1 col-sm-4">\r\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\r\n            </div>\r\n            <div class="col-md-offset-1 col-sm-4">\r\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\r\n            </div>\r\n          </div>\r\n      </form>\r\n  </div>\r\n  <div class="col-md-4">\r\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\r\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\r\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\r\n  </div>\r\n</div>\r\n');
+$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\r\n    <li uib-dropdown>\r\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\r\n        {{ctrl.identity.login}}<span class="caret"></span>\r\n      </button>\r\n      <ul uib-dropdown-menu class="dropdown-menu">\r\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\r\n        <li class="divider"></li>\r\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\r\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\r\n        </li>\r\n        <li class="divider"></li>\r\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\r\n      </ul>\r\n    </li>\r\n</ul>\r\n');
+$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\r\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\r\n');
+$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\r\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\r\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\r\n');
+$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n<div gs-dynamic="trustedHtml"></div>\r\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n');
+$templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\r\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\r\n</ul>\r\n');
+$templateCache.put('components/member/summary/summary.html','<div class="row">\r\n  <div class="col-md-12">\r\n    <div class="row">\r\n      <h2>Liste des inscriptions</h2>\r\n      <div ng-repeat="elem in ctrl.list">\r\n        <h4>{{elem.name}}</h4>\r\n        <table class="table table-striped">\r\n          <tr>\r\n            <th>intitul\xE9</th>\r\n            <th>tarif</th>\r\n            <th>remise</th>\r\n            <th>somme d\xFBe</th>\r\n            <th>somme pay\xE9e</th>\r\n          </tr>\r\n          <tr ng-repeat="elem in ctrl.list">\r\n            <td>{{elem.title}}</td>\r\n            <td>{{elem.price}}</td>\r\n            <td>{{elem.discount}}</td>\r\n            <td>{{elem.balance}}</td>\r\n            <td>{{elem.alreadyPaid}}</td>\r\n          </tr>\r\n        </table>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\r\n  <div gs-dynamic="ctrl.trustedHtml"></div>\r\n</div>\r\n');
+$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\r\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n');
+$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\r\n    <span class="col-md-12">\r\n      <div class="row">\r\n        <span class="col-md-12">\r\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\r\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\r\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\r\n        </span>\r\n      </div>\r\n      <div class="row">\r\n        <span class="col-md-6">\r\n          <p>{{registration.topic.description}}</p>\r\n        </span>\r\n        <span class="col-md-6">\r\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\r\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\r\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\r\n        </span>\r\n      </div>\r\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\r\n        <p>R\xF4le : {{registration.role | translate}}</p>\r\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\r\n      </div>\r\n    </span>\r\n    <hr />\r\n</div>\r\n<div ng-if="!ctrl.$ok" class="col-md-12">\r\n    <span class="col-md-12">\r\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\r\n    </span>\r\n</div>\r\n');
+$templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\r\n  <a class="btn btn-warning" role="button"\r\n      ng-click="ctrl.showForm(subscription)">\r\n    <h5>Annuler <i class="glyphicon glyphicon-trash"></i></h5>\r\n  </a>\r\n</span>\r\n');
+$templateCache.put('components/member/registration/action/add/registration.add.html','<span>\r\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\r\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\r\n  </a>\r\n</span>\r\n');
+$templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\r\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\r\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\r\n  </a>\r\n</span>\r\n');
+$templateCache.put('components/member/registration/action/update/registration.update.html','<span>\r\n  <a class="btn btn-primary" role="button"\r\n    ng-click="ctrl.showForm(subscription)">\r\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\r\n  </a>\r\n</span>\r\n');}]);
