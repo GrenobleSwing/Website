@@ -1,4 +1,4 @@
-function PasswordResetController($http, config, $scope, $sce, content, $compile, userDetails) {
+function PasswordResetController($http, config, $scope, $sce, content, $compile) {
 
   $scope.registerDone = false;
   $scope.registerSuccessful = false;

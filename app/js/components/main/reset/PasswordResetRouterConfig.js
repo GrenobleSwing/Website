@@ -1,6 +1,5 @@
 function PasswordResetRouterConfig($stateProvider) {
-  $stateProvider.state('reset', {
-      parent: 'index',
+  $stateProvider.state('index.reset', {
       url: "/reset",
       data: {
         roles: []
@@ -9,15 +8,15 @@ function PasswordResetRouterConfig($stateProvider) {
         'content@': {
           templateUrl: 'components/main/reset/password.reset.html',
           controller: "passwordResetController",
-          controllerAs: "ctrl",
-          resolve: {
-            content : ['$http', 'config', function($http, config) {
-              return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
-                return response.data;
-              });
-            }]
-          }
+          controllerAs: "ctrl"
         }
+      },
+      resolve: {
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
+            return response.data;
+          });
+        }]
       }
     });
 }

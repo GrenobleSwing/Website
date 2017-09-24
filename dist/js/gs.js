@@ -1,3 +1,559 @@
+function MainNavController($state, authenticationService, config, $http, $rootScope, $cookies) {
+  this.state = $state;
+  this.config = config;
+
+  this.authenticationService = authenticationService;
+
+  this.logout = function() {
+    return $http.get(config.apiUrl + '/disconnect').finally(function() {
+      $rootScope.globals = {};
+      $cookies.remove('globals');
+      $http.defaults.headers.common.Authorization = 'Bearer';
+      return $state.go('index.login');
+    });
+  }
+
+  this.init_();
+}
+
+MainNavController.prototype = {
+
+  init_: function init_() {
+    return this.authenticationService
+      .getIdentity()
+      .then(function(response) {
+        // console.info(response);
+        this.identity = response.data;
+        return response;
+      }.bind(this));
+  }
+};
+
+function MainNavDirective() {
+  return {
+    templateUrl: 'components/main/main-navigation/navbar.html',
+    controller: 'mainNavController',
+    controllerAs: 'ctrl'
+  };
+}
+
+function MainNavRouterConfig($stateProvider) {
+  $stateProvider
+    .state('main.nav', {
+      templateUrl: 'components/main/main-navigation/navbar.html',
+      controller: 'mainNavController',
+      controllerAs: 'ctrl'
+  });
+}
+
+function PasswordResetController($http, config, $scope, $sce, content, $compile) {
+
+  $scope.registerDone = false;
+  $scope.registerSuccessful = false;
+  $scope.formData = {};
+  $scope.formData.user__token = content.match('value="(.*)" ')[1];
+
+  $scope.trustedHtml = $sce.trustAsHtml(content
+     .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
+
+  // process the form
+  $scope.processForm = function($event, method, action) {
+
+    $event.preventDefault();
+
+    $http({
+      method  : method,
+      url     : config.apiUrl + action,
+      // data : $.param($scope.formData),
+      data    : {
+        "username" :	$scope.formData.username
+      },
+      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+      transformRequest : function transformRequest( data, getHeaders ) {
+					var headers = getHeaders();
+          if ( ! angular.isObject( data ) ) {
+						return( ( data == null ) ? "" : data.toString() );
+					}
+					var buffer = [];
+					// Serialize each key in the object.
+					for ( var name in data ) {
+						if ( ! data.hasOwnProperty( name ) ) {
+							continue;
+						}
+						var value = data[ name ];
+						buffer.push(
+							encodeURIComponent( name ) +
+							"=" +
+							encodeURIComponent( ( value == null ) ? "" : value )
+						);
+					}
+					// Serialize the buffer and clean it up for transportation.
+					var source = buffer
+						.join( "&" )
+						.replace( /%20/g, "+" )
+					;
+					return( source );
+				}
+     })
+    .then(function(data) {
+      console.log(data);
+      $scope.registerDone = true;
+      if (data.status != 302) {
+        $scope.registerSuccessful = false;
+      } else {
+        // if successful, bind success message to message
+        $scope.registerSuccessful = true;
+      }
+    }, function(error) {
+      console.log(error);
+
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+        .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
+    });
+  }
+}
+
+function PasswordResetRouterConfig($stateProvider) {
+  $stateProvider.state('index.reset', {
+      url: "/reset",
+      data: {
+        roles: []
+      },
+      views: {
+        'content@': {
+          templateUrl: 'components/main/reset/password.reset.html',
+          controller: "passwordResetController",
+          controllerAs: "ctrl"
+        }
+      },
+      resolve: {
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
+            return response.data;
+          });
+        }]
+      }
+    });
+}
+
+function SignUpController($http, config, $scope, $sce, content, $compile, $state) {
+
+  $scope.registerDone = false;
+  $scope.registerSuccessful = false;
+  $scope.formData = {};
+  // $scope.formData.user__token = content.match('value="(.*)" ')[1];
+
+  $scope.trustedHtml = $sce.trustAsHtml(content
+     .replace("$element.action, $element.method", "$event, '/user', 'POST'")
+     .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
+     .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
+     .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
+
+   $scope.cancelForm = function() {
+     $state.go('index.login');
+   }
+
+  // process the form
+  $scope.processForm = function($event, method, action) {
+    // console.info($event);
+    $event.preventDefault();
+
+    $http({
+      method  : method,
+      url     : config.apiUrl + action,
+      // data : $.param($scope.formData),
+      data    : {
+        "user[email]" :	$scope.formData.user_email,
+        "user[plainPassword][first]" :	$scope.formData.user_plainPassword_first,
+        "user[plainPassword][second]" :	$scope.formData.user_plainPassword_second,
+        "user[register]" :	""
+        // ,"user[_token]" :	$scope.formData.user__token
+      },
+      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+      transformRequest : function transformRequest( data, getHeaders ) {
+					var headers = getHeaders();
+          if ( ! angular.isObject( data ) ) {
+						return( ( data == null ) ? "" : data.toString() );
+					}
+					var buffer = [];
+					// Serialize each key in the object.
+					for ( var name in data ) {
+						if ( ! data.hasOwnProperty( name ) ) {
+							continue;
+						}
+						var value = data[ name ];
+						buffer.push(
+							encodeURIComponent( name ) +
+							"=" +
+							encodeURIComponent( ( value == null ) ? "" : value )
+						);
+					}
+					// Serialize the buffer and clean it up for transportation.
+					var source = buffer
+						.join( "&" )
+						.replace( /%20/g, "+" )
+					;
+					return( source );
+				}
+     })
+    .then(function(data) {
+      // console.log(data);
+      $scope.registerDone = true;
+      if (data.status != 201) {
+        $scope.registerSuccessful = false;
+      } else {
+        // if successful, bind success message to message
+        $scope.registerSuccessful = true;
+      }
+    }, function(error) {
+      // console.log(error);
+
+      $scope.trustedHtml = $sce.trustAsHtml(error.data
+        .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")
+        .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
+        .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
+        .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
+    });
+  }
+}
+
+function SignUpRouterConfig($stateProvider) {
+  $stateProvider
+    .state('index.sign-up', {
+      url: "/sign-up",
+      views: {
+        'content@': {
+          templateUrl: "components/main/signup/signup.html",
+          // template: '<section gs-dynamic="trustedHtml"></section><section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>',
+          controller: "signUpController",
+          controllerAs: "ctrl"
+        }
+      },
+      resolve: {
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/user/new').then(function(response) {
+            return response.data;
+          });
+        }]
+      },
+      data: {
+        permissions: {
+          only: ['ANONYMOUS']
+        }
+      }
+    });
+}
+
+function AuthResource($http, config) {
+  this.http = $http;
+  this.config = config;
+}
+
+AuthResource.prototype = {
+
+    authenticate: function authenticate(login, password) {
+        return this.http.post(this.config.apiUrl + '/auth', {"login": login, "password": password});
+    },
+
+    getCurrentUser: function getCurrentUser() {
+      // console.info("IdentityResource#getCurrentUser");
+      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
+        console.info(response);
+        var data = JSON.parse(response);
+        data.login = data.email;
+        console.info(data);
+        return data;
+      }});
+    },
+
+    terminate: function terminate(identity) {
+        return this.http.post(this.config.apiUrl + '/logout', {login: identity.login});
+    }
+};
+
+function AuthenticationService($rootScope, $cookies, $http, config) {
+
+  this.rootScope = $rootScope;
+  this.cookies = $cookies;
+
+  this.http = $http;
+  this.config = config;
+
+  this.init_();
+}
+
+AuthenticationService.prototype = {
+    init_ : function init_() {
+      this.handleLoginSuccess_ = this.handleLoginSuccess_.bind(this);
+    },
+
+    login: function login(username, password) {
+      return this.http.post(this.config.apiUrl + '/auth', {"login": username, "password": password}).then(this.handleLoginSuccess_);
+    },
+
+    clearCredentials : function clearCredentials() {
+
+        this.rootScope.globals = {};
+        this.cookies.remove('globals');
+        this.http.defaults.headers.common.Authorization = 'Bearer';
+    },
+
+    getIdentity: function getIdentity(force) {
+      return this.http.get(this.config.apiUrl + '/identity', { transformResponse: function(response, headersGetter, status) {
+//        console.info(response);
+        var data = JSON.parse(response);
+        data.login = data.email;
+//        console.info(data);
+        return data;
+      }});
+    },
+
+    getCurrentAccount : function getCurrentAccount() {
+      return this.getIdentity().then(function(response) {
+        return this.http.get(this.config.apiUrl + '/user/' + response.data.id + '/account', { cache: true });
+      }.bind(this));
+    },
+
+
+    isAnonymous : function isAnonymous() {
+      return !this.isIdentified_();
+    },
+
+    isAuthenticated : function isAuthenticated() {
+      return this.isIdentified_();
+    },
+
+    /**
+     * @private
+     */
+    isIdentified_: function isIdentified_() {
+      var data = this.cookies.getObject('globals');
+      // console.info(data);
+      return data !== undefined && data.currentUser !== undefined && data.currentUser.token !== undefined;
+    },
+
+    /**
+     * @link https://jwt.io/introduction/
+     * @private
+     */
+    handleLoginSuccess_ : function handleLoginSuccess_(response) {
+      // console.info(response);
+      var user = response.data;
+      this.rootScope.globals = {
+        currentUser: {
+            userId : user.id,
+            login : user.login,
+            roles : user.roles,
+            token : user.token
+        }
+      };
+
+      var expirationDate = new Date();
+      expirationDate.setSeconds(user.expires_in);
+      this.cookies.putObject('globals', this.rootScope.globals, {expires: expirationDate});
+
+      this.http.defaults.headers.common.Authorization = 'Bearer ' + user.token;
+      return response;
+    }
+};
+
+function AclService($q, roleMap, authenticationService)  {
+  this.q = $q;
+  this.authenticationService = authenticationService;
+
+  this.roleMap = roleMap;
+
+  this.handleSuccess_ = this.handleSuccess_.bind(this);
+  this.handleError_ = this.handleError_.bind(this);
+}
+
+AclService.prototype = {
+
+  isInRole: function isInRole(role) {
+    var deferred = this.q.defer();
+
+    this.authenticationService.getIdentity().then(function(response) {
+      // console.info(response);
+
+      if (response.data.roles.indexOf(role) != -1 && this.roleMap[role] !== undefined) {
+        // console.info("AclService#isInRole#accept for " + role);
+        deferred.resolve(this.roleMap[role]);
+      } else {
+        // console.info("AclService#isInRole#reject for " + role);
+        deferred.reject({'role' : 'none'});
+      }
+    }.bind(this));
+    return deferred.promise;
+  },
+
+  isInAnyRole: function isInAnyRole(roles) {
+    var deferred = this.q.defer();
+    // console.info(roles);
+    this.authenticationService.getIdentity().then(function(response) {
+      // console.info(response);
+      var result = false;
+      var targetRole = "none";
+      for (var i = 0; i < roles.length; i++) {
+          if (response.data.roles.indexOf(roles[i]) != -1) {
+              result = true;
+              targetRole = roles[i];
+          }
+      }
+
+      if (result && this.roleMap[targetRole] !== undefined) {
+        deferred.resolve(this.roleMap[targetRole]);
+        // console.info("AclService#isInAnyRole#accept");
+      } else {
+        // console.info("AclService#isInAnyRole#reject");
+        deferred.reject({});
+      }
+
+    }.bind(this));
+    return deferred.promise;
+  },
+
+  hasPermission : function hasPermission(permissionName) {
+    var deferred = this.q.defer();
+    // console.info(permissionName);
+    this.authenticationService.getIdentity().then(function(response) {
+      // console.info(response);
+      var result = false;
+      var roles = response.data.roles;
+      var targetRole = 'none';
+
+      for (var i = 0; i < roles.length; i++) {
+        if (roles[i].indexOf(permissionName) != -1) {
+            result = true;
+            targetRole = roles[i];
+        }
+      }
+
+      if (result) {
+        // console.info("AclService#hasPermission#accept");
+        deferred.resolve({'role' : targetRole});
+      } else {
+        // console.info("AclService#hasPermission#reject");
+        deferred.reject({'role' : 'none'});
+      }
+    }.bind(this));
+    return deferred.promise;
+  },
+
+
+
+  handleSuccess_: function handleSuccess_() {
+
+  },
+
+  handleError_: function handleError_() {
+
+  }
+};
+
+function CompareToDirective() {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=gsCompareTo"
+        },
+        link: function (scope, element, attrs, ctrl) {
+
+          ctrl.$validators.compareTo = function(modelValue) {
+              return modelValue == scope.otherModelValue;
+          };
+
+          scope.$watch("otherModelValue", function() {
+              ctrl.$validate();
+          });
+        }
+    };
+}
+
+function DynamicDirective($compile) {
+  return {
+    restrict: 'A',
+    replace: true,
+    link: function (scope, ele, attrs) {
+      scope.$watch(attrs.gsDynamic, function(html) {
+        ele.html(html);
+        $compile(ele.contents())(scope);
+      });
+    }
+  };
+}
+
+function StrengthDirective($parse) {
+	return {
+		require: 'ngModel',
+		restrict: 'A',
+		link: function(scope, elem, attrs, ctrl) {
+      // This part is supposed to check the strength
+			ctrl.$parsers.unshift(function(viewValue) {
+				if(viewValue && viewValue.length >= 6) {
+					ctrl.$setValidity('minLength', true);
+				} else {
+					ctrl.$setValidity('minLength', false);
+				}
+
+				if(viewValue && viewValue.length <= 16) {
+					ctrl.$setValidity('maxLength', true);
+				} else {
+					ctrl.$setValidity('maxLength', false);
+				}
+
+				if(viewValue && /[A-z]/.test(viewValue)) {
+					ctrl.$setValidity('letter', true);
+				} else {
+					ctrl.$setValidity('letter', false);
+				}
+
+				if(viewValue && /\d/.test(viewValue)) {
+					ctrl.$setValidity('number', true);
+				} else {
+					ctrl.$setValidity('number', false);
+				}
+
+				return viewValue;
+			});
+		}
+	};
+}
+
+function HttpInterceptor($q, $injector, $cookies) {
+  return {
+    'request': function (config) {
+        config.headers = config.headers || {};
+        if ($cookies.getObject('globals') && $cookies.getObject('globals').currentUser) {
+            config.headers.Authorization = 'Bearer ' + $cookies.getObject('globals').currentUser.token;
+        }
+        return config;
+    },
+    'response': function(response) {
+
+        if (response.status === 401) {
+          $injector.get('$state').go('index.logout');
+          return $q.reject(response);
+        }
+        return response || $q.when(response);
+    },
+
+    'responseError': function(rejection) {
+
+        if (rejection.status === 401) {
+          $injector.get('$state').go('index.logout');
+          return $q.reject(rejection);
+        }
+        return $q.reject(rejection);
+    }
+  };
+}
+
+angular.module('app.http', [])
+  .factory('httpInterceptor', ['$q', '$injector', '$cookies', HttpInterceptor])
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push('httpInterceptor');
+  }]);
+
 function HomeController() {
   this.init_();
 }
@@ -114,252 +670,103 @@ function LogoutRouterConfig($stateProvider) {
   });
 }
 
-function MainNavController($state, authenticationService, config, $http, $rootScope, $cookies) {
-  this.state = $state;
-  this.config = config;
-
-  this.authenticationService = authenticationService;
-
-  this.logout = function() {
-    return $http.get(config.apiUrl + '/disconnect').finally(function() {
-      $rootScope.globals = {};
-      $cookies.remove('globals');
-      $http.defaults.headers.common.Authorization = 'Bearer';
-      return $state.go('index.login');
-    });
-  }
-
-  this.init_();
+function TranslateConfiguration($translateProvider) {
+  $translateProvider.translations('fr', {
+    'LOGIN' : {
+      'TITLE' : 'Déja membre ?',
+      'SIGNUP': 'Nouveau membre ?',
+      'MESSAGE': 'La création d\'un compte est gratuite et sans aucune obligation de votre part. Avoir un compte chez nous vous donne accès à votre espace personnel pour suivre votre information en temps réel.'
+    },
+    'SIGNUP': {
+      'TITLE': 'Créer un compte',
+      'REGISTER_SUCCESSFUL' : 'Votre compte a été créé avec succès.'
+    },
+    'ACCOUNT': {
+      // 'ADDRESS': 'Adresse',
+      // 'CITY' : 'Ville',
+      // 'COUNTRY' : 'Pays',
+      'EMAIL' : 'Courriel',
+      // 'EMAIL_REQUIRED': 'Le courriel est requis',
+      // 'FEMALE' : 'Femme',
+      // 'FIRSTNAME' : 'Prénom',
+      // 'FIRSTNAME_REQUIRED' : 'le prénom est requis',
+      // 'FOLLOWER' : 'Follower',
+      // 'GENDER' : 'Genre',
+      // 'LASTNAME' : 'Nom',
+      // 'LASTNAME_REQUIRED' : 'le nom est requis',
+      // 'LEADER': 'Leader',
+      // 'MALE' : 'Homme',
+      'PASSWORD': 'Mot de passe',
+      'PASSWORD_NEW': 'Nouveau mot de passe',
+      'PASSWORD_OLD': 'Ancien mot de passe',
+      'PASSWORD_REQUIRED': 'Le mot de passe est requis.',
+      'PASSWORD_FAILED': 'Le mot de passe est erroné. Veuillez réessayer.',
+      'PASSWORD_CONFIRM': 'Confirmation du mot de passe',
+      'PASSWORD_CONFIRM_REQUIRED': 'Le mot de passe est erroné',
+      // 'PHONE': 'Téléphone',
+      // 'PRIMARY_ROLE': 'Rôle préféré',
+      // 'RECOVERY': 'Récupération du compte',
+      // 'SPECIAL': 'Cochez cette case si vous avez un régime spécial (étudiant, chômeur, retraité)',
+      // 'TITLE': 'Etat civil',
+      // 'ZIPCODE' : 'Code postal',
+      'SAVE_SUCCESSFUL' : 'Mise à jour réalisée avec succès.',
+      'SAVE_FAILED' : 'Une erreur s\'est produite lors de la mise à jour.'
+    },
+    'SUBSCRIPTIONS' : {
+      'TITLE': 'Inscriptions',
+      'NO_TOPIC' : 'pas de cours/niveau ouvert pour le moment'
+    },
+    'BALANCE' : {
+      'TITLE': 'Solde',
+    },
+    'PASSWORD' : {
+      'TITLE': 'Mot de passe',
+      'PWD_REQUIRED': 'Ce champ est requis.',
+      'PWD_TOO_SHORT': 'doit comporter 6 caractères minimum.',
+      'PWD_TOO_LONG': 'doit comporter 16 caractères maximum.',
+      'PWD_NEEDS_LETTERS': 'doit comporter au moins 1 lettre.',
+      'PWD_NEEDS_NUMBERS': 'doit comporter au moins 1 chiffre.',
+      'PWD_CONFIRM_FAILED': 'doit être identique au mot de passe.'
+    },
+    'TOPICS' : {
+      'TITLE': 'Thèmes',
+    },
+    'ACTION' : {
+      'SAVE' : 'Enregistrer',
+      'CONNECT' : 'Ouvrir une session',
+      'SIGNUP' : 'Continuer',
+      'CHANGE' : 'Modifier',
+      'CANCEL' : 'Annuler',
+      'BACK_TO_LOGIN' : 'Retourner sur la page d\'authentification',
+      'FORGOT_PASSWORD' : 'Mot de passe oublié ?',
+      'RESET_PASSWORD' : 'Réinitialiser mon mot de passe'
+    },
+    'SUBMITTED' : 'Demande transmise.',
+    'WAITING' : 'En attente de validation.',
+    'VALIDATED' : 'Validé. En attente de paiement.',
+    'PAID' : 'Payé.',
+    'UNPICKED' : '',
+    'OK' : 'OK',
+    'leader' : 'Leader',
+    'follower' : 'Follower',
+    'open' : 'Ouvert',
+    'draft' : 'Brouillon'
+  });
+  $translateProvider.useSanitizeValueStrategy(null);
+  $translateProvider.preferredLanguage('fr');
 }
 
-MainNavController.prototype = {
+function YearService($http, config) {
+  this.http = $http;
+  this.config = config;
+}
 
-  init_: function init_() {
-    return this.authenticationService
-      .getIdentity()
-      .then(function(response) {
-        // console.info(response);
-        this.identity = response.data;
-        return response;
-      }.bind(this));
+YearService.prototype = {
+
+  getCurrentYear: function getCurrentYear(force) {
+    return this.http.get(this.config.apiUrl + '/year/current', {cache : true});
   }
 };
-
-function MainNavDirective() {
-  return {
-    templateUrl: 'components/main/main-navigation/navbar.html',
-    controller: 'mainNavController',
-    controllerAs: 'ctrl'
-  };
-}
-
-function MainNavRouterConfig($stateProvider) {
-  $stateProvider
-    .state('main.nav', {
-      templateUrl: 'components/main/main-navigation/navbar.html',
-      controller: 'mainNavController',
-      controllerAs: 'ctrl'
-  });
-}
-
-function PasswordResetController($http, config, $scope, $sce, content, $compile, userDetails) {
-
-  $scope.registerDone = false;
-  $scope.registerSuccessful = false;
-  $scope.formData = {};
-  $scope.formData.user__token = content.match('value="(.*)" ')[1];
-
-  $scope.trustedHtml = $sce.trustAsHtml(content
-     .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
-
-  // process the form
-  $scope.processForm = function($event, method, action) {
-
-    $event.preventDefault();
-
-    $http({
-      method  : method,
-      url     : config.apiUrl + action,
-      // data : $.param($scope.formData),
-      data    : {
-        "username" :	$scope.formData.username
-      },
-      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
-      transformRequest : function transformRequest( data, getHeaders ) {
-					var headers = getHeaders();
-          if ( ! angular.isObject( data ) ) {
-						return( ( data == null ) ? "" : data.toString() );
-					}
-					var buffer = [];
-					// Serialize each key in the object.
-					for ( var name in data ) {
-						if ( ! data.hasOwnProperty( name ) ) {
-							continue;
-						}
-						var value = data[ name ];
-						buffer.push(
-							encodeURIComponent( name ) +
-							"=" +
-							encodeURIComponent( ( value == null ) ? "" : value )
-						);
-					}
-					// Serialize the buffer and clean it up for transportation.
-					var source = buffer
-						.join( "&" )
-						.replace( /%20/g, "+" )
-					;
-					return( source );
-				}
-     })
-    .then(function(data) {
-      console.log(data);
-      $scope.registerDone = true;
-      if (data.status != 302) {
-        $scope.registerSuccessful = false;
-      } else {
-        // if successful, bind success message to message
-        $scope.registerSuccessful = true;
-      }
-    }, function(error) {
-      console.log(error);
-
-      $scope.trustedHtml = $sce.trustAsHtml(error.data
-        .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
-    });
-  }
-}
-
-function PasswordResetRouterConfig($stateProvider) {
-  $stateProvider.state('reset', {
-      parent: 'index',
-      url: "/reset",
-      data: {
-        roles: []
-      },
-      views: {
-        'content@': {
-          templateUrl: 'components/main/reset/password.reset.html',
-          controller: "passwordResetController",
-          controllerAs: "ctrl",
-          resolve: {
-            content : ['$http', 'config', function($http, config) {
-              return $http.get(config.apiUrl + '/resetting/request').then(function(response) {
-                return response.data;
-              });
-            }]
-          }
-        }
-      }
-    });
-}
-
-function SignUpController($http, config, $scope, $sce, content, $compile, $state) {
-
-  $scope.registerDone = false;
-  $scope.registerSuccessful = false;
-  $scope.formData = {};
-  // $scope.formData.user__token = content.match('value="(.*)" ')[1];
-
-  $scope.trustedHtml = $sce.trustAsHtml(content
-     .replace("$element.action, $element.method", "$event, '/user', 'POST'")
-     .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
-     .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
-     .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
-
-   $scope.cancelForm = function() {
-     $state.go('index.login');
-   }
-
-  // process the form
-  $scope.processForm = function($event, method, action) {
-    // console.info($event);
-    $event.preventDefault();
-
-    $http({
-      method  : method,
-      url     : config.apiUrl + action,
-      // data : $.param($scope.formData),
-      data    : {
-        "user[email]" :	$scope.formData.user_email,
-        "user[plainPassword][first]" :	$scope.formData.user_plainPassword_first,
-        "user[plainPassword][second]" :	$scope.formData.user_plainPassword_second,
-        "user[register]" :	""
-        // ,"user[_token]" :	$scope.formData.user__token
-      },
-      headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
-      transformRequest : function transformRequest( data, getHeaders ) {
-					var headers = getHeaders();
-          if ( ! angular.isObject( data ) ) {
-						return( ( data == null ) ? "" : data.toString() );
-					}
-					var buffer = [];
-					// Serialize each key in the object.
-					for ( var name in data ) {
-						if ( ! data.hasOwnProperty( name ) ) {
-							continue;
-						}
-						var value = data[ name ];
-						buffer.push(
-							encodeURIComponent( name ) +
-							"=" +
-							encodeURIComponent( ( value == null ) ? "" : value )
-						);
-					}
-					// Serialize the buffer and clean it up for transportation.
-					var source = buffer
-						.join( "&" )
-						.replace( /%20/g, "+" )
-					;
-					return( source );
-				}
-     })
-    .then(function(data) {
-      // console.log(data);
-      $scope.registerDone = true;
-      if (data.status != 201) {
-        $scope.registerSuccessful = false;
-      } else {
-        // if successful, bind success message to message
-        $scope.registerSuccessful = true;
-      }
-    }, function(error) {
-      // console.log(error);
-
-      $scope.trustedHtml = $sce.trustAsHtml(error.data
-        .replace("$element.action, $element.method", "$event, \"/user\", \"POST\"")
-        .replace(' id="user_email" ', ' id="user_email" ng-model="formData.user_email" ')
-        .replace(' id="user_plainPassword_first" ', ' id="user_plainPassword_first" ng-model="formData.user_plainPassword_first" ')
-        .replace(' id="user_plainPassword_second" ', ' id="user_plainPassword_second" ng-model="formData.user_plainPassword_second" '));
-    });
-  }
-}
-
-function SignUpRouterConfig($stateProvider) {
-  $stateProvider
-    .state('index.sign-up', {
-      url: "/sign-up",
-      views: {
-        'content@': {
-          templateUrl: "components/main/signup/signup.html",
-          // template: '<section gs-dynamic="trustedHtml"></section><section><a href="#/login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>',
-          controller: "signUpController",
-          controllerAs: "ctrl"
-        }
-      },
-      resolve: {
-        content : ['$http', 'config', function($http, config) {
-          return $http.get(config.apiUrl + '/user/new').then(function(response) {
-            return response.data;
-          });
-        }]
-      },
-      data: {
-        permissions: {
-          only: ['ANONYMOUS']
-        }
-      }
-    });
-}
 
 function AccountController($http, config, userDetails, $sce, $scope, $compile) {
   $scope.saveDone = false;
@@ -575,414 +982,6 @@ function SummaryRouterConfig($stateProvider) {
     });
 }
 
-function AuthenticationService($rootScope, $cookies, $http, config) {
-
-  this.rootScope = $rootScope;
-  this.cookies = $cookies;
-
-  this.http = $http;
-  this.config = config;
-
-  this.init_();
-}
-
-AuthenticationService.prototype = {
-    init_ : function init_() {
-      this.handleLoginSuccess_ = this.handleLoginSuccess_.bind(this);
-    },
-
-    login: function login(username, password) {
-      return this.http.post(this.config.apiUrl + '/auth', {"login": username, "password": password}).then(this.handleLoginSuccess_);
-    },
-
-    clearCredentials : function clearCredentials() {
-
-        this.rootScope.globals = {};
-        this.cookies.remove('globals');
-        this.http.defaults.headers.common.Authorization = 'Bearer';
-    },
-
-    getIdentity: function getIdentity(force) {
-      return this.http.get(this.config.apiUrl + '/identity', { transformResponse: function(response, headersGetter, status) {
-//        console.info(response);
-        var data = JSON.parse(response);
-        data.login = data.email;
-//        console.info(data);
-        return data;
-      }});
-    },
-
-    getCurrentAccount : function getCurrentAccount() {
-      return this.getIdentity().then(function(response) {
-        return this.http.get(this.config.apiUrl + '/user/' + response.data.id + '/account', { cache: true });
-      }.bind(this));
-    },
-
-
-    isAnonymous : function isAnonymous() {
-      return !this.isIdentified_();
-    },
-
-    isAuthenticated : function isAuthenticated() {
-      return this.isIdentified_();
-    },
-
-    /**
-     * @private
-     */
-    isIdentified_: function isIdentified_() {
-      var data = this.cookies.getObject('globals');
-      // console.info(data);
-      return data !== undefined && data.currentUser !== undefined && data.currentUser.token !== undefined;
-    },
-
-    /**
-     * @link https://jwt.io/introduction/
-     * @private
-     */
-    handleLoginSuccess_ : function handleLoginSuccess_(response) {
-      // console.info(response);
-      var user = response.data;
-      this.rootScope.globals = {
-        currentUser: {
-            userId : user.id,
-            login : user.login,
-            roles : user.roles,
-            token : user.token
-        }
-      };
-
-      var expirationDate = new Date();
-      expirationDate.setSeconds(user.expires_in);
-      this.cookies.putObject('globals', this.rootScope.globals, {expires: expirationDate});
-
-      this.http.defaults.headers.common.Authorization = 'Bearer ' + user.token;
-      return response;
-    }
-};
-
-function AuthResource($http, config) {
-  this.http = $http;
-  this.config = config;
-}
-
-AuthResource.prototype = {
-
-    authenticate: function authenticate(login, password) {
-        return this.http.post(this.config.apiUrl + '/auth', {"login": login, "password": password});
-    },
-
-    getCurrentUser: function getCurrentUser() {
-      // console.info("IdentityResource#getCurrentUser");
-      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
-        console.info(response);
-        var data = JSON.parse(response);
-        data.login = data.email;
-        console.info(data);
-        return data;
-      }});
-    },
-
-    terminate: function terminate(identity) {
-        return this.http.post(this.config.apiUrl + '/logout', {login: identity.login});
-    }
-};
-
-function AclService($q, roleMap, authenticationService)  {
-  this.q = $q;
-  this.authenticationService = authenticationService;
-
-  this.roleMap = roleMap;
-
-  this.handleSuccess_ = this.handleSuccess_.bind(this);
-  this.handleError_ = this.handleError_.bind(this);
-}
-
-AclService.prototype = {
-
-  isInRole: function isInRole(role) {
-    var deferred = this.q.defer();
-
-    this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
-
-      if (response.data.roles.indexOf(role) != -1 && this.roleMap[role] !== undefined) {
-        // console.info("AclService#isInRole#accept for " + role);
-        deferred.resolve(this.roleMap[role]);
-      } else {
-        // console.info("AclService#isInRole#reject for " + role);
-        deferred.reject({'role' : 'none'});
-      }
-    }.bind(this));
-    return deferred.promise;
-  },
-
-  isInAnyRole: function isInAnyRole(roles) {
-    var deferred = this.q.defer();
-    // console.info(roles);
-    this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
-      var result = false;
-      var targetRole = "none";
-      for (var i = 0; i < roles.length; i++) {
-          if (response.data.roles.indexOf(roles[i]) != -1) {
-              result = true;
-              targetRole = roles[i];
-          }
-      }
-
-      if (result && this.roleMap[targetRole] !== undefined) {
-        deferred.resolve(this.roleMap[targetRole]);
-        // console.info("AclService#isInAnyRole#accept");
-      } else {
-        // console.info("AclService#isInAnyRole#reject");
-        deferred.reject({});
-      }
-
-    }.bind(this));
-    return deferred.promise;
-  },
-
-  hasPermission : function hasPermission(permissionName) {
-    var deferred = this.q.defer();
-    // console.info(permissionName);
-    this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
-      var result = false;
-      var roles = response.data.roles;
-      var targetRole = 'none';
-
-      for (var i = 0; i < roles.length; i++) {
-        if (roles[i].indexOf(permissionName) != -1) {
-            result = true;
-            targetRole = roles[i];
-        }
-      }
-
-      if (result) {
-        // console.info("AclService#hasPermission#accept");
-        deferred.resolve({'role' : targetRole});
-      } else {
-        // console.info("AclService#hasPermission#reject");
-        deferred.reject({'role' : 'none'});
-      }
-    }.bind(this));
-    return deferred.promise;
-  },
-
-
-
-  handleSuccess_: function handleSuccess_() {
-
-  },
-
-  handleError_: function handleError_() {
-
-  }
-};
-
-function CompareToDirective() {
-    return {
-        require: "ngModel",
-        scope: {
-            otherModelValue: "=gsCompareTo"
-        },
-        link: function (scope, element, attrs, ctrl) {
-
-          ctrl.$validators.compareTo = function(modelValue) {
-              return modelValue == scope.otherModelValue;
-          };
-
-          scope.$watch("otherModelValue", function() {
-              ctrl.$validate();
-          });
-        }
-    };
-}
-
-function DynamicDirective($compile) {
-  return {
-    restrict: 'A',
-    replace: true,
-    link: function (scope, ele, attrs) {
-      scope.$watch(attrs.gsDynamic, function(html) {
-        ele.html(html);
-        $compile(ele.contents())(scope);
-      });
-    }
-  };
-}
-
-function StrengthDirective($parse) {
-	return {
-		require: 'ngModel',
-		restrict: 'A',
-		link: function(scope, elem, attrs, ctrl) {
-      // This part is supposed to check the strength
-			ctrl.$parsers.unshift(function(viewValue) {
-				if(viewValue && viewValue.length >= 6) {
-					ctrl.$setValidity('minLength', true);
-				} else {
-					ctrl.$setValidity('minLength', false);
-				}
-
-				if(viewValue && viewValue.length <= 16) {
-					ctrl.$setValidity('maxLength', true);
-				} else {
-					ctrl.$setValidity('maxLength', false);
-				}
-
-				if(viewValue && /[A-z]/.test(viewValue)) {
-					ctrl.$setValidity('letter', true);
-				} else {
-					ctrl.$setValidity('letter', false);
-				}
-
-				if(viewValue && /\d/.test(viewValue)) {
-					ctrl.$setValidity('number', true);
-				} else {
-					ctrl.$setValidity('number', false);
-				}
-
-				return viewValue;
-			});
-		}
-	};
-}
-
-angular.module('app.http', [])
-  .factory('httpInterceptor', ['$q', '$injector', '$cookies', HttpInterceptor])
-  .config(['$httpProvider', function($httpProvider) {
-    $httpProvider.interceptors.push('httpInterceptor');
-  }]);
-
-function HttpInterceptor($q, $injector, $cookies) {
-  return {
-    'request': function (config) {
-        config.headers = config.headers || {};
-        if ($cookies.getObject('globals') && $cookies.getObject('globals').currentUser) {
-            config.headers.Authorization = 'Bearer ' + $cookies.getObject('globals').currentUser.token;
-        }
-        return config;
-    },
-    'response': function(response) {
-
-        if (response.status === 401) {
-          $injector.get('$state').go('index.logout');
-          return $q.reject(response);
-        }
-        return response || $q.when(response);
-    },
-
-    'responseError': function(rejection) {
-
-        if (rejection.status === 401) {
-          $injector.get('$state').go('index.logout');
-          return $q.reject(rejection);
-        }
-        return $q.reject(rejection);
-    }
-  };
-}
-
-function TranslateConfiguration($translateProvider) {
-  $translateProvider.translations('fr', {
-    'LOGIN' : {
-      'TITLE' : 'Déja membre ?',
-      'SIGNUP': 'Nouveau membre ?',
-      'MESSAGE': 'La création d\'un compte est gratuite et sans aucune obligation de votre part. Avoir un compte chez nous vous donne accès à votre espace personnel pour suivre votre information en temps réel.'
-    },
-    'SIGNUP': {
-      'TITLE': 'Créer un compte',
-      'REGISTER_SUCCESSFUL' : 'Votre compte a été créé avec succès.'
-    },
-    'ACCOUNT': {
-      // 'ADDRESS': 'Adresse',
-      // 'CITY' : 'Ville',
-      // 'COUNTRY' : 'Pays',
-      'EMAIL' : 'Courriel',
-      // 'EMAIL_REQUIRED': 'Le courriel est requis',
-      // 'FEMALE' : 'Femme',
-      // 'FIRSTNAME' : 'Prénom',
-      // 'FIRSTNAME_REQUIRED' : 'le prénom est requis',
-      // 'FOLLOWER' : 'Follower',
-      // 'GENDER' : 'Genre',
-      // 'LASTNAME' : 'Nom',
-      // 'LASTNAME_REQUIRED' : 'le nom est requis',
-      // 'LEADER': 'Leader',
-      // 'MALE' : 'Homme',
-      'PASSWORD': 'Mot de passe',
-      'PASSWORD_NEW': 'Nouveau mot de passe',
-      'PASSWORD_OLD': 'Ancien mot de passe',
-      'PASSWORD_REQUIRED': 'Le mot de passe est requis.',
-      'PASSWORD_FAILED': 'Le mot de passe est erroné. Veuillez réessayer.',
-      'PASSWORD_CONFIRM': 'Confirmation du mot de passe',
-      'PASSWORD_CONFIRM_REQUIRED': 'Le mot de passe est erroné',
-      // 'PHONE': 'Téléphone',
-      // 'PRIMARY_ROLE': 'Rôle préféré',
-      // 'RECOVERY': 'Récupération du compte',
-      // 'SPECIAL': 'Cochez cette case si vous avez un régime spécial (étudiant, chômeur, retraité)',
-      // 'TITLE': 'Etat civil',
-      // 'ZIPCODE' : 'Code postal',
-      'SAVE_SUCCESSFUL' : 'Mise à jour réalisée avec succès.',
-      'SAVE_FAILED' : 'Une erreur s\'est produite lors de la mise à jour.'
-    },
-    'SUBSCRIPTIONS' : {
-      'TITLE': 'Inscriptions',
-      'NO_TOPIC' : 'pas de cours/niveau ouvert pour le moment'
-    },
-    'BALANCE' : {
-      'TITLE': 'Solde',
-    },
-    'PASSWORD' : {
-      'TITLE': 'Mot de passe',
-      'PWD_REQUIRED': 'Ce champ est requis.',
-      'PWD_TOO_SHORT': 'doit comporter 6 caractères minimum.',
-      'PWD_TOO_LONG': 'doit comporter 16 caractères maximum.',
-      'PWD_NEEDS_LETTERS': 'doit comporter au moins 1 lettre.',
-      'PWD_NEEDS_NUMBERS': 'doit comporter au moins 1 chiffre.',
-      'PWD_CONFIRM_FAILED': 'doit être identique au mot de passe.'
-    },
-    'TOPICS' : {
-      'TITLE': 'Thèmes',
-    },
-    'ACTION' : {
-      'SAVE' : 'Enregistrer',
-      'CONNECT' : 'Ouvrir une session',
-      'SIGNUP' : 'Continuer',
-      'CHANGE' : 'Modifier',
-      'CANCEL' : 'Annuler',
-      'BACK_TO_LOGIN' : 'Retourner sur la page d\'authentification',
-      'FORGOT_PASSWORD' : 'Mot de passe oublié ?',
-      'RESET_PASSWORD' : 'Réinitialiser mon mot de passe'
-    },
-    'SUBMITTED' : 'Demande transmise.',
-    'WAITING' : 'En attente de validation.',
-    'VALIDATED' : 'Validé. En attente de paiement.',
-    'PAID' : 'Payé.',
-    'UNPICKED' : '',
-    'OK' : 'OK',
-    'leader' : 'Leader',
-    'follower' : 'Follower',
-    'open' : 'Ouvert',
-    'draft' : 'Brouillon'
-  });
-  $translateProvider.useSanitizeValueStrategy(null);
-  $translateProvider.preferredLanguage('fr');
-}
-
-function YearService($http, config) {
-  this.http = $http;
-  this.config = config;
-}
-
-YearService.prototype = {
-
-  getCurrentYear: function getCurrentYear(force) {
-    return this.http.get(this.config.apiUrl + '/year/current', {cache : true});
-  }
-};
-
 function PasswordEditController($http, config, $scope, $sce, content, $compile, userDetails) {
 
     $scope.saveDone = false;
@@ -1092,6 +1091,102 @@ function PasswordRouterConfig($stateProvider) {
         content : ['$http', 'config', function($http, config) {
           return $http.get(config.apiUrl + '/user/change-password').then(function(response) {
             return response.data;
+          });
+        }]
+      }
+    });
+}
+
+function RegistrationsListController($q, $http, config, userDetails, year) {
+
+  this.$ok = false;
+  this.registrations = [];
+  this.accountId = userDetails.id;
+  if (!!year.$ok) {
+    var topicsPromise = $http
+      .get(config.apiUrl + '/topic?yearId='+ year.id, { transformResponse :function(response, headersGetter, status) {
+        var resp = JSON.parse(response);
+        var array = [];
+        var data;
+        for (var i = 0; i < resp.length; i++) {
+          data = {};
+          data.id = resp[i].id;
+          data.role="";
+          data.state = "UNCHECKED";
+          data.amountPaid = 0;
+          data.options = [];
+          data.withPartner = false;
+          data.topic = {
+           "id": resp[i].id,
+           "title": resp[i].title,
+           "type": resp[i].type,
+           "description": resp[i].description,
+          };
+          data.accountId = this.accountId;
+          data._links = resp[i]._links;
+          array.push(data);
+        }
+        return array;
+      }.bind(this)});
+
+    var registrationsPromise = $http
+      .get(config.apiUrl + '/account/'+userDetails.id+'/registrations?yearId='+ year.id);
+
+    $q.all({topics : topicsPromise, registrations : registrationsPromise}).then(function(response) {
+      var topics = angular.copy(response.topics.data);
+      this.registrations = angular.copy(response.registrations.data);
+
+      var found;
+      var currentTopic;
+      for (var i = 0; i < topics.length; i++) {
+        currentTopic = topics[i];
+        found = false;
+        for (var j = 0; j < this.registrations.length; j++) {
+          if (this.registrations[j].topic.id == currentTopic.topic.id) {
+            found = true;
+          }
+        }
+        if (!found) {
+          this.registrations.push(currentTopic);
+        }
+      }
+      this.$ok = true;
+    }.bind(this));
+  }
+}
+
+function RegistrationsRouterConfig($stateProvider) {
+  $stateProvider
+    .state('member.registrations', {
+      url: "/registrations",
+      views: {
+        'content@': {
+          templateUrl: "components/member/registration/list/registrations.list.html",
+          controller: "registrationsListController",
+          controllerAs: "ctrl"
+        }
+      },
+      resolve: {
+        userDetails : ['authenticationService', function(authService) {
+          return authService.getCurrentAccount().then(function(response) {
+            return response.data;
+          });
+        }],
+        year : ['yearService', function(yearService) {
+          return yearService.getCurrentYear().then(function(response) {
+            var data;
+            if ( response.data !== undefined) {
+              data = response.data;
+              data.$ok = true;
+            } else {
+              data.$ok = false;
+            }
+
+            return data;
+          }, function() {
+            var data = {};
+            data.$ok = false;
+            return data;
           });
         }]
       }
@@ -1290,102 +1385,6 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   }
 }
 
-function RegistrationsListController($q, $http, config, userDetails, year) {
-
-  this.$ok = false;
-  this.registrations = [];
-  this.accountId = userDetails.id;
-  if (!!year.$ok) {
-    var topicsPromise = $http
-      .get(config.apiUrl + '/topic?yearId='+ year.id, { transformResponse :function(response, headersGetter, status) {
-        var resp = JSON.parse(response);
-        var array = [];
-        var data;
-        for (var i = 0; i < resp.length; i++) {
-          data = {};
-          data.id = resp[i].id;
-          data.role="";
-          data.state = "UNCHECKED";
-          data.amountPaid = 0;
-          data.options = [];
-          data.withPartner = false;
-          data.topic = {
-           "id": resp[i].id,
-           "title": resp[i].title,
-           "type": resp[i].type,
-           "description": resp[i].description,
-          };
-          data.accountId = this.accountId;
-          data._links = resp[i]._links;
-          array.push(data);
-        }
-        return array;
-      }.bind(this)});
-
-    var registrationsPromise = $http
-      .get(config.apiUrl + '/account/'+userDetails.id+'/registrations?yearId='+ year.id);
-
-    $q.all({topics : topicsPromise, registrations : registrationsPromise}).then(function(response) {
-      var topics = angular.copy(response.topics.data);
-      this.registrations = angular.copy(response.registrations.data);
-
-      var found;
-      var currentTopic;
-      for (var i = 0; i < topics.length; i++) {
-        currentTopic = topics[i];
-        found = false;
-        for (var j = 0; j < this.registrations.length; j++) {
-          if (this.registrations[j].topic.id == currentTopic.topic.id) {
-            found = true;
-          }
-        }
-        if (!found) {
-          this.registrations.push(currentTopic);
-        }
-      }
-      this.$ok = true;
-    }.bind(this));
-  }
-}
-
-function RegistrationsRouterConfig($stateProvider) {
-  $stateProvider
-    .state('member.registrations', {
-      url: "/registrations",
-      views: {
-        'content@': {
-          templateUrl: "components/member/registration/list/registrations.list.html",
-          controller: "registrationsListController",
-          controllerAs: "ctrl"
-        }
-      },
-      resolve: {
-        userDetails : ['authenticationService', function(authService) {
-          return authService.getCurrentAccount().then(function(response) {
-            return response.data;
-          });
-        }],
-        year : ['yearService', function(yearService) {
-          return yearService.getCurrentYear().then(function(response) {
-            var data;
-            if ( response.data !== undefined) {
-              data = response.data;
-              data.$ok = true;
-            } else {
-              data.$ok = false;
-            }
-
-            return data;
-          }, function() {
-            var data = {};
-            data.$ok = false;
-            return data;
-          });
-        }]
-      }
-    });
-}
-
 function RegistrationAddController($scope, $modal, $state) {
   this.registration = $scope.registration;
   this.modal = $modal;
@@ -1582,18 +1581,6 @@ function RegistrationValidateDirective() {
   };
 }
 
-angular.module('app.home', ['ui.router'])
-  .config(['$stateProvider', HomeRouterConfig])
-  .controller('homeController', [HomeController]);
-
-angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
-.config(['$stateProvider', LoginRouterConfig])
-.controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
-
-angular
-    .module('app.logout', ['ui.router'])
-    .config(['$stateProvider', LogoutRouterConfig]);
-
 angular.module('app.main.nav', ['app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
   .controller('mainNavController', ['$state', 'authenticationService', 'config', '$http', '$rootScope', '$cookies', MainNavController]);
@@ -1605,21 +1592,6 @@ angular.module('app.main.nav', ['app.auth', 'ui.router'])
 angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', SignUpRouterConfig])
   .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', '$state', SignUpController]);
-
-angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
-  .config(['$stateProvider', AccountRouterConfig])
-  // .directive('gsDatepicker', AccountDatepickerDirective)
-  .controller('accountController', ['$http', 'config', 'userDetails', '$sce', '$scope', '$compile', AccountController]);
-
-angular.module('app.member.nav', ['ui.router'])
-  .controller('memberNavController', ['$state', MemberNavController]);
-
-angular.module('app.registration', ['app.registrations.list',
-  'app.registration.dialog', 'app.registration.actions']);
-
-angular.module('app.summary', ['ui.router', 'app.auth', 'app.config', 'ngSanitize'])
-    .config(['$stateProvider', SummaryRouterConfig])
-    .controller('summaryController', ['$scope', '$http', 'userDetails', 'config', '$sce', SummaryController]);
 
 angular.module('app.auth', ['app.config'])
     .service('authResource', ['$http', 'config', AuthResource])
@@ -1664,13 +1636,40 @@ angular
   .module('app.config', [])
   .constant('config', {
     // apiUrl: 'http://localhost/api',
-    apiUrl: 'https://api.inscriptions.grenobleswing.com/api',
+    apiUrl: 'https://test.api.grenobleswing.com/api',
     baseUrl: '/',
     enableDebug: true
   });
 
+angular.module('app.home', ['ui.router'])
+  .config(['$stateProvider', HomeRouterConfig])
+  .controller('homeController', [HomeController]);
+
+angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
+.config(['$stateProvider', LoginRouterConfig])
+.controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
+
+angular
+    .module('app.logout', ['ui.router'])
+    .config(['$stateProvider', LogoutRouterConfig]);
+
 angular.module('app.year', ['app.config'])
     .service('yearService', ['$http', 'config', YearService]);
+
+angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
+  .config(['$stateProvider', AccountRouterConfig])
+  // .directive('gsDatepicker', AccountDatepickerDirective)
+  .controller('accountController', ['$http', 'config', 'userDetails', '$sce', '$scope', '$compile', AccountController]);
+
+angular.module('app.member.nav', ['ui.router'])
+  .controller('memberNavController', ['$state', MemberNavController]);
+
+angular.module('app.registration', ['app.registrations.list',
+  'app.registration.dialog', 'app.registration.actions']);
+
+angular.module('app.summary', ['ui.router', 'app.auth', 'app.config', 'ngSanitize'])
+    .config(['$stateProvider', SummaryRouterConfig])
+    .controller('summaryController', ['$scope', '$http', 'userDetails', 'config', '$sce', SummaryController]);
 
 angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', PasswordRouterConfig])
@@ -1683,13 +1682,13 @@ angular.module('app.registration.actions',
     'app.registration.actions.update'
   ]);
 
-angular.module('app.registration.dialog', ['ui.bootstrap', 'app.config', 'ngSanitize'])
-    .controller('registrationEditDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationEditDialogController])
-    .controller('registrationDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationDialogController]);
-
 angular.module('app.registrations.list', ['ui.router', 'app.config'])
     .config(['$stateProvider', RegistrationsRouterConfig])
     .controller('registrationsListController', ['$q', '$http', 'config', 'userDetails', 'year', RegistrationsListController]);
+
+angular.module('app.registration.dialog', ['ui.bootstrap', 'app.config', 'ngSanitize'])
+    .controller('registrationEditDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationEditDialogController])
+    .controller('registrationDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationDialogController]);
 
 angular.module('app.registration.actions.add', ['ui.bootstrap', 'ui.router'])
     .controller('registrationAddController', ['$scope', '$uibModal', '$state', RegistrationAddController])
@@ -1857,17 +1856,17 @@ angular
   .run(['PermPermissionStore', 'authenticationService', withPermissions])
   .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);
 
-angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\r\n<h2>Gestion de compte</h2>\r\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\r\n\r\n<h2>Actualit\xE9s</h2>\r\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\r\n');
-$templateCache.put('components/main/login/login.html','<div class="row">\r\n  <div class="col-md-4  col-md-offset-2 bg-info">\r\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\r\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\r\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\r\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\r\n              <div class="col-sm-8">\r\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\r\n                <small ng-if="form.login.$dirty && form.login.$invalid"\r\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\r\n              </div>\r\n          </div>\r\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\r\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\r\n              <div class="col-sm-8">\r\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\r\n                <small ng-if="form.password.$dirty && form.password.$error.required"\r\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\r\n                <small ng-if="ctrl.authFailed"\r\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\r\n              </div>\r\n          </div>\r\n          <div class="form-actions row">\r\n            <div class="col-md-offset-1 col-sm-4">\r\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\r\n            </div>\r\n            <div class="col-md-offset-1 col-sm-4">\r\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\r\n            </div>\r\n          </div>\r\n      </form>\r\n  </div>\r\n  <div class="col-md-4">\r\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\r\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\r\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\r\n  </div>\r\n</div>\r\n');
-$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\r\n    <li uib-dropdown>\r\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\r\n        {{ctrl.identity.login}}<span class="caret"></span>\r\n      </button>\r\n      <ul uib-dropdown-menu class="dropdown-menu">\r\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\r\n        <li class="divider"></li>\r\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\r\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\r\n        </li>\r\n        <li class="divider"></li>\r\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\r\n      </ul>\r\n    </li>\r\n</ul>\r\n');
-$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\r\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\r\n');
-$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\r\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\r\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\r\n');
-$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n<div gs-dynamic="trustedHtml"></div>\r\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n');
-$templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\r\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\r\n</ul>\r\n');
-$templateCache.put('components/member/summary/summary.html','<div class="row">\r\n  <div class="col-md-12">\r\n    <div class="row">\r\n      <h2>Liste des inscriptions</h2>\r\n      <div ng-repeat="elem in ctrl.list">\r\n        <h4>{{elem.name}}</h4>\r\n        <table class="table table-striped">\r\n          <tr>\r\n            <th>intitul\xE9</th>\r\n            <th>tarif</th>\r\n            <th>remise</th>\r\n            <th>somme d\xFBe</th>\r\n            <th>somme pay\xE9e</th>\r\n          </tr>\r\n          <tr ng-repeat="elem in ctrl.list">\r\n            <td>{{elem.title}}</td>\r\n            <td>{{elem.price}}</td>\r\n            <td>{{elem.discount}}</td>\r\n            <td>{{elem.balance}}</td>\r\n            <td>{{elem.alreadyPaid}}</td>\r\n          </tr>\r\n        </table>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\r\n  <div gs-dynamic="ctrl.trustedHtml"></div>\r\n</div>\r\n');
-$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\r\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n');
-$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\r\n    <span class="col-md-12">\r\n      <div class="row">\r\n        <span class="col-md-12">\r\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\r\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\r\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\r\n        </span>\r\n      </div>\r\n      <div class="row">\r\n        <span class="col-md-6">\r\n          <p>{{registration.topic.description}}</p>\r\n        </span>\r\n        <span class="col-md-6">\r\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\r\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\r\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\r\n        </span>\r\n      </div>\r\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\r\n        <p>R\xF4le : {{registration.role | translate}}</p>\r\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\r\n      </div>\r\n    </span>\r\n    <hr />\r\n</div>\r\n<div ng-if="!ctrl.$ok" class="col-md-12">\r\n    <span class="col-md-12">\r\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\r\n    </span>\r\n</div>\r\n');
-$templateCache.put('components/member/registration/action/add/registration.add.html','<span>\r\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\r\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\r\n  </a>\r\n</span>\r\n');
-$templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\r\n  <a class="btn btn-warning" role="button"\r\n      ng-click="ctrl.showForm(subscription)">\r\n    <h5>Annuler <i class="glyphicon glyphicon-trash"></i></h5>\r\n  </a>\r\n</span>\r\n');
-$templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\r\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\r\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\r\n  </a>\r\n</span>\r\n');
-$templateCache.put('components/member/registration/action/update/registration.update.html','<span>\r\n  <a class="btn btn-primary" role="button"\r\n    ng-click="ctrl.showForm(subscription)">\r\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\r\n  </a>\r\n</span>\r\n');}]);
+angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
+$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
+$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
+$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
+$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
+$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
+$templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
+$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <div ng-repeat="elem in ctrl.list">\n        <h4>{{elem.name}}</h4>\n        <table class="table table-striped">\n          <tr>\n            <th>intitul\xE9</th>\n            <th>tarif</th>\n            <th>remise</th>\n            <th>somme d\xFBe</th>\n            <th>somme pay\xE9e</th>\n          </tr>\n          <tr ng-repeat="elem in ctrl.list">\n            <td>{{elem.title}}</td>\n            <td>{{elem.price}}</td>\n            <td>{{elem.discount}}</td>\n            <td>{{elem.balance}}</td>\n            <td>{{elem.alreadyPaid}}</td>\n          </tr>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n  <div gs-dynamic="ctrl.trustedHtml"></div>\n</div>\n');
+$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
+$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n<div ng-if="!ctrl.$ok" class="col-md-12">\n    <span class="col-md-12">\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\n    </span>\n</div>\n');
+$templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
+$templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\n  <a class="btn btn-warning" role="button"\n      ng-click="ctrl.showForm(subscription)">\n    <h5>Annuler <i class="glyphicon glyphicon-trash"></i></h5>\n  </a>\n</span>\n');
+$templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');
+$templateCache.put('components/member/registration/action/update/registration.update.html','<span>\n  <a class="btn btn-primary" role="button"\n    ng-click="ctrl.showForm(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');}]);
