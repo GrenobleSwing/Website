@@ -2,25 +2,22 @@
   <div class="col-md-12">
     <div class="row">
       <h2>Liste des inscriptions</h2>
-      <div ng-repeat="elem in ctrl.list">
-        <h4>{{elem.name}}</h4>
-        <table class="table table-striped">
-          <tr>
-            <th>intitulé</th>
-            <th>tarif</th>
-            <th>remise</th>
-            <th>somme dûe</th>
-            <th>somme payée</th>
-          </tr>
-          <tr ng-repeat="elem in ctrl.list">
-            <td>{{elem.title}}</td>
-            <td>{{elem.price}}</td>
-            <td>{{elem.discount}}</td>
-            <td>{{elem.balance}}</td>
-            <td>{{elem.alreadyPaid}}</td>
-          </tr>
-        </table>
-      </div>
+      <table class="table table-striped">
+        <tr>
+          <th>intitulé</th>
+          <th>tarif</th>
+          <th>remise</th>
+          <th>somme dûe</th>
+          <th>somme payée</th>
+        </tr>
+        <tr ng-repeat="elem in ctrl.list">
+          <td>{{elem.title}}</td>
+          <td>{{elem.price}}</td>
+          <td>{{elem.discount}}</td>
+          <td>{{elem.balance}}</td>
+          <td>{{elem.alreadyPaid}}</td>
+        </tr>
+      </table>
     </div>
   </div>
   <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}€</h4></div>
