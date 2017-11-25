@@ -3,7 +3,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
     $scope.saveDone = false;
     $scope.saveSuccessful = false;
     $scope.formData = {};
-    $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
+    // $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
     $scope.trustedHtml = $sce.trustAsHtml(content
        .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
        .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
@@ -24,8 +24,8 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
         data    : {
           "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
           "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
-          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second,
-          "fos_user_change_password_form[_token]" :	$scope.formData.user__token
+          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second
+          //, "fos_user_change_password_form[_token]" :	$scope.formData.user__token
         },
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
         transformRequest : function transformRequest( data, getHeaders ) {
