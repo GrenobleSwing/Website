@@ -89,20 +89,22 @@ function LoginRouterConfig($stateProvider) {
     });
 }
 
+function LogoutController($rootScope, $cookies, $state, $http, config) {
+  $http.get(config.apiUrl + '/disconnect').finally(function() {
+    $rootScope.globals = {};
+    $cookies.remove('globals');
+    $http.defaults.headers.common.Authorization = 'Bearer';
+    return $state.go('index.login');
+  });
+}
+
 function LogoutRouterConfig($stateProvider) {
   $stateProvider.state('index.logout', {
 		url: '/logout',
     views: {
       'content@': {
         template : "<div />",
-        controller: function ($rootScope, $cookies, $state, $http, config) {
-          return $http.get(config.apiUrl + '/disconnect').finally(function() {
-            $rootScope.globals = {};
-            $cookies.remove('globals');
-            $http.defaults.headers.common.Authorization = 'Bearer';
-            return $state.go('index.login');
-          });
-        }
+        controller: 'logoutController' 
       }
     },
     data: {
@@ -1000,6 +1002,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
     $scope.processForm = function($event, method, action) {
       console.info($event);
       $event.preventDefault();
+      $scope.saveDone = false;
 
       $http({
         method  : method,
@@ -1041,6 +1044,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
       .then(function(data) {
         console.log(data);
         // $scope.saveDone = true;
+        $scope.saveDone = true;
         if (data.status != 200) {
           $scope.saveSuccessful = false;
         } else {
@@ -1057,7 +1061,8 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
         }
       }, function(error) {
         console.log(error);
-
+        $scope.saveSuccessful = false;
+        $scope.saveDone = true;
         $scope.trustedHtml = $sce.trustAsHtml(error.data
           .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
           .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
@@ -1603,7 +1608,8 @@ angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
 
 angular
     .module('app.logout', ['ui.router'])
-    .config(['$stateProvider', LogoutRouterConfig]);
+    .config(['$stateProvider', LogoutRouterConfig])
+    .controller('logoutController', ['$rootScope', '$cookies', '$state', '$http', 'config', LogoutController]);;
 
 angular.module('app.main.nav', ['app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
