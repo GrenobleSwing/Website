@@ -1607,9 +1607,9 @@ angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
 .controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
 
 angular
-    .module('app.logout', ['ui.router'])
+    .module('app.logout', ['app.config', 'ui.router'])
     .config(['$stateProvider', LogoutRouterConfig])
-    .controller('logoutController', ['$rootScope', '$cookies', '$state', '$http', 'config', LogoutController]);;
+    .controller('logoutController', ['$rootScope', '$cookies', '$state', '$http', 'config', LogoutController]);
 
 angular.module('app.main.nav', ['app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
