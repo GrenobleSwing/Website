@@ -987,7 +987,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
     $scope.saveDone = false;
     $scope.saveSuccessful = false;
     $scope.formData = {};
-    $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
+    // $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
     $scope.trustedHtml = $sce.trustAsHtml(content
        .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
        .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
@@ -1008,8 +1008,8 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
         data    : {
           "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
           "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
-          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second,
-          "fos_user_change_password_form[_token]" :	$scope.formData.user__token
+          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second
+          //, "fos_user_change_password_form[_token]" :	$scope.formData.user__token
         },
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
         transformRequest : function transformRequest( data, getHeaders ) {
@@ -1199,6 +1199,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
      .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
      .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+     .replace(' name="registration[semester]" ', ' name="registration[semester]" ng-model="formData.registration_semester" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName"  ng-disabled="!formData.registration_withPartner" ')
      .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner" ')
@@ -1208,6 +1209,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
   $scope.formData = {};
   $scope.formData.registration_topic = $("input#registration_topic", content.data).val();
   $scope.formData.registration_role = $("select#registration_role", content.data).val();
+  $scope.formData.registration_semester = false;
   $scope.formData.registration_withPartner = false;
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
@@ -1233,6 +1235,9 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
 	};
 	if ($scope.formData.registration_withPartner) {
         resultData["registration[withPartner]"] = 1;
+	}
+	if ($scope.formData.registration_semester) {
+        resultData["registration[semester]"] = 1;
 	}
 	if ($scope.formData.registration_acceptRules) {
 		 resultData["registration[acceptRules]"] = 1;
@@ -1279,6 +1284,7 @@ function RegistrationDialogController($http, $scope, $modalInstance, content, co
       $scope.trustedHtml = $sce.trustAsHtml(error.data
          .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.acceptRules" ')
          .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+         .replace(' name="registration[semester]" ', ' name="registration[semester]" ng-model="formData.registration_semester" ')
          .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
          .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
@@ -1295,6 +1301,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
      .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
      .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
      .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+     .replace(' name="registration[semester]" ', ' name="registration[semester]" ng-model="formData.registration_semester" ')
      .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
      .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ng-disabled="!formData.registration_withPartner" ')
      .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ng-disabled="!formData.registration_withPartner" ')
@@ -1304,6 +1311,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   $scope.formData = {};
   $scope.formData.registration_topic = $("input#registration_topic", content.data).val();
   $scope.formData.registration_role = $("select#registration_role", content.data).val();
+  $scope.formData.registration_semester = $("input#registration_semester", content.data).prop( "checked" );
   $scope.formData.registration_withPartner = $("input#registration_withPartner", content.data).prop( "checked" );
   $scope.formData.registration_partnerFirstName = $("input#registration_partnerFirstName", content.data).val();
   $scope.formData.registration_partnerLastName = $("input#registration_partnerLastName", content.data).val();
@@ -1329,6 +1337,9 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
 	};
 	if ($scope.formData.registration_withPartner) {
         resultData["registration[withPartner]"] = 1;
+	}
+	if ($scope.formData.registration_semester) {
+        resultData["registration[semester]"] = 1;
 	}
 	if ($scope.formData.registration_acceptRules) {
 		 resultData["registration[acceptRules]"] = 1;
@@ -1376,6 +1387,7 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
          .replace(' name="registration[acceptRules]" ', ' name="registration[acceptRules]" ng-model="formData.registration_acceptRules" ')
          .replace(' name="registration[topic]" ', ' name="registration[topic]" ng-model="formData.registration_topic" ')
          .replace(' name="registration[role]" ', ' name="registration[role]" ng-model="formData.registration_role" ')
+         .replace(' name="registration[semester]" ', ' name="registration[semester]" ng-model="formData.registration_semester" ')
          .replace(' name="registration[withPartner]" ', ' name="registration[withPartner]" ng-model="formData.registration_withPartner" ')
          .replace(' name="registration[partnerFirstName]" ', ' name="registration[partnerFirstName]" ng-model="formData.registration_partnerFirstName" ')
          .replace(' name="registration[partnerLastName]" ', ' name="registration[partnerLastName]" ng-model="formData.registration_partnerLastName" ')
