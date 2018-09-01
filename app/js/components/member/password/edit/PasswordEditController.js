@@ -14,7 +14,7 @@ function PasswordEditController($http, config, $scope, $sce, content, $compile, 
 
     // process the form
     $scope.processForm = function($event, method, action) {
-      console.info($event);
+      // console.info($event);
       $event.preventDefault();
       $scope.saveDone = false;
 

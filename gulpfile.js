@@ -70,6 +70,7 @@ gulp.task('build', ['clean:build'], function() {
     .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream, templates), {
       ignorePath: ['build', 'app'],
       addRootSlash: false,
+      addSuffix : "?v=e6dd2f46",
       // addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.build_dir.root));
@@ -125,6 +126,7 @@ gulp.task('dist', ['clean:dist'], function() {
     .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
       ignorePath: 'dist',
       addRootSlash: false,
+      addSuffix : "?v=e6dd2f46"
       // addPrefix : 'gs'
     }))
     .pipe(gulp.dest(config.dist_dir.root));
@@ -219,6 +221,7 @@ gulp.task('dist-prod', ['clean:dist'], function() {
       .pipe(inject(series(styleStream, assetsStream, vendorStream, sourceStream), {
         ignorePath: 'dist',
         addRootSlash: false,
+        addSuffix : "?v=" + randomId(),
         // addPrefix : 'gs'
       }))
       .pipe(gulp.dest(config.dist_dir.root));
@@ -241,3 +244,8 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', ['lint', 'build', 'watch']);
+
+function randomId() {
+  return Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+}

@@ -34,7 +34,7 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
   }.bind(this));
 
   $scope.processForm = function($event, method, action) {
-    // console.info($event);
+    // // console.info($event);
     $event.preventDefault();
 
     $http({

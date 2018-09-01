@@ -12,15 +12,15 @@ AclService.prototype = {
 
   isInRole: function isInRole(role) {
     var deferred = this.q.defer();
-
+    // console.info("Message=Checking one role...");
     this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
+      // // console.info(response);
 
       if (response.data.roles.indexOf(role) != -1 && this.roleMap[role] !== undefined) {
-        // console.info("AclService#isInRole#accept for " + role);
+        // // console.info("AclService#isInRole#accept for " + role);
         deferred.resolve(this.roleMap[role]);
       } else {
-        // console.info("AclService#isInRole#reject for " + role);
+        // // console.info("AclService#isInRole#reject for " + role);
         deferred.reject({'role' : 'none'});
       }
     }.bind(this));
@@ -29,9 +29,9 @@ AclService.prototype = {
 
   isInAnyRole: function isInAnyRole(roles) {
     var deferred = this.q.defer();
-    // console.info(roles);
+    // console.info("Message=Checking multiple roles...");
     this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
+      // // console.info(response);
       var result = false;
       var targetRole = "none";
       for (var i = 0; i < roles.length; i++) {
@@ -43,9 +43,9 @@ AclService.prototype = {
 
       if (result && this.roleMap[targetRole] !== undefined) {
         deferred.resolve(this.roleMap[targetRole]);
-        // console.info("AclService#isInAnyRole#accept");
+        // // console.info("AclService#isInAnyRole#accept");
       } else {
-        // console.info("AclService#isInAnyRole#reject");
+        // // console.info("AclService#isInAnyRole#reject");
         deferred.reject({});
       }
 
@@ -55,9 +55,10 @@ AclService.prototype = {
 
   hasPermission : function hasPermission(permissionName) {
     var deferred = this.q.defer();
-    // console.info(permissionName);
+    // // console.info(permissionName);
+    // console.info("Message=Checking one permission...");
     this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
+      // // console.info(response);
       var result = false;
       var roles = response.data.roles;
       var targetRole = 'none';
@@ -70,10 +71,10 @@ AclService.prototype = {
       }
 
       if (result) {
-        // console.info("AclService#hasPermission#accept");
+        // // console.info("AclService#hasPermission#accept");
         deferred.resolve({'role' : targetRole});
       } else {
-        // console.info("AclService#hasPermission#reject");
+        // // console.info("AclService#hasPermission#reject");
         deferred.reject({'role' : 'none'});
       }
     }.bind(this));

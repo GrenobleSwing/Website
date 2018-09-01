@@ -23,20 +23,25 @@ LoginController.prototype = {
   },
 
   handleSuccess_ : function handleSuccess_(identity) {
+    // console.info("Message=Log in failed");
     if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
       this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
+        // console.info("Message=Redirecting to " + this.scope.returnToState.name);
       return this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
-      return this.aclService
+      return this
+        .aclService
         .isInAnyRole(['ROLE_USER'])
         .then(function(response) {
-          return this.state.go('index.home');
+          // console.info("Message=Going to member.home");
+          return this.state.go('member.home');
         }.bind(this), this.handleError_);
     }
   },
 
   handleError_ : function handleError_(error)  {
-    console.error(error);
+    // console.info("Message=Log in failed");
+    // console.info(error);
     this.authFailed = true;
     return error;
   }

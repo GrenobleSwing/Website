@@ -5,6 +5,6 @@ function HomeController() {
 HomeController.prototype = {
 
   init_: function init_() {
-    console.info("Message=Welcome home !");
+    // console.info("Message=Welcome home !");
   }
 };

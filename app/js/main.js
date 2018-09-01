@@ -69,7 +69,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                   template : ''
                 },
                 'content@': {
-                    template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="index.home">Return home.</a></p></alert>'
+                    template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="member.home">Return home.</a></p></alert>'
                 }
             }
         })
@@ -98,15 +98,20 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
-      return authenticationService
-        .getIdentity()
-        .then(function() {
-            console.info("Message=Go to home");
-            return state.go('member.home');
-        }, function() {
-            console.info("Message=Go to login");
-            return state.go('index.login');
-        });
+      if (authenticationService.isAuthenticated()) {
+        // console.info("Message=Checking main otherwise...");
+        return authenticationService
+            .getIdentity()
+            .then(function() {
+                // console.info("Message=Go to home");
+                return state.go('member.home');
+            }, function() {
+                // console.info("Message=Go to login");
+                return state.go('index.logout');
+            });
+      } else {
+        return state.go('index.logout');
+      }
     });
 }
 

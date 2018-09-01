@@ -10,12 +10,12 @@ AuthResource.prototype = {
     },
 
     getCurrentUser: function getCurrentUser() {
-      // console.info("IdentityResource#getCurrentUser");
+      // // console.info("IdentityResource#getCurrentUser");
       return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
-        console.info(response);
+        // console.info(response);
         var data = JSON.parse(response);
         data.login = data.email;
-        console.info(data);
+        // console.info(data);
         return data;
       }});
     },

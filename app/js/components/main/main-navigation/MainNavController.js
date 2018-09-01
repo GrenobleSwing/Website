@@ -22,7 +22,7 @@ MainNavController.prototype = {
     return this.authenticationService
       .getIdentity()
       .then(function(response) {
-        // console.info(response);
+        // // console.info(response);
         this.identity = response.data;
         return response;
       }.bind(this));

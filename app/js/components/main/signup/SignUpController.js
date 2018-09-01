@@ -17,7 +17,7 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
 
   // process the form
   $scope.processForm = function($event, method, action) {
-    // console.info($event);
+    // // console.info($event);
     $event.preventDefault();
 
     $http({

@@ -5,13 +5,13 @@ function HomeController() {
 HomeController.prototype = {
 
   init_: function init_() {
-
+    // console.info("Message=Welcome home !");
   }
 };
 
 function HomeRouterConfig($stateProvider) {
   $stateProvider
-    .state('index.home', {
+    .state('member.home', {
       url: '/home',
       views: {
         'content@': {
@@ -51,20 +51,25 @@ LoginController.prototype = {
   },
 
   handleSuccess_ : function handleSuccess_(identity) {
+    // console.info("Message=Log in failed");
     if (!!this.scope.returnToState && this.scope.returnToState.name != 'index.login' &&
       this.scope.returnToState.name != '404' && this.scope.returnToState.name != 'access-denied') {
+        // console.info("Message=Redirecting to " + this.scope.returnToState.name);
       return this.state.go(this.scope.returnToState.name, this.scope.returnToStateParams);
     } else {
-      return this.aclService
+      return this
+        .aclService
         .isInAnyRole(['ROLE_USER'])
         .then(function(response) {
-          return this.state.go('index.home');
+          // console.info("Message=Going to member.home");
+          return this.state.go('member.home');
         }.bind(this), this.handleError_);
     }
   },
 
   handleError_ : function handleError_(error)  {
-    console.error(error);
+    // console.info("Message=Log in failed");
+    // console.info(error);
     this.authFailed = true;
     return error;
   }
@@ -89,13 +94,25 @@ function LoginRouterConfig($stateProvider) {
     });
 }
 
-function LogoutController($rootScope, $cookies, $state, $http, config) {
-  $http.get(config.apiUrl + '/disconnect').finally(function() {
-    $rootScope.globals = {};
-    $cookies.remove('globals');
-    $http.defaults.headers.common.Authorization = 'Bearer';
+function LogoutController($rootScope, $cookies, $state, $http, config, authenticationService) {
+
+  if (authenticationService.isAnonymous()) {
+    // console.info("Message=Clearing credentials...");
+    authenticationService.clearCredentials();
     return $state.go('index.login');
-  });
+  } else {
+    // console.info("Message=Disconnecting...");
+    $http
+      .get(config.apiUrl + '/disconnect')
+      .finally(function() {
+//        $rootScope.globals = {};
+//        $cookies.remove('globals');
+//        $http.defaults.headers.common.Authorization = 'Bearer';
+        authenticationService.clearCredentials();
+        return $state.go('index.login');
+      });
+  
+  }
 }
 
 function LogoutRouterConfig($stateProvider) {
@@ -140,7 +157,7 @@ MainNavController.prototype = {
     return this.authenticationService
       .getIdentity()
       .then(function(response) {
-        // console.info(response);
+        // // console.info(response);
         this.identity = response.data;
         return response;
       }.bind(this));
@@ -164,6 +181,16 @@ function MainNavRouterConfig($stateProvider) {
   });
 }
 
+/**
+ * Contrôleur chargé d'afficher la page de remise à zéro du mot de passe
+ * 
+ * @param {*} $http 
+ * @param {*} config 
+ * @param {*} $scope 
+ * @param {*} $sce 
+ * @param {*} content 
+ * @param {*} $compile 
+ */
 function PasswordResetController($http, config, $scope, $sce, content, $compile) {
 
   $scope.registerDone = false;
@@ -213,18 +240,20 @@ function PasswordResetController($http, config, $scope, $sce, content, $compile)
 					return( source );
 				}
      })
-    .then(function(data) {
-      console.log(data);
+    .then(function(response) {
+      console.log(response);
       $scope.registerDone = true;
-      if (data.status != 302) {
-        $scope.registerSuccessful = false;
-      } else {
+      if (response.status == 302 || response.status == 200) {
         // if successful, bind success message to message
         $scope.registerSuccessful = true;
+        $scope.successResponse = $sce.trustAsHtml(response.data);
+      } else {
+        $scope.registerSuccessful = false;
       }
     }, function(error) {
       console.log(error);
-
+      $scope.registerDone = false;
+      $scope.registerSuccessful = false;
       $scope.trustedHtml = $sce.trustAsHtml(error.data
         .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
     });
@@ -273,7 +302,7 @@ function SignUpController($http, config, $scope, $sce, content, $compile, $state
 
   // process the form
   $scope.processForm = function($event, method, action) {
-    // console.info($event);
+    // // console.info($event);
     $event.preventDefault();
 
     $http({
@@ -362,6 +391,26 @@ function SignUpRouterConfig($stateProvider) {
     });
 }
 
+function MemberNavController($state) {
+  this.state = $state;
+  // // console.info("MemberNavController");
+}
+
+MemberNavController.prototype = {
+  isActive: function isActive(name) {
+    return (this.state.is(name) ? "active" : "");
+  }
+};
+
+function MemberNavRouterConfig($stateProvider) {
+  $stateProvider
+    .state('member.nav', {
+      templateUrl: 'components/member/member-navigation/navbar.html',
+      controller: 'memberNavController',
+      controllerAs: 'ctrl'
+  });
+}
+
 function AccountController($http, config, userDetails, $sce, $scope, $compile) {
   $scope.saveDone = false;
   $scope.saveSuccessful = false;
@@ -398,7 +447,7 @@ function AccountController($http, config, userDetails, $sce, $scope, $compile) {
   }.bind(this));
 
   $scope.processForm = function($event, method, action) {
-    // console.info($event);
+    // // console.info($event);
     $event.preventDefault();
 
     $http({
@@ -508,26 +557,6 @@ function AccountRouterConfig($stateProvider) {
     });
 }
 
-function MemberNavController($state) {
-  this.state = $state;
-  // console.info("MemberNavController");
-}
-
-MemberNavController.prototype = {
-  isActive: function isActive(name) {
-    return (this.state.is(name) ? "active" : "");
-  }
-};
-
-function MemberNavRouterConfig($stateProvider) {
-  $stateProvider
-    .state('member.nav', {
-      templateUrl: 'components/member/member-navigation/navbar.html',
-      controller: 'memberNavController',
-      controllerAs: 'ctrl'
-  });
-}
-
 function SummaryController($scope, $http, userDetails, config, $sce) {
   this.http = $http;
   this.userDetails = userDetails;
@@ -576,40 +605,14 @@ function SummaryRouterConfig($stateProvider) {
     });
 }
 
-function AuthResource($http, config) {
-  this.http = $http;
-  this.config = config;
-}
-
-AuthResource.prototype = {
-
-    authenticate: function authenticate(login, password) {
-        return this.http.post(this.config.apiUrl + '/auth', {"login": login, "password": password});
-    },
-
-    getCurrentUser: function getCurrentUser() {
-      // console.info("IdentityResource#getCurrentUser");
-      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
-        console.info(response);
-        var data = JSON.parse(response);
-        data.login = data.email;
-        console.info(data);
-        return data;
-      }});
-    },
-
-    terminate: function terminate(identity) {
-        return this.http.post(this.config.apiUrl + '/logout', {login: identity.login});
-    }
-};
-
-function AuthenticationService($rootScope, $cookies, $http, config) {
+function AuthenticationService($rootScope, $cookies, $q, $http, config) {
 
   this.rootScope = $rootScope;
   this.cookies = $cookies;
 
   this.http = $http;
   this.config = config;
+  this.q = $q;
 
   this.init_();
 }
@@ -620,7 +623,10 @@ AuthenticationService.prototype = {
     },
 
     login: function login(username, password) {
-      return this.http.post(this.config.apiUrl + '/auth', {"login": username, "password": password}).then(this.handleLoginSuccess_);
+      return this
+        .http
+        .post(this.config.apiUrl + '/auth', {"login": username, "password": password})
+        .then(this.handleLoginSuccess_);
     },
 
     clearCredentials : function clearCredentials() {
@@ -631,19 +637,45 @@ AuthenticationService.prototype = {
     },
 
     getIdentity: function getIdentity(force) {
-      return this.http.get(this.config.apiUrl + '/identity', { transformResponse: function(response, headersGetter, status) {
-//        console.info(response);
-        var data = JSON.parse(response);
-        data.login = data.email;
-//        console.info(data);
-        return data;
-      }});
+      // console.info("Message=Retrieving current identity...");
+      var deferred = this.q.defer();
+      if (this.isAnonymous()) {
+        // console.info("Message=... is anonymous");
+        return this.q.reject("Current user is anonymous");
+      }
+
+      // if (this.isAuthenticated() && !force) {
+        // // console.info("Message=... is anonymous");
+        // return this.q.resolve(this.cookies.getObject('globals').currentUser);
+      //}
+
+      return this
+        .http
+        .get(this.config.apiUrl + '/identity', { 
+          transformResponse: function(response, headersGetter, status) {
+            // console.info(response);
+            var data = JSON.parse(response);
+            data.login = data.email;
+            // console.info(data);
+            return data;
+          }
+        })
+        .then(function onSuccess(response) {
+          // console.info("Message=Retrieving identity is successful");
+          return response;
+        }, function onError(rejection) {
+          console.error("Message=Retrieving identity failed");
+          return this.q.reject(rejection.data);
+        });
     },
 
     getCurrentAccount : function getCurrentAccount() {
-      return this.getIdentity().then(function(response) {
-        return this.http.get(this.config.apiUrl + '/user/' + response.data.id + '/account', { cache: true });
-      }.bind(this));
+      // console.info("Message=Retrieving current account...");
+      return this
+        .getIdentity()
+        .then(function(response) {
+          return this.http.get(this.config.apiUrl + '/user/' + response.data.id + '/account', { cache: true });
+        }.bind(this));
     },
 
 
@@ -656,12 +688,23 @@ AuthenticationService.prototype = {
     },
 
     /**
+     * Warning : the test for expiration is duplicated from the HTTP Interceptor in http.config.js
+     * 
      * @private
      */
     isIdentified_: function isIdentified_() {
       var data = this.cookies.getObject('globals');
-      // console.info(data);
-      return data !== undefined && data.currentUser !== undefined && data.currentUser.token !== undefined;
+      var result = false;
+      if (data !== undefined 
+          && data.currentUser !== undefined 
+          && data.currentUser.token !== undefined 
+          && data.currentUser.expires_in !== undefined) {
+        var now = new Date();
+        var expirationDate = new Date(data.currentUser.expires_in);
+
+        result = (now.getTime() < expirationDate.getTime());
+      }
+      return  result;
     },
 
     /**
@@ -669,19 +712,23 @@ AuthenticationService.prototype = {
      * @private
      */
     handleLoginSuccess_ : function handleLoginSuccess_(response) {
-      // console.info(response);
+      // // console.info(response);
       var user = response.data;
+      var now = new Date();
+      var expirationDate = new Date(now);
+      expirationDate.setDate(now.getDate() + 30);
+
       this.rootScope.globals = {
         currentUser: {
             userId : user.id,
             login : user.login,
             roles : user.roles,
-            token : user.token
+            token : user.token,
+            expires_in : expirationDate.getTime()
         }
       };
 
-      var expirationDate = new Date();
-      expirationDate.setSeconds(user.expires_in);
+      // console.info("Message=Setting expiration date with " + user.expires_in + " => " + expirationDate);
       this.cookies.putObject('globals', this.rootScope.globals, {expires: expirationDate});
 
       this.http.defaults.headers.common.Authorization = 'Bearer ' + user.token;
@@ -689,97 +736,31 @@ AuthenticationService.prototype = {
     }
 };
 
-function AclService($q, roleMap, authenticationService)  {
-  this.q = $q;
-  this.authenticationService = authenticationService;
-
-  this.roleMap = roleMap;
-
-  this.handleSuccess_ = this.handleSuccess_.bind(this);
-  this.handleError_ = this.handleError_.bind(this);
+function AuthResource($http, config) {
+  this.http = $http;
+  this.config = config;
 }
 
-AclService.prototype = {
+AuthResource.prototype = {
 
-  isInRole: function isInRole(role) {
-    var deferred = this.q.defer();
+    authenticate: function authenticate(login, password) {
+        return this.http.post(this.config.apiUrl + '/auth', {"login": login, "password": password});
+    },
 
-    this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
+    getCurrentUser: function getCurrentUser() {
+      // // console.info("IdentityResource#getCurrentUser");
+      return this.http.get(this.config.apiUrl + '/identity', { cache: true, transformResponse: function(response, headersGetter, status) {
+        // console.info(response);
+        var data = JSON.parse(response);
+        data.login = data.email;
+        // console.info(data);
+        return data;
+      }});
+    },
 
-      if (response.data.roles.indexOf(role) != -1 && this.roleMap[role] !== undefined) {
-        // console.info("AclService#isInRole#accept for " + role);
-        deferred.resolve(this.roleMap[role]);
-      } else {
-        // console.info("AclService#isInRole#reject for " + role);
-        deferred.reject({'role' : 'none'});
-      }
-    }.bind(this));
-    return deferred.promise;
-  },
-
-  isInAnyRole: function isInAnyRole(roles) {
-    var deferred = this.q.defer();
-    // console.info(roles);
-    this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
-      var result = false;
-      var targetRole = "none";
-      for (var i = 0; i < roles.length; i++) {
-          if (response.data.roles.indexOf(roles[i]) != -1) {
-              result = true;
-              targetRole = roles[i];
-          }
-      }
-
-      if (result && this.roleMap[targetRole] !== undefined) {
-        deferred.resolve(this.roleMap[targetRole]);
-        // console.info("AclService#isInAnyRole#accept");
-      } else {
-        // console.info("AclService#isInAnyRole#reject");
-        deferred.reject({});
-      }
-
-    }.bind(this));
-    return deferred.promise;
-  },
-
-  hasPermission : function hasPermission(permissionName) {
-    var deferred = this.q.defer();
-    // console.info(permissionName);
-    this.authenticationService.getIdentity().then(function(response) {
-      // console.info(response);
-      var result = false;
-      var roles = response.data.roles;
-      var targetRole = 'none';
-
-      for (var i = 0; i < roles.length; i++) {
-        if (roles[i].indexOf(permissionName) != -1) {
-            result = true;
-            targetRole = roles[i];
-        }
-      }
-
-      if (result) {
-        // console.info("AclService#hasPermission#accept");
-        deferred.resolve({'role' : targetRole});
-      } else {
-        // console.info("AclService#hasPermission#reject");
-        deferred.reject({'role' : 'none'});
-      }
-    }.bind(this));
-    return deferred.promise;
-  },
-
-
-
-  handleSuccess_: function handleSuccess_() {
-
-  },
-
-  handleError_: function handleError_() {
-
-  }
+    terminate: function terminate(identity) {
+        return this.http.post(this.config.apiUrl + '/logout', {login: identity.login});
+    }
 };
 
 function CompareToDirective() {
@@ -851,37 +832,156 @@ function StrengthDirective($parse) {
 	};
 }
 
-function HttpInterceptor($q, $injector, $cookies) {
-  return {
-    'request': function (config) {
+function AclService($q, roleMap, authenticationService)  {
+  this.q = $q;
+  this.authenticationService = authenticationService;
+
+  this.roleMap = roleMap;
+
+  this.handleSuccess_ = this.handleSuccess_.bind(this);
+  this.handleError_ = this.handleError_.bind(this);
+}
+
+AclService.prototype = {
+
+  isInRole: function isInRole(role) {
+    var deferred = this.q.defer();
+    // console.info("Message=Checking one role...");
+    this.authenticationService.getIdentity().then(function(response) {
+      // // console.info(response);
+
+      if (response.data.roles.indexOf(role) != -1 && this.roleMap[role] !== undefined) {
+        // // console.info("AclService#isInRole#accept for " + role);
+        deferred.resolve(this.roleMap[role]);
+      } else {
+        // // console.info("AclService#isInRole#reject for " + role);
+        deferred.reject({'role' : 'none'});
+      }
+    }.bind(this));
+    return deferred.promise;
+  },
+
+  isInAnyRole: function isInAnyRole(roles) {
+    var deferred = this.q.defer();
+    // console.info("Message=Checking multiple roles...");
+    this.authenticationService.getIdentity().then(function(response) {
+      // // console.info(response);
+      var result = false;
+      var targetRole = "none";
+      for (var i = 0; i < roles.length; i++) {
+          if (response.data.roles.indexOf(roles[i]) != -1) {
+              result = true;
+              targetRole = roles[i];
+          }
+      }
+
+      if (result && this.roleMap[targetRole] !== undefined) {
+        deferred.resolve(this.roleMap[targetRole]);
+        // // console.info("AclService#isInAnyRole#accept");
+      } else {
+        // // console.info("AclService#isInAnyRole#reject");
+        deferred.reject({});
+      }
+
+    }.bind(this));
+    return deferred.promise;
+  },
+
+  hasPermission : function hasPermission(permissionName) {
+    var deferred = this.q.defer();
+    // // console.info(permissionName);
+    // console.info("Message=Checking one permission...");
+    this.authenticationService.getIdentity().then(function(response) {
+      // // console.info(response);
+      var result = false;
+      var roles = response.data.roles;
+      var targetRole = 'none';
+
+      for (var i = 0; i < roles.length; i++) {
+        if (roles[i].indexOf(permissionName) != -1) {
+            result = true;
+            targetRole = roles[i];
+        }
+      }
+
+      if (result) {
+        // // console.info("AclService#hasPermission#accept");
+        deferred.resolve({'role' : targetRole});
+      } else {
+        // // console.info("AclService#hasPermission#reject");
+        deferred.reject({'role' : 'none'});
+      }
+    }.bind(this));
+    return deferred.promise;
+  },
+
+
+
+  handleSuccess_: function handleSuccess_() {
+
+  },
+
+  handleError_: function handleError_() {
+
+  }
+};
+
+angular
+  .module('app.http', [])
+  .factory('httpInterceptor', ['$q', '$injector', '$cookies', function($q, $injector, $cookies) {
+    return {
+      'request': function (config) {
+        // console.info("Message=Intercepting request...");
+
         config.headers = config.headers || {};
-        if ($cookies.getObject('globals') && $cookies.getObject('globals').currentUser) {
-            config.headers.Authorization = 'Bearer ' + $cookies.getObject('globals').currentUser.token;
+        var data = $cookies.getObject('globals');
+        if (data && data.currentUser) {
+          // console.info("Message=... checking current user");
+          if (data.currentUser.expires_in) {
+            var now = new Date();
+            var expirationDate = new Date(data.currentUser.expires_in);
+
+            // console.info("Today is " + now.getDay() + "/" + now.getMonth() + "/" + now.getFullYear());
+            // console.info("Expiration date is " + expirationDate.getDay() + "/" + expirationDate.getMonth() + expirationDate.getFullYear());
+            var hasNotExpired = (now.getTime() < expirationDate.getTime());
+            // console.info("Token has expired ? " + (hasNotExpired ? "NO" : "YES"));
+
+            if (hasNotExpired) {
+              // console.info("Message=... and adding a bearer");
+              config.headers.Authorization = 'Bearer ' + data.currentUser.token;
+            } else {
+              // console.info("Message=... and removing the user, because his token has expired");
+              $cookies.getObject('globals').currentUser = {};
+            }
+          } else {
+            // console.info("Message=... and removing the user");
+            $cookies.getObject('globals').currentUser = {};
+          }
         }
         return config;
-    },
-    'response': function(response) {
-
+      },
+      'response': function(response) {
+  
+        // console.info("Message=Intercepting response;ResponseStatus=" + response.status);
         if (response.status === 401) {
+          // console.info("Message=Intercepted response is 401;Goto=index.logout");
           $injector.get('$state').go('index.logout');
           return $q.reject(response);
         }
         return response || $q.when(response);
-    },
-
-    'responseError': function(rejection) {
-
+      },
+  
+      'responseError': function(rejection) {
+  
+        // console.info("Message=Intercepting response as error;ResponseStatus=" + rejection.status);
         if (rejection.status === 401) {
           $injector.get('$state').go('index.logout');
           return $q.reject(rejection);
         }
         return $q.reject(rejection);
-    }
-  };
-}
-
-angular.module('app.http', [])
-  .factory('httpInterceptor', ['$q', '$injector', '$cookies', HttpInterceptor])
+      }
+    };
+  }])
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push('httpInterceptor');
   }]);
@@ -983,124 +1083,6 @@ YearService.prototype = {
     return this.http.get(this.config.apiUrl + '/year/current', {cache : true});
   }
 };
-
-function PasswordEditController($http, config, $scope, $sce, content, $compile, userDetails) {
-
-    $scope.saveDone = false;
-    $scope.saveSuccessful = false;
-    $scope.formData = {};
-    // $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
-    $scope.trustedHtml = $sce.trustAsHtml(content
-       .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
-       .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
-       .replace(' name="fos_user_change_password_formser[plainPassword][second]" ', '  ')
-       .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
-       .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
-       .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
-
-    // process the form
-    $scope.processForm = function($event, method, action) {
-      console.info($event);
-      $event.preventDefault();
-      $scope.saveDone = false;
-
-      $http({
-        method  : method,
-        url     : config.apiUrl + action,
-        // data : $.param($scope.formData),
-        data    : {
-          "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
-          "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
-          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second
-          //, "fos_user_change_password_form[_token]" :	$scope.formData.user__token
-        },
-        headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
-        transformRequest : function transformRequest( data, getHeaders ) {
-  					var headers = getHeaders();
-            if ( ! angular.isObject( data ) ) {
-  						return( ( data == null ) ? "" : data.toString() );
-  					}
-  					var buffer = [];
-  					// Serialize each key in the object.
-  					for ( var name in data ) {
-  						if ( ! data.hasOwnProperty( name ) ) {
-  							continue;
-  						}
-  						var value = data[ name ];
-  						buffer.push(
-  							encodeURIComponent( name ) +
-  							"=" +
-  							encodeURIComponent( ( value == null ) ? "" : value )
-  						);
-  					}
-  					// Serialize the buffer and clean it up for transportation.
-  					var source = buffer
-  						.join( "&" )
-  						.replace( /%20/g, "+" )
-  					;
-  					return( source );
-  				}
-       })
-      .then(function(data) {
-        console.log(data);
-        // $scope.saveDone = true;
-        $scope.saveDone = true;
-        if (data.status != 200) {
-          $scope.saveSuccessful = false;
-        } else {
-          // if successful, bind success message to message
-          $scope.saveSuccessful = true;
-
-          $scope.trustedHtml = $sce.trustAsHtml(data.data
-            .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
-            .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
-            .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
-            .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
-            .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
-            .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
-        }
-      }, function(error) {
-        console.log(error);
-        $scope.saveSuccessful = false;
-        $scope.saveDone = true;
-        $scope.trustedHtml = $sce.trustAsHtml(error.data
-          .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
-          .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
-          .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
-          .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
-          .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
-          .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
-      });
-    }
-};
-
-function PasswordRouterConfig($stateProvider) {
-  $stateProvider.state('member.password', {
-      url: "/password",
-      data: {
-        roles: ['USER']
-      },
-      views: {
-        'content@': {
-          templateUrl: 'components/member/password/edit/password.edit.html',
-          controller: "passwordEditController",
-          controllerAs: "ctrl"
-        }
-      },
-      resolve: {
-        userDetails : ['authenticationService', function(authService) {
-          return authService.getCurrentAccount().then(function(response) {
-            return response.data;
-          });
-        }],
-        content : ['$http', 'config', function($http, config) {
-          return $http.get(config.apiUrl + '/user/change-password').then(function(response) {
-            return response.data;
-          });
-        }]
-      }
-    });
-}
 
 function RegistrationsListController($q, $http, config, userDetails, year) {
 
@@ -1402,6 +1384,124 @@ function RegistrationEditDialogController($http, $scope, $modalInstance, content
   }
 }
 
+function PasswordEditController($http, config, $scope, $sce, content, $compile, userDetails) {
+
+    $scope.saveDone = false;
+    $scope.saveSuccessful = false;
+    $scope.formData = {};
+    // $scope.formData.user__token = $("input#fos_user_change_password_form__token", content).val();
+    $scope.trustedHtml = $sce.trustAsHtml(content
+       .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
+       .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
+       .replace(' name="fos_user_change_password_formser[plainPassword][second]" ', '  ')
+       .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
+       .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
+       .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
+
+    // process the form
+    $scope.processForm = function($event, method, action) {
+      // console.info($event);
+      $event.preventDefault();
+      $scope.saveDone = false;
+
+      $http({
+        method  : method,
+        url     : config.apiUrl + action,
+        // data : $.param($scope.formData),
+        data    : {
+          "fos_user_change_password_form[current_password]" :	$scope.formData.current_password,
+          "fos_user_change_password_form[plainPassword][first]" :	$scope.formData.plainPassword_first,
+          "fos_user_change_password_form[plainPassword][second]" :	$scope.formData.plainPassword_second
+          //, "fos_user_change_password_form[_token]" :	$scope.formData.user__token
+        },
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' },  // set the headers so angular passing info as form data (not request payload)
+        transformRequest : function transformRequest( data, getHeaders ) {
+  					var headers = getHeaders();
+            if ( ! angular.isObject( data ) ) {
+  						return( ( data == null ) ? "" : data.toString() );
+  					}
+  					var buffer = [];
+  					// Serialize each key in the object.
+  					for ( var name in data ) {
+  						if ( ! data.hasOwnProperty( name ) ) {
+  							continue;
+  						}
+  						var value = data[ name ];
+  						buffer.push(
+  							encodeURIComponent( name ) +
+  							"=" +
+  							encodeURIComponent( ( value == null ) ? "" : value )
+  						);
+  					}
+  					// Serialize the buffer and clean it up for transportation.
+  					var source = buffer
+  						.join( "&" )
+  						.replace( /%20/g, "+" )
+  					;
+  					return( source );
+  				}
+       })
+      .then(function(data) {
+        console.log(data);
+        // $scope.saveDone = true;
+        $scope.saveDone = true;
+        if (data.status != 200) {
+          $scope.saveSuccessful = false;
+        } else {
+          // if successful, bind success message to message
+          $scope.saveSuccessful = true;
+
+          $scope.trustedHtml = $sce.trustAsHtml(data.data
+            .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
+            .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
+            .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+            .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
+            .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
+            .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
+        }
+      }, function(error) {
+        console.log(error);
+        $scope.saveSuccessful = false;
+        $scope.saveDone = true;
+        $scope.trustedHtml = $sce.trustAsHtml(error.data
+          .replace(' name="fos_user_change_password_form[current_password]" ', '  ')
+          .replace(' name="fos_user_change_password_form[plainPassword][first]" ', '  ')
+          .replace(' name="ufos_user_change_password_formser[plainPassword][second]" ', '  ')
+          .replace(' id="fos_user_change_password_form_current_password" ', ' id="fos_user_change_password_form_current_password" ng-model="formData.current_password" ')
+          .replace(' id="fos_user_change_password_form_plainPassword_first" ', ' id="fos_user_change_password_form_plainPassword_first" ng-model="formData.plainPassword_first" ')
+          .replace(' id="fos_user_change_password_form_plainPassword_second" ', ' id="fos_user_change_password_form_plainPassword_second" ng-model="formData.plainPassword_second" '));
+      });
+    }
+};
+
+function PasswordRouterConfig($stateProvider) {
+  $stateProvider.state('member.password', {
+      url: "/password",
+      data: {
+        roles: ['USER']
+      },
+      views: {
+        'content@': {
+          templateUrl: 'components/member/password/edit/password.edit.html',
+          controller: "passwordEditController",
+          controllerAs: "ctrl"
+        }
+      },
+      resolve: {
+        userDetails : ['authenticationService', function(authService) {
+          return authService.getCurrentAccount().then(function(response) {
+            return response.data;
+          });
+        }],
+        content : ['$http', 'config', function($http, config) {
+          return $http.get(config.apiUrl + '/user/change-password').then(function(response) {
+            return response.data;
+          });
+        }]
+      }
+    });
+}
+
 function RegistrationAddController($scope, $modal, $state) {
   this.registration = $scope.registration;
   this.modal = $modal;
@@ -1607,9 +1707,9 @@ angular.module('app.login', ['app.auth', 'app.acl', 'ui.router'])
 .controller('loginController', ['$scope', '$state', 'authenticationService', 'aclService', LoginController]);
 
 angular
-    .module('app.logout', ['app.config', 'ui.router'])
+    .module('app.logout', ['app.config', 'ui.router', 'app.auth'])
     .config(['$stateProvider', LogoutRouterConfig])
-    .controller('logoutController', ['$rootScope', '$cookies', '$state', '$http', 'config', LogoutController]);
+    .controller('logoutController', ['$rootScope', '$cookies', '$state', '$http', 'config', 'authenticationService', LogoutController]);
 
 angular.module('app.main.nav', ['app.auth', 'ui.router'])
   .directive('gsMainNav', MainNavDirective)
@@ -1623,13 +1723,13 @@ angular.module('app.signup', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', SignUpRouterConfig])
   .controller('signUpController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', '$state', SignUpController]);
 
+angular.module('app.member.nav', ['ui.router'])
+  .controller('memberNavController', ['$state', MemberNavController]);
+
 angular.module('app.account', ['app.config', 'ui.router', 'ngSanitize'])
   .config(['$stateProvider', AccountRouterConfig])
   // .directive('gsDatepicker', AccountDatepickerDirective)
   .controller('accountController', ['$http', 'config', 'userDetails', '$sce', '$scope', '$compile', AccountController]);
-
-angular.module('app.member.nav', ['ui.router'])
-  .controller('memberNavController', ['$state', MemberNavController]);
 
 angular.module('app.registration', ['app.registrations.list',
   'app.registration.dialog', 'app.registration.actions']);
@@ -1640,7 +1740,12 @@ angular.module('app.summary', ['ui.router', 'app.auth', 'app.config', 'ngSanitiz
 
 angular.module('app.auth', ['app.config'])
     .service('authResource', ['$http', 'config', AuthResource])
-    .service('authenticationService', ['$rootScope', '$cookies', '$http', 'config', AuthenticationService]);
+    .service('authenticationService', ['$rootScope', '$cookies', '$q', '$http', 'config', AuthenticationService]);
+
+angular.module('app.common', [])
+  .directive('gsCompareTo', CompareToDirective)
+  .directive('gsDynamic', ['$compile', DynamicDirective])
+  .directive('gsStrength', StrengthDirective);
 
 angular.module('app.acl', [])
     .constant("roleMap", {
@@ -1649,39 +1754,14 @@ angular.module('app.acl', [])
           'permissions' : ['canViewProfile', 'canViewSubscriptions'],
           'defaultState' : 'member.account'
       }
-      // 'ROLE_TEACHER' : {
-      //     'role': 'ROLE_TEACHER',
-      //     'permissions' : ['canViewTopics', 'canViewClasses'],
-      //     'defaultState' : 'admin.admin'
-      // },
-      // 'ROLE_SECRETARY' : {
-      //   'role': 'ROLE_SECRETARY',
-      //   'permissions' : [],
-      //   'defaultState' : 'admin.secretariat'
-      // },
-      // 'ROLE_TREASURER' : {
-      //     'role': 'ROLE_TREASURER',
-      //     'permissions' : [],
-      //     'defaultState' : 'admin.treasury'
-      // },
-      // 'ROLE_ADMIN': {
-      //   'role': 'ROLE_ADMIN',
-      //   'permissions' : [],
-      //   'defaultState' : 'index.home'
-      // }
     })
     .service('aclService', ['$q', 'roleMap', 'authenticationService', AclService]);
-
-angular.module('app.common', [])
-  .directive('gsCompareTo', CompareToDirective)
-  .directive('gsDynamic', ['$compile', DynamicDirective])
-  .directive('gsStrength', StrengthDirective);
 
 angular
   .module('app.config', [])
   .constant('config', {
     // apiUrl: 'http://localhost/api',
-    apiUrl: 'https://test.api.grenobleswing.com/api',
+    apiUrl: 'https://api.inscriptions.grenobleswing.com/api',
     baseUrl: '/',
     enableDebug: true
   });
@@ -1689,9 +1769,9 @@ angular
 angular.module('app.year', ['app.config'])
     .service('yearService', ['$http', 'config', YearService]);
 
-angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
-  .config(['$stateProvider', PasswordRouterConfig])
-  .controller('passwordEditController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', 'userDetails', PasswordEditController]);
+angular.module('app.registrations.list', ['ui.router', 'app.config'])
+    .config(['$stateProvider', RegistrationsRouterConfig])
+    .controller('registrationsListController', ['$q', '$http', 'config', 'userDetails', 'year', RegistrationsListController]);
 
 angular.module('app.registration.actions',
   ['app.registration.actions.add',
@@ -1700,13 +1780,13 @@ angular.module('app.registration.actions',
     'app.registration.actions.update'
   ]);
 
-angular.module('app.registrations.list', ['ui.router', 'app.config'])
-    .config(['$stateProvider', RegistrationsRouterConfig])
-    .controller('registrationsListController', ['$q', '$http', 'config', 'userDetails', 'year', RegistrationsListController]);
-
 angular.module('app.registration.dialog', ['ui.bootstrap', 'app.config', 'ngSanitize'])
     .controller('registrationEditDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationEditDialogController])
     .controller('registrationDialogController', ['$http', '$scope', '$uibModalInstance', 'content', 'config', '$sce', RegistrationDialogController]);
+
+angular.module('app.password.edit', ['app.config', 'ui.router', 'ngSanitize'])
+  .config(['$stateProvider', PasswordRouterConfig])
+  .controller('passwordEditController', ['$http', 'config', '$scope', '$sce', 'content', '$compile', 'userDetails', PasswordEditController]);
 
 angular.module('app.registration.actions.add', ['ui.bootstrap', 'ui.router'])
     .controller('registrationAddController', ['$scope', '$uibModal', '$state', RegistrationAddController])
@@ -1730,13 +1810,13 @@ angular.module('app.registration.actions.validate', [])
 
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui', 'ngSanitize',
+        'app.http',
+        'app.account',
         'app.acl',
         'app.auth',
         'app.common',
         'app.config',
         'app.home',
-        'app.account',
-        'app.http',
         'app.login',
         'app.logout',
         'app.main.nav',
@@ -1799,7 +1879,7 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
                   template : ''
                 },
                 'content@': {
-                    template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="index.home">Return home.</a></p></alert>'
+                    template: '<alert type="danger"><strong>Access Denied</strong><p>You don\'t have permission to see this. <a href="" ui-sref="member.home">Return home.</a></p></alert>'
                 }
             }
         })
@@ -1828,9 +1908,20 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
-      return authenticationService.getIdentity().then(function() {
-        return state.go('index.home');
-      });
+      if (authenticationService.isAuthenticated()) {
+        // console.info("Message=Checking main otherwise...");
+        return authenticationService
+            .getIdentity()
+            .then(function() {
+                // console.info("Message=Go to home");
+                return state.go('member.home');
+            }, function() {
+                // console.info("Message=Go to login");
+                return state.go('index.logout');
+            });
+      } else {
+        return state.go('index.logout');
+      }
     });
 }
 
@@ -1874,17 +1965,17 @@ angular
   .run(['PermPermissionStore', 'authenticationService', withPermissions])
   .run(['PermRoleStore', 'authenticationService', 'aclService', '$q', withRoles]);
 
-angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\n<h2>Gestion de compte</h2>\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\n\n<h2>Actualit\xE9s</h2>\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\n');
-$templateCache.put('components/main/login/login.html','<div class="row">\n  <div class="col-md-4  col-md-offset-2 bg-info">\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\n              <div class="col-sm-8">\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\n                <small ng-if="form.login.$dirty && form.login.$invalid"\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\n              <div class="col-sm-8">\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\n                <small ng-if="form.password.$dirty && form.password.$error.required"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\n                <small ng-if="ctrl.authFailed"\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\n              </div>\n          </div>\n          <div class="form-actions row">\n            <div class="col-md-offset-1 col-sm-4">\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\n            </div>\n            <div class="col-md-offset-1 col-sm-4">\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\n            </div>\n          </div>\n      </form>\n  </div>\n  <div class="col-md-4">\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\n  </div>\n</div>\n');
-$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\n    <li uib-dropdown>\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\n        {{ctrl.identity.login}}<span class="caret"></span>\n      </button>\n      <ul uib-dropdown-menu class="dropdown-menu">\n        <li role="menuitem"><a ui-sref="index.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\n        <li class="divider"></li>\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\n        </li>\n        <li class="divider"></li>\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\n      </ul>\n    </li>\n</ul>\n');
-$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\n');
-$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
-$templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\n</ul>\n');
-$templateCache.put('components/member/summary/summary.html','<div class="row">\n  <div class="col-md-12">\n    <div class="row">\n      <h2>Liste des inscriptions</h2>\n      <table class="table table-striped">\n        <tr>\n          <th>intitul\xE9</th>\n          <th>tarif</th>\n          <th>remise</th>\n          <th>somme d\xFBe</th>\n          <th>somme pay\xE9e</th>\n        </tr>\n        <tr ng-repeat="elem in ctrl.list">\n          <td>{{elem.title}}</td>\n          <td>{{elem.price}}</td>\n          <td>{{elem.discount}}</td>\n          <td>{{elem.balance}}</td>\n          <td>{{elem.alreadyPaid}}</td>\n        </tr>\n      </table>\n    </div>\n  </div>\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\n  <div gs-dynamic="ctrl.trustedHtml"></div>\n</div>\n');
-$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\n');
-$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\n    <span class="col-md-12">\n      <div class="row">\n        <span class="col-md-12">\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\n        </span>\n      </div>\n      <div class="row">\n        <span class="col-md-6">\n          <p>{{registration.topic.description}}</p>\n        </span>\n        <span class="col-md-6">\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\n        </span>\n      </div>\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\n        <p>R\xF4le : {{registration.role | translate}}</p>\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\n      </div>\n    </span>\n    <hr />\n</div>\n<div ng-if="!ctrl.$ok" class="col-md-12">\n    <span class="col-md-12">\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\n    </span>\n</div>\n');
-$templateCache.put('components/member/registration/action/add/registration.add.html','<span>\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\n  </a>\n</span>\n');
-$templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\n  <a class="btn btn-warning" role="button"\n      ng-click="ctrl.showForm(subscription)">\n    <h5>Annuler <i class="glyphicon glyphicon-trash"></i></h5>\n  </a>\n</span>\n');
-$templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');
-$templateCache.put('components/member/registration/action/update/registration.update.html','<span>\n  <a class="btn btn-primary" role="button"\n    ng-click="ctrl.showForm(subscription)">\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\n  </a>\n</span>\n');}]);
+angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('components/main/home/home.html','<h1>Bienvenue sur votre espace personnel Grenoble Swing</h1>\r\n<h2>Gestion de compte</h2>\r\n<p>Vous pouvez g\xE9rer votre compte, vos inscriptions, vos paiments en cliquant sur le menu <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i>Profil</a>.</p>\r\n\r\n<h2>Actualit\xE9s</h2>\r\n<p>Rendez-vous sur la page <a href="http://www.grenobleswing.com/" target="blank">Grenoble Swing</a> pour plus d\'informations sur l\'association et ses \xE9v\xE9nements.</p>\r\n');
+$templateCache.put('components/main/login/login.html','<div class="row">\r\n  <div class="col-md-4  col-md-offset-2 bg-info">\r\n      <h4>{{\'LOGIN.TITLE\' | translate}}</h4>\r\n      <form name="ctrl.loginForm" ng-submit="ctrl.connect()" role="form">\r\n          <div class="form-group row" ng-class="{ \'has-error\': form.login.$dirty && form.login.$invalid }">\r\n              <label for="login" class="col-sm-4 control-label">{{ \'ACCOUNT.EMAIL\' | translate}}</label>\r\n              <div class="col-sm-8">\r\n                <input type="email" name="login" id="login" class="form-control" ng-model="ctrl.login" required ng-pattern="/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/" />\r\n                <small ng-if="form.login.$dirty && form.login.$invalid"\r\n                       class="has-error help-block">{{ \'ACCOUNT.EMAIL_REQUIRED\' | translate}}</small>\r\n              </div>\r\n          </div>\r\n          <div class="form-group row" ng-class="{ \'has-error\': (form.password.$dirty && form.password.$error.required) || ctrl.authFailed }">\r\n              <label for="password" class="col-sm-4 control-label">{{ \'ACCOUNT.PASSWORD\' | translate }}</label>\r\n              <div class="col-sm-8">\r\n                <input type="password" name="password" id="password" class="form-control" ng-model="ctrl.password" required />\r\n                <small ng-if="form.password.$dirty && form.password.$error.required"\r\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_REQUIRED\' | translate}}</small>\r\n                <small ng-if="ctrl.authFailed"\r\n                       class="has-error help-block">{{ \'ACCOUNT.PASSWORD_FAILED\' | translate}}</small>\r\n              </div>\r\n          </div>\r\n          <div class="form-actions row">\r\n            <div class="col-md-offset-1 col-sm-4">\r\n              <button type="submit" ng-disabled="form.$invalid || ctrl.isLoading" class="btn btn-primary">{{ \'ACTION.CONNECT\' | translate}}</button>\r\n            </div>\r\n            <div class="col-md-offset-1 col-sm-4">\r\n              <a ui-sref="index.reset" class="btn btn-link">{{ \'ACTION.FORGOT_PASSWORD\' | translate}}</a>\r\n            </div>\r\n          </div>\r\n      </form>\r\n  </div>\r\n  <div class="col-md-4">\r\n    <h4>{{\'LOGIN.SIGNUP\' | translate}}</h4>\r\n    <p>{{\'LOGIN.MESSAGE\' | translate}}</p>\r\n    <a ui-sref="index.sign-up" class="btn btn-link">{{ \'ACTION.SIGNUP\' | translate}}</a>\r\n  </div>\r\n</div>\r\n');
+$templateCache.put('components/main/main-navigation/navbar.html','<ul class="nav navbar-nav navbar-right" permission permission-only="\'AUTHORIZED\'">\r\n    <li uib-dropdown>\r\n      <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">\r\n        {{ctrl.identity.login}}<span class="caret"></span>\r\n      </button>\r\n      <ul uib-dropdown-menu class="dropdown-menu">\r\n        <li role="menuitem"><a ui-sref="member.home"><i class="glyphicon glyphicon-user"></i> Accueil</a></li>\r\n        <li class="divider"></li>\r\n        <li role="menuitem" permission permission-only="\'ROLE_USER\'">\r\n          <a ui-sref="member.account"><i class="glyphicon glyphicon-user"></i> Profil</a>\r\n        </li>\r\n        <li class="divider"></li>\r\n        <li role="menuitem"><a ng-click="ctrl.logout()"><i class="glyphicon glyphicon-log-out"></i> Se d\xE9connecter</a></li>\r\n      </ul>\r\n    </li>\r\n</ul>\r\n');
+$templateCache.put('components/main/reset/password.reset.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\r\n<div ng-if="registerDone && registerSuccessful" gs-dynamic="successResponse"></div>\r\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\r\n');
+$templateCache.put('components/main/signup/signup.html','<div ng-if="!registerDone" gs-dynamic="trustedHtml"></div>\r\n<div ng-if="!!registerDone && !!registerSuccessful">{{ "SIGNUP.REGISTER_SUCCESSFUL" | translate }}</div>\r\n<section><a ui-sref="index.login" class="btn btn-link">{{ "ACTION.BACK_TO_LOGIN" | translate}}</a></section>\r\n');
+$templateCache.put('components/member/member-navigation/navbar.html','<ul class="nav navbar-nav">\r\n  <li ng-class="ctrl.isActive(\'member.account\')"><a ui-sref="member.account">Modifier mon profil</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.password\')"><a ui-sref="member.password">Changer le mot de passe</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.registrations\')"><a ui-sref="member.registrations">G\xE9rer mes inscriptions</a></li>\r\n  <li ng-class="ctrl.isActive(\'member.summary\')"><a ui-sref="member.summary">Voir le r\xE9capitulatif</a></li>\r\n</ul>\r\n');
+$templateCache.put('components/member/account/account.html','<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n<div gs-dynamic="trustedHtml"></div>\r\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n');
+$templateCache.put('components/member/summary/summary.html','<div class="row">\r\n  <div class="col-md-12">\r\n    <div class="row">\r\n      <h2>Liste des inscriptions</h2>\r\n      <table class="table table-striped">\r\n        <tr>\r\n          <th>intitul\xE9</th>\r\n          <th>tarif</th>\r\n          <th>remise</th>\r\n          <th>somme d\xFBe</th>\r\n          <th>somme pay\xE9e</th>\r\n        </tr>\r\n        <tr ng-repeat="elem in ctrl.list">\r\n          <td>{{elem.title}}</td>\r\n          <td>{{elem.price}}</td>\r\n          <td>{{elem.discount}}</td>\r\n          <td>{{elem.balance}}</td>\r\n          <td>{{elem.alreadyPaid}}</td>\r\n        </tr>\r\n      </table>\r\n    </div>\r\n  </div>\r\n  <div class="col-md-12"><h4>Total : {{ctrl.totalAmount}}\u20AC</h4></div>\r\n  <div gs-dynamic="ctrl.trustedHtml"></div>\r\n</div>\r\n');
+$templateCache.put('components/member/registration/list/registrations.list.html','<div  ng-if="!!ctrl.$ok" ng-repeat="registration in ctrl.registrations | orderBy : \'topic.id\'" class="col-md-12">\r\n    <span class="col-md-12">\r\n      <div class="row">\r\n        <span class="col-md-12">\r\n          <h3 class="text-primary">{{registration.topic.title}}</h3>\r\n          <span ng-if="registration.state == \'VALIDATED\' || registration.state == \'WAITING\'  || registration.state == \'PAID\' ||\xA0registration.state == \'SUBMITTED\'"\r\n            ng-class="{\'text-primary\' : registration.state == \'PAID\', \'text-warning\' : registration.state == \'SUBMITTED\'}">{{registration.state | translate}}</span>\r\n        </span>\r\n      </div>\r\n      <div class="row">\r\n        <span class="col-md-6">\r\n          <p>{{registration.topic.description}}</p>\r\n        </span>\r\n        <span class="col-md-6">\r\n          <span ng-if="!!registration._links.new_registration" gs-registration-add data-registration="registration"></span>\r\n          <span ng-if="!!registration._links.edit" gs-registration-update data-registration="registration"></span>\r\n          <span ng-if="!!registration._links.cancel" gs-registration-cancel data-registration="registration"></span>\r\n        </span>\r\n      </div>\r\n      <div ng-if="registration.topic.type == \'couple\' && registration.state != \'UNCHECKED\'" class="row">\r\n        <p>R\xF4le : {{registration.role | translate}}</p>\r\n        <p ng-if="!!registration.withPartner">Partenaire : {{registration.partnerFirstName}} {{registration.partnerLastName}}</p>\r\n      </div>\r\n    </span>\r\n    <hr />\r\n</div>\r\n<div ng-if="!ctrl.$ok" class="col-md-12">\r\n    <span class="col-md-12">\r\n      <p class="text-center">{{ \'SUBSCRIPTIONS.NO_TOPIC\' |\xA0translate }}</p>\r\n    </span>\r\n</div>\r\n');
+$templateCache.put('components/member/password/edit/password.edit.html','<div gs-dynamic="trustedHtml"></div>\r\n<div class="alert alert-success" ng-if="!!saveDone && !!saveSuccessful"><p class="bg-success">{{ "ACCOUNT.SAVE_SUCCESSFUL" | translate }}</p></div>\r\n<div class="alert alert-danger" ng-if="!!saveDone && !saveSuccessful"><p class="bg-danger">{{ "ACCOUNT.SAVE_FAILED" | translate }}</p></div>\r\n');
+$templateCache.put('components/member/registration/action/add/registration.add.html','<span>\r\n  <a class="btn btn-primary" role="button" ng-click="ctrl.showForm()">\r\n    <h5>Ajouter <i class="glyphicon glyphicon-plus-sign"></i></h5>\r\n  </a>\r\n</span>\r\n');
+$templateCache.put('components/member/registration/action/cancel/registration.cancel.html','<span>\r\n  <a class="btn btn-warning" role="button"\r\n      ng-click="ctrl.showForm(subscription)">\r\n    <h5>Annuler <i class="glyphicon glyphicon-trash"></i></h5>\r\n  </a>\r\n</span>\r\n');
+$templateCache.put('components/member/registration/action/pay/subscription.pay.html','<span ng-if="subscription.selected && subscription.state === \'SUBMITTED\' && subscription.type === \'couple\'">\r\n  <a class="btn btn-primary" role="button" ng-disabled="!ctrl.isUpdatable(subscription)" ng-click="ctrl.updateSubscription(subscription)">\r\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\r\n  </a>\r\n</span>\r\n');
+$templateCache.put('components/member/registration/action/update/registration.update.html','<span>\r\n  <a class="btn btn-primary" role="button"\r\n    ng-click="ctrl.showForm(subscription)">\r\n    <h5>Modifier <i class="glyphicon glyphicon-edit"></i></h5>\r\n  </a>\r\n</span>\r\n');}]);
