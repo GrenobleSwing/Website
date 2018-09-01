@@ -1,4 +1,6 @@
 function LogoutController($rootScope, $cookies, $state, $http, config) {
+
+  console.info("Message=Disconnecting...");
   $http.get(config.apiUrl + '/disconnect').finally(function() {
     $rootScope.globals = {};
     $cookies.remove('globals');

@@ -1,12 +1,12 @@
 angular.module('app', ['ngCookies', 'ui.bootstrap', 'ngResource',
         'ui.router', 'permission', 'permission.ui', 'ngSanitize',
+        'app.http',
+        'app.account',
         'app.acl',
         'app.auth',
         'app.common',
         'app.config',
         'app.home',
-        'app.account',
-        'app.http',
         'app.login',
         'app.logout',
         'app.main.nav',
@@ -98,9 +98,15 @@ function DefaultRouteConfig($stateProvider, $urlRouterProvider) {
       var state = $injector.get("$state");
       var authenticationService = $injector.get("authenticationService");
 
-      return authenticationService.getIdentity().then(function() {
-        return state.go('index.home');
-      });
+      return authenticationService
+        .getIdentity()
+        .then(function() {
+            console.info("Message=Go to home");
+            return state.go('member.home');
+        }, function() {
+            console.info("Message=Go to login");
+            return state.go('index.login');
+        });
     });
 }
 

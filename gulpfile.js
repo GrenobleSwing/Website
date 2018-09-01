@@ -55,7 +55,7 @@ gulp.task('build', ['clean:build'], function() {
   var mainStream = gulp.src('app/js/main.js');
 
   var sourceStream = series(appStream, configStream, mainStream)
-    .pipe(replace(new RegExp('@API_URL@', 'g'), 'http://localhost/api'))
+    .pipe(replace(new RegExp('@API_URL@', 'g'), 'https://api.inscriptions.grenobleswing.com/api'))
     .pipe(gulp.dest(config.build_dir.js.src));
 
   // Concatenate HTML templates

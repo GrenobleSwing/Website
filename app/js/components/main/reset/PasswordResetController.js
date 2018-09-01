@@ -1,3 +1,13 @@
+/**
+ * Contrôleur chargé d'afficher la page de remise à zéro du mot de passe
+ * 
+ * @param {*} $http 
+ * @param {*} config 
+ * @param {*} $scope 
+ * @param {*} $sce 
+ * @param {*} content 
+ * @param {*} $compile 
+ */
 function PasswordResetController($http, config, $scope, $sce, content, $compile) {
 
   $scope.registerDone = false;
@@ -47,18 +57,20 @@ function PasswordResetController($http, config, $scope, $sce, content, $compile)
 					return( source );
 				}
      })
-    .then(function(data) {
-      console.log(data);
+    .then(function(response) {
+      console.log(response);
       $scope.registerDone = true;
-      if (data.status != 302) {
-        $scope.registerSuccessful = false;
-      } else {
+      if (response.status == 302 || response.status == 200) {
         // if successful, bind success message to message
         $scope.registerSuccessful = true;
+        $scope.successResponse = $sce.trustAsHtml(response.data);
+      } else {
+        $scope.registerSuccessful = false;
       }
     }, function(error) {
       console.log(error);
-
+      $scope.registerDone = false;
+      $scope.registerSuccessful = false;
       $scope.trustedHtml = $sce.trustAsHtml(error.data
         .replace(' id="username" ', ' id="username" ng-model="formData.username" '));
     });

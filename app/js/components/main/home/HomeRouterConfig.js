@@ -1,6 +1,6 @@
 function HomeRouterConfig($stateProvider) {
   $stateProvider
-    .state('index.home', {
+    .state('member.home', {
       url: '/home',
       views: {
         'content@': {

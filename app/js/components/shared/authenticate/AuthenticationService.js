@@ -1,10 +1,11 @@
-function AuthenticationService($rootScope, $cookies, $http, config) {
+function AuthenticationService($rootScope, $cookies, $q, $http, config) {
 
   this.rootScope = $rootScope;
   this.cookies = $cookies;
 
   this.http = $http;
   this.config = config;
+  this.q = $q;
 
   this.init_();
 }
@@ -26,16 +27,35 @@ AuthenticationService.prototype = {
     },
 
     getIdentity: function getIdentity(force) {
-      return this.http.get(this.config.apiUrl + '/identity', { transformResponse: function(response, headersGetter, status) {
-//        console.info(response);
-        var data = JSON.parse(response);
-        data.login = data.email;
-//        console.info(data);
-        return data;
-      }});
+      console.info("Message=Retrieving current identity...");
+      var deferred = this.q.defer();
+      if (this.isAnonymous()) {
+        console.info("Message=... is anonymous");
+        return this.q.reject("Current user is anonymous");
+      }
+
+      return this
+        .http
+        .get(this.config.apiUrl + '/identity', { 
+          transformResponse: function(response, headersGetter, status) {
+            console.info(response);
+            var data = JSON.parse(response);
+            data.login = data.email;
+            console.info(data);
+            return data;
+          }
+        })
+        .then(function onSuccess(data) {
+          console.info("Message=Retrieving identity is successful");
+          return this.q.resolve(data);
+        }, function onError(rejection) {
+          console.error("Message=Retrieving identity failed");
+          return this.q.reject(rejection);
+        });
     },
 
     getCurrentAccount : function getCurrentAccount() {
+      console.info("Message=Retrieving current account...");
       return this.getIdentity().then(function(response) {
         return this.http.get(this.config.apiUrl + '/user/' + response.data.id + '/account', { cache: true });
       }.bind(this));
